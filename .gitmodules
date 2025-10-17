@@ -1,0 +1,6 @@
+[submodule "lib/oboe"]
+	path = lib/oboe
+	url = https://github.com/google/oboe.git
+[submodule "lib/beatrice-vst"]
+	path = lib/beatrice-vst
+	url = https://github.com/prj-beatrice/beatrice-vst.git
