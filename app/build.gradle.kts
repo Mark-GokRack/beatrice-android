@@ -4,24 +4,41 @@ plugins {
 }
 
 android {
-    namespace = "com.gokrack.beatrice_android"
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("C:\\Users\\gokqo\\AndroidStudioProjects\\releasekey.jks")
+            storePassword = "releasekey"
+            keyAlias = "key0"
+            keyPassword = "releasekey"
+        }
+        create("release") {
+            storeFile = file("C:\\Users\\gokqo\\AndroidStudioProjects\\releasekey.jks")
+            storePassword = "releasekey"
+            keyAlias = "key0"
+            keyPassword = "releasekey"
+        }
+    }
+    namespace = "com.gokrack.beatriceAndroid"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.gokrack.beatrice_android"
+        applicationId = "com.gokrack.beatriceAndroid"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
         externalNativeBuild {
             cmake {
                 cppFlags += "-std=c++20"
-                arguments += "-DANDROID_ABI=arm64-v8a"
                 arguments += "-DANDROID_STL=c++_shared"
+                abiFilters += listOf("arm64-v8a")
             }
         }
     }
@@ -33,6 +50,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -60,7 +81,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation("com.google.oboe:oboe:1.10.0")
-    implementation(":lib:oboe:samples:audio-device")
+    implementation(project(":audio-device"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

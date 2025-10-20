@@ -1,4 +1,4 @@
-package com.gokrack.beatrice_android
+package com.gokrack.beatriceAndroid
 
 import org.junit.Test
 

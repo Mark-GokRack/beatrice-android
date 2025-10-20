@@ -1,0 +1,34 @@
+package com.gokrack.beatriceAndroid
+
+import android.content.Context
+import android.media.AudioManager
+import android.os.Build
+import android.content.res.AssetManager
+object beatriceEngine {
+
+    init {
+        System.loadLibrary("beatriceAndroid")
+    }
+
+    // Native methods
+    external fun create(assetManager: AssetManager, filesDir: String): Boolean
+    external fun isAAudioRecommended(): Boolean
+    external fun setAPI(apiType: Int): Boolean
+    external fun setEffectOn(isEffectOn: Boolean): Boolean
+    external fun setRecordingDeviceId(deviceId: Int)
+    external fun setPlaybackDeviceId(deviceId: Int)
+    external fun delete()
+    external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)
+
+    fun setDefaultStreamValues(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
+            val defaultSampleRate = sampleRateStr?.toIntOrNull() ?: return
+            val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+            val defaultFramesPerBurst = framesPerBurstStr?.toIntOrNull() ?: return
+
+            native_setDefaultStreamValues(defaultSampleRate, defaultFramesPerBurst)
+        }
+    }
+}
