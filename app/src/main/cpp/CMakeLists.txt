@@ -29,6 +29,8 @@ target_include_directories(${CMAKE_PROJECT_NAME}
         ${BEATRICE_VST_DIR}/lib
         ${BEATRICE_VST_DIR}/src
 )
+
+find_library( log-lib log )
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         oboe::oboe
@@ -36,9 +38,10 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         atomic
         log
         beatrice
+        ${log-lib}
 )
 target_link_directories( ${CMAKE_PROJECT_NAME} PUBLIC . )
-        
+
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall "$<$<CONFIG:RELEASE>:-Ofast>")
 

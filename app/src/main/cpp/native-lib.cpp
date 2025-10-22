@@ -108,7 +108,6 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_setRecordingDeviceId(
         "method");
     return;
   }
-
   engine->setRecordingDeviceId(deviceId);
 }
 
@@ -123,6 +122,89 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_setPlaybackDeviceId(
   }
 
   engine->setPlaybackDeviceId(deviceId);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setPerformanceMode(
+    JNIEnv* env, jclass type, jint performanceMode_) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+  oboe::PerformanceMode performanceMode;
+  switch (performanceMode_) {
+    case 0:
+      performanceMode = oboe::PerformanceMode::LowLatency;
+      break;
+    case 1:
+      performanceMode = oboe::PerformanceMode::None;
+      break;
+    case 2:
+    default:
+      performanceMode = oboe::PerformanceMode::PowerSaving;
+      break;
+  }
+  engine->setPerformanceMode(performanceMode);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setVoiceID(JNIEnv* env,
+                                                           jclass type,
+                                                           jint voiceID) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setVoiceID(voiceID);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_getVoiceName(JNIEnv* env,
+                                                             jclass type,
+                                                             jint voiceID) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return nullptr;
+  }
+  std::u8string voiceName = engine->getVoiceName(voiceID);
+  return env->NewStringUTF(reinterpret_cast<const char*>(voiceName.c_str()));
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setPitchShift(
+    JNIEnv* env, jclass type, jfloat pitchShift) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setPitchShift(pitchShift);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setFormantShift(
+    JNIEnv* env, jclass type, jfloat formantShift) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setFormantShift(formantShift);
+  return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
@@ -167,6 +249,6 @@ JNIEXPORT void JNICALL
 Java_com_gokrack_beatriceAndroid_beatriceEngine_native_1setDefaultStreamValues(
     JNIEnv* env, jclass type, jint sampleRate, jint framesPerBurst) {
   oboe::DefaultStreamValues::SampleRate = (int32_t)sampleRate;
-  oboe::DefaultStreamValues::FramesPerBurst = 480;//(int32_t)framesPerBurst;
+  oboe::DefaultStreamValues::FramesPerBurst = 480;  //(int32_t)framesPerBurst;
 }
 }  // extern "C"

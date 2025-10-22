@@ -27,6 +27,11 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
     private lateinit var toggleEffectButton: Button
     private lateinit var recordingDeviceSpinner: AudioDeviceSpinner
     private lateinit var playbackDeviceSpinner: AudioDeviceSpinner
+    private lateinit var voiceSpinner: Spinner
+    private lateinit var pitchShiftSlider: com.google.android.material.slider.Slider
+    private lateinit var formantShiftSlider: com.google.android.material.slider.Slider
+
+    private var performanceMode = 0
 
     private var isPlaying = false
     private var apiSelection = OBOE_API_AAUDIO
@@ -65,17 +70,54 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
             }
         }
 
+        voiceSpinner = findViewById(R.id.voice_select_spinner)
+        voiceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                beatriceEngine.setVoiceID(id.toInt())
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        pitchShiftSlider = findViewById(R.id.pitch_shift_slider)
+        pitchShiftSlider.addOnChangeListener { slider, value, fromUser ->
+            beatriceEngine.setPitchShift(value)
+        }
+
+        formantShiftSlider = findViewById(R.id.formant_shift_slider)
+        formantShiftSlider.addOnChangeListener { slider, value, fromUser ->
+            beatriceEngine.setFormantShift(value)
+        }
+
         findViewById<RadioGroup>(R.id.apiSelectionGroup).check(R.id.aaudioButton)
         findViewById<RadioButton>(R.id.aaudioButton).setOnClickListener {
             if ((it as RadioButton).isChecked) {
                 apiSelection = OBOE_API_AAUDIO
                 setSpinnersEnabled(true)
+                EnablePerformanceModeUI(true)
             }
         }
         findViewById<RadioButton>(R.id.slesButton).setOnClickListener {
             if ((it as RadioButton).isChecked) {
                 apiSelection = OBOE_API_OPENSL_ES
                 setSpinnersEnabled(false)
+                EnablePerformanceModeUI(false)
+            }
+        }
+        
+        findViewById<RadioGroup>(R.id.LatencySelectionGroup).check(R.id.LowLatencyButton)
+        findViewById<RadioButton>(R.id.LowLatencyButton).setOnClickListener {
+            if ((it as RadioButton).isChecked) {
+                performanceMode = 0
+            }
+        }
+        findViewById<RadioButton>(R.id.NormalLatencyButton).setOnClickListener {
+            if ((it as RadioButton).isChecked) {
+                performanceMode = 1
+            } 
+        }
+        findViewById<RadioButton>(R.id.PowerSavingButton).setOnClickListener {
+            if ((it as RadioButton).isChecked) {
+                performanceMode = 2
             }
         }
 
@@ -105,6 +147,19 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         setSpinnersEnabled(enable)
     }
 
+    private fun EnablePerformanceModeUI(enable: Boolean) {
+
+        findViewById<RadioButton>(R.id.LowLatencyButton).isEnabled = enable
+        findViewById<RadioButton>(R.id.NormalLatencyButton).isEnabled = enable
+        findViewById<RadioButton>(R.id.PowerSavingButton).isEnabled = enable
+
+        findViewById<RadioGroup>(R.id.LatencySelectionGroup).check(
+            if (performanceMode == 0) R.id.LowLatencyButton
+            else if (performanceMode == 1) R.id.NormalLatencyButton
+            else R.id.PowerSavingButton
+        )
+    }
+
     override fun onDestroy() {
         onStopTest()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -122,7 +177,23 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         )
         mAAudioRecommended = beatriceEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
+        EnablePerformanceModeUI(true)
         beatriceEngine.setAPI(apiSelection)
+        beatriceEngine.setPerformanceMode(performanceMode)
+        val voiceNameList = ArrayList<String>()
+        for(i in 0 until 256) {
+            val voiceName = beatriceEngine.getVoiceName(i)
+            if (voiceName.isNotEmpty()) {
+                voiceNameList.add(voiceName)
+            }else{
+                break
+            }
+        }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, voiceNameList)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        voiceSpinner.adapter = adapter
+        beatriceEngine.setVoiceID(0)
+        beatriceEngine.setPitchShift(0.0f)
     }
 
     private fun onStopTest() {
@@ -135,6 +206,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
             stopEffect()
         } else {
             beatriceEngine.setAPI(apiSelection)
+            beatriceEngine.setPerformanceMode(performanceMode)
             startEffect()
         }
     }
@@ -147,6 +219,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
             toggleEffectButton.setText(R.string.stop_effect)
             isPlaying = true
             EnableAudioApiUI(false)
+            EnablePerformanceModeUI(false)
         } else {
             statusText.setText(R.string.status_open_failed)
             isPlaying = false
@@ -160,6 +233,9 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         toggleEffectButton.setText(R.string.start_effect)
         isPlaying = false
         EnableAudioApiUI(true)
+
+        val enabled = findViewById<RadioButton>(R.id.aaudioButton).isChecked
+        EnablePerformanceModeUI(enabled)
     }
 
     private fun setSpinnersEnabled(isEnabled: Boolean) {

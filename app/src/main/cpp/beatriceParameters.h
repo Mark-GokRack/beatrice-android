@@ -6,9 +6,9 @@
 #include <array>
 
 struct BeatriceParameters {
-  int targetSpeaker = 3;
-  double formantShift = 0.5;
-  double pitchShift = 12.0;
+  int targetSpeaker = 0;
+  double formantShift = 0.0;
+  double pitchShift = 0.0;
   double inputGain = 0.0;
   double outputGain = 0.0;
   double averageSourcePitch = 52.0;

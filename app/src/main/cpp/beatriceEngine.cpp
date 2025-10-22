@@ -47,6 +47,10 @@ void beatriceEngine::setRecordingDeviceId(int32_t deviceId) {
   mRecordingDeviceId = deviceId;
 }
 
+void beatriceEngine::setPerformanceMode(oboe::PerformanceMode mode) {
+  mPerformanceMode = mode;
+}
+
 void beatriceEngine::setPlaybackDeviceId(int32_t deviceId) {
   mPlaybackDeviceId = deviceId;
 }
@@ -88,6 +92,11 @@ oboe::Result beatriceEngine::openStreams() {
   oboe::AudioStreamBuilder inBuilder, outBuilder;
   setupPlaybackStreamParameters(&outBuilder);
   oboe::Result result = outBuilder.openStream(mPlayStream);
+  auto outBurstSize = mPlayStream->getFramesPerBurst();
+  mPlayStream->setBufferSizeInFrames(std::max(480 * 2, 2 * outBurstSize));
+
+  // auto outBufferSize = mPlayStream->getBufferSizeInFrames();
+  // auto outBufferCapacity = mPlayStream->getBufferCapacityInFrames();
 
   if (result != oboe::Result::OK) {
     LOGE("Failed to open output stream. Error %s", oboe::convertToText(result));
@@ -102,12 +111,17 @@ oboe::Result beatriceEngine::openStreams() {
   inBuilder.setBufferCapacityInFrames(outBuilder.getBufferCapacityInFrames() *
                                       2);
   result = inBuilder.openStream(mRecordingStream);
+
+  // auto inBurstSize = mRecordingStream->getFramesPerBurst();
+  // auto inBufferSize = mRecordingStream->getBufferSizeInFrames();
+  // auto inBufferCapacity = mRecordingStream->getBufferCapacityInFrames();
+
   if (result != oboe::Result::OK) {
     LOGE("Failed to open input stream. Error %s", oboe::convertToText(result));
     closeStream(mPlayStream);
     return result;
   }
-  warnIfNotLowLatency(mRecordingStream);
+  // warnIfNotLowLatency(mRecordingStream);
 
   if (mBeatriceModelConfig.model.VersionInt() == 0) {
     mBeatriceProcessorCore =
@@ -183,7 +197,7 @@ oboe::AudioStreamBuilder* beatriceEngine::setupCommonStreamParameters(
       ->setFormat(mFormat)
       ->setFormatConversionAllowed(true)
       ->setSharingMode(oboe::SharingMode::Exclusive)
-      ->setPerformanceMode(oboe::PerformanceMode::LowLatency);
+      ->setPerformanceMode(mPerformanceMode);
   builder->setFramesPerDataCallback(480);
   builder->setUsage(oboe::Usage::Game);
   return builder;
@@ -202,6 +216,9 @@ void beatriceEngine::closeStream(std::shared_ptr<oboe::AudioStream>& stream) {
       LOGW("Successfully closed streams");
     }
     stream.reset();
+  }
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore.reset();
   }
 }
 
@@ -237,5 +254,50 @@ void beatriceEngine::onErrorAfterClose(oboe::AudioStream* oboeStream,
   if (error == oboe::Result::ErrorDisconnected) {
     LOGI("Restarting AudioStream");
     openStreams();
+  }
+}
+
+void beatriceEngine::setVoiceID(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return;
+  }
+  mBeatriceParameters.targetSpeaker = voiceID;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetTargetSpeaker(mBeatriceParameters.targetSpeaker);
+    mBeatriceProcessorCore->SetAverageSourcePitch(
+        mBeatriceParameters
+            .averageTargetPitchBase[mBeatriceParameters.targetSpeaker] -
+        mBeatriceParameters.pitchShift);
+  }
+}
+
+std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].name;
+}
+
+void beatriceEngine::setPitchShift(float pitchShift) {
+  mBeatriceParameters.pitchShift = pitchShift;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetPitchShift(mBeatriceParameters.pitchShift);
+    mBeatriceProcessorCore->SetAverageSourcePitch(
+        mBeatriceParameters
+            .averageTargetPitchBase[mBeatriceParameters.targetSpeaker] -
+        mBeatriceParameters.pitchShift);
+  }
+}
+
+void beatriceEngine::setFormantShift(float formantShift) {
+  mBeatriceParameters.formantShift = formantShift;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetFormantShift(mBeatriceParameters.formantShift);
   }
 }

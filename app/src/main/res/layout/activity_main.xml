@@ -63,6 +63,47 @@
             android:text="@string/sles" />
     </RadioGroup>
 
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/LatencySelectionGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/apiSelectionGroup" >
+
+        <TextView
+            android:id="@+id/latencyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/latencySelection" />
+
+        <RadioButton
+            android:id="@+id/LowLatencyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/low_latency" />
+
+        <RadioButton
+            android:id="@+id/NormalLatencyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/normal_latency" />
+
+        <RadioButton
+            android:id="@+id/PowerSavingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/power_saving" />
+    </RadioGroup>
+
     <TextView
         android:id="@+id/recDeviceLabel"
         android:layout_width="wrap_content"
@@ -72,7 +113,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/recording_device"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/apiSelectionGroup"/>
+        app:layout_constraintTop_toBottomOf="@+id/LatencySelectionGroup"/>
 
     <com.google.oboe.samples.audio_device.AudioDeviceSpinner
         android:id="@+id/recording_devices_spinner"
@@ -81,8 +122,8 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recDeviceLabel" />
+        app:layout_constraintLeft_toRightOf="@+id/recDeviceLabel"
+        app:layout_constraintTop_toBottomOf="@+id/LatencySelectionGroup" />
 
     <TextView
         android:id="@+id/playDeviceLabel"
@@ -102,8 +143,82 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/playDeviceLabel"
+        app:layout_constraintTop_toBottomOf="@+id/recording_devices_spinner" />
+
+    <TextView
+        android:id="@+id/VoiceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/voice_select"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playDeviceLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/playback_devices_spinner" />
+
+    <Spinner
+        android:id="@+id/voice_select_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/VoiceLabel"
+        app:layout_constraintTop_toTopOf="@+id/VoiceLabel" />
+
+    <TextView
+        android:id="@+id/PitchShiftLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/pitch_shift"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/voice_select_spinner" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/pitch_shift_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/PitchShiftLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/voice_select_spinner"
+        android:valueFrom="-24.0"
+        android:valueTo="24.0"
+        android:stepSize="0.125"
+        android:value="0" />
+
+    <TextView
+        android:id="@+id/FormantShiftLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/formant_shift"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitch_shift_slider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/formant_shift_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/FormantShiftLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitch_shift_slider"
+        android:valueFrom="-2.0"
+        android:valueTo="2.0"
+        android:stepSize="0.5"
+        android:value="0" />
+
 
     <Button
         android:id="@+id/button_toggle_effect"
@@ -116,7 +231,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.53"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playback_devices_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/pitch_shift_slider" />
 
     <TextView
         android:id="@+id/status_view_text"

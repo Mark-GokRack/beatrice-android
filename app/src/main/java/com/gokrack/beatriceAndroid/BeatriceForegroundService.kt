@@ -38,7 +38,7 @@ class BeatriceForegroundService : Service() {
             Notification.Builder(this, "all")
                 .setContentTitle("Playing/recording audio")
                 .setContentText("playing/recording...")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.icon)
                 .build()
         } else {
             null

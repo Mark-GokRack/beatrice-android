@@ -25,6 +25,14 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   bool setAudioApi(oboe::AudioApi);
   bool isAAudioRecommended(void);
 
+  void setPerformanceMode(oboe::PerformanceMode mode);
+
+  void setVoiceID(int32_t voiceID);
+  std::u8string getVoiceName(int32_t voiceID);
+
+  void setPitchShift(float pitchShift);
+  void setFormantShift(float formantShift);
+
   oboe::DataCallbackResult onAudioReady(oboe::AudioStream* oboeStream,
                                         void* audioData,
                                         int32_t numFrames) override;
@@ -43,6 +51,7 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   int32_t mSampleRate = oboe::kUnspecified;
   const int32_t mInputChannelCount = oboe::ChannelCount::Mono;
   const int32_t mOutputChannelCount = oboe::ChannelCount::Mono;
+  oboe::PerformanceMode mPerformanceMode = oboe::PerformanceMode::LowLatency;
 
   std::unique_ptr<BeatriceFullDuplexPass> mDuplexStream;
   std::shared_ptr<oboe::AudioStream> mRecordingStream;

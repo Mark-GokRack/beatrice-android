@@ -18,6 +18,8 @@
 #define BEATRICE_FULLDUPLEXPASS_H
 
 #include <common/processor_core.h>
+#include <android/log.h>
+#include <string>
 
 class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
  public:
@@ -45,6 +47,9 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
     // It is possible that there may be fewer input than output samples.
     int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
 
+
+    //__android_log_write(ANDROID_LOG_INFO, "BEATRICE-ANDROID_input", std::to_string(numInputSamples).c_str());
+    //__android_log_write(ANDROID_LOG_INFO, "BEATRICE-ANDROID_output", std::to_string(numOutputSamples).c_str());
     /*  for (int32_t i = 0; i < samplesToProcess; i++) {
           *outputFloats++ = *inputFloats++;  // silence
       }*/

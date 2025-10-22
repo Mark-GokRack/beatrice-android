@@ -17,6 +17,12 @@ object beatriceEngine {
     external fun setEffectOn(isEffectOn: Boolean): Boolean
     external fun setRecordingDeviceId(deviceId: Int)
     external fun setPlaybackDeviceId(deviceId: Int)
+    external fun setPerformanceMode(performanceMode: Int): Boolean
+    external fun setVoiceID(voiceID: Int): Boolean
+    external fun getVoiceName(voiceID: Int): String
+    external fun setPitchShift(pitchShift: Float): Boolean
+    external fun setFormantShift(formantShift: Float): Boolean
+
     external fun delete()
     external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)
 
