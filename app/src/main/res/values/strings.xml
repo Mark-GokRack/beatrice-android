@@ -21,6 +21,7 @@
     <string name="low_latency">LowLatency</string>
     <string name="normal_latency">Normal</string>
     <string name="power_saving">PowerSaving</string>
+    <string name="async_proc">use Async Processing</string>
 
     <string name="pitch_shift">PitchShift</string>
     <string name="voice_select">Voice</string>

@@ -47,26 +47,22 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_create(JNIEnv* env, jclass,
     auto c_dir_name =
         env->GetStringUTFChars(static_cast<jstring>(dir_name_), JNI_FALSE);
     auto dir_name = std::string(c_dir_name);
-    copy_from_asset(
-        assetManager,
-        "beatrice_paraphernalia_jvs/beatrice_paraphernalia_jvs.toml",
-        dir_name + std::string("/beatrice_paraphernalia_jvs.toml"));
-    copy_from_asset(assetManager, "beatrice_paraphernalia_jvs/noimage.png",
-                    dir_name + std::string("/noimage.png"));
+    // auto model_name = std::string("beatrice_paraphernalia_jvs");
+    auto model_name = std::string("gokrack");
     copy_from_asset(assetManager,
-                    "beatrice_paraphernalia_jvs/phone_extractor.bin",
+                    model_name + "/beatrice_paraphernalia_jvs.toml",
+                    dir_name + std::string("/beatrice_paraphernalia_jvs.toml"));
+    // copy_from_asset(assetManager, "beatrice_paraphernalia_jvs/noimage.png",
+    //                 dir_name + std::string("/noimage.png"));
+    copy_from_asset(assetManager, model_name + "/phone_extractor.bin",
                     dir_name + std::string("/phone_extractor.bin"));
-    copy_from_asset(assetManager,
-                    "beatrice_paraphernalia_jvs/pitch_estimator.bin",
+    copy_from_asset(assetManager, model_name + "/pitch_estimator.bin",
                     dir_name + std::string("/pitch_estimator.bin"));
-    copy_from_asset(assetManager,
-                    "beatrice_paraphernalia_jvs/embedding_setter.bin",
+    copy_from_asset(assetManager, model_name + "/embedding_setter.bin",
                     dir_name + std::string("/embedding_setter.bin"));
-    copy_from_asset(assetManager,
-                    "beatrice_paraphernalia_jvs/waveform_generator.bin",
+    copy_from_asset(assetManager, model_name + "/waveform_generator.bin",
                     dir_name + std::string("/waveform_generator.bin"));
-    copy_from_asset(assetManager,
-                    "beatrice_paraphernalia_jvs/speaker_embeddings.bin",
+    copy_from_asset(assetManager, model_name + "/speaker_embeddings.bin",
                     dir_name + std::string("/speaker_embeddings.bin"));
 
     engine = new beatriceEngine(
@@ -135,6 +131,7 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_setPerformanceMode(
   }
   oboe::PerformanceMode performanceMode;
   switch (performanceMode_) {
+    default:
     case 0:
       performanceMode = oboe::PerformanceMode::LowLatency;
       break;
@@ -142,7 +139,6 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_setPerformanceMode(
       performanceMode = oboe::PerformanceMode::None;
       break;
     case 2:
-    default:
       performanceMode = oboe::PerformanceMode::PowerSaving;
       break;
   }
@@ -251,4 +247,18 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_native_1setDefaultStreamValues(
   oboe::DefaultStreamValues::SampleRate = (int32_t)sampleRate;
   oboe::DefaultStreamValues::FramesPerBurst = 480;  //(int32_t)framesPerBurst;
 }
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setAsyncMode(
+    JNIEnv* env, jclass type, jboolean isAsyncMode) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine "
+        "before calling this method");
+    return JNI_FALSE;
+  }
+  engine->setAsyncMode(isAsyncMode);
+  return JNI_TRUE;
+}
+
 }  // extern "C"

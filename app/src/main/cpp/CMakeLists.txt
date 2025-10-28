@@ -9,6 +9,7 @@ get_filename_component(PROJECT_ROOT_DIR
 
 set( BEATRICE_VST_DIR ${PROJECT_ROOT_DIR}/lib/beatrice-vst )
 set( OBOE_DIR ${PROJECT_ROOT_DIR}/lib/oboe )
+set( ASIO_DIR ${PROJECT_ROOT_DIR}/lib/asio )
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         native-lib.cpp
@@ -28,6 +29,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
         ${OBOE_DIR}/include
         ${BEATRICE_VST_DIR}/lib
         ${BEATRICE_VST_DIR}/src
+        ${ASIO_DIR}/asio/include/
 )
 
 find_library( log-lib log )

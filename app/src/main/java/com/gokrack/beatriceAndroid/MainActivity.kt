@@ -32,6 +32,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
     private lateinit var formantShiftSlider: com.google.android.material.slider.Slider
 
     private var performanceMode = 0
+    private var isAsyncMode = false
 
     private var isPlaying = false
     private var apiSelection = OBOE_API_AAUDIO
@@ -94,6 +95,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
                 apiSelection = OBOE_API_AAUDIO
                 setSpinnersEnabled(true)
                 EnablePerformanceModeUI(true)
+                EnableAsyncModeUI(true)
             }
         }
         findViewById<RadioButton>(R.id.slesButton).setOnClickListener {
@@ -101,6 +103,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
                 apiSelection = OBOE_API_OPENSL_ES
                 setSpinnersEnabled(false)
                 EnablePerformanceModeUI(false)
+                EnableAsyncModeUI(false)
             }
         }
         
@@ -119,6 +122,19 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
             if ((it as RadioButton).isChecked) {
                 performanceMode = 2
             }
+        }
+
+        findViewById<CheckBox>(R.id.asyncProcessingCheckbox).setOnCheckedChangeListener { buttonView, isChecked ->
+            isAsyncMode = isChecked
+            if (isAsyncMode) {
+                performanceMode = 0
+                findViewById<RadioGroup>(R.id.LatencySelectionGroup).check(
+                    R.id.LowLatencyButton
+                )
+                EnablePerformanceModeUI(false)
+            } else {
+                EnablePerformanceModeUI(true)
+            }            
         }
 
         beatriceEngine.setDefaultStreamValues(this)
@@ -160,6 +176,18 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         )
     }
 
+    private fun EnableAsyncModeUI(enable: Boolean) {
+        findViewById<CheckBox>(R.id.asyncProcessingCheckbox).isEnabled = enable
+        findViewById<CheckBox>(R.id.asyncProcessingCheckbox).isChecked = isAsyncMode
+        if (isAsyncMode) {
+            performanceMode = 0
+            findViewById<RadioGroup>(R.id.LatencySelectionGroup).check(
+                R.id.LowLatencyButton
+            )
+            EnablePerformanceModeUI(false)
+        }
+    }
+
     override fun onDestroy() {
         onStopTest()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -178,8 +206,11 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         mAAudioRecommended = beatriceEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
         EnablePerformanceModeUI(true)
+        EnableAsyncModeUI(true)
+        
         beatriceEngine.setAPI(apiSelection)
         beatriceEngine.setPerformanceMode(performanceMode)
+        beatriceEngine.setAsyncMode(isAsyncMode)
         val voiceNameList = ArrayList<String>()
         for(i in 0 until 256) {
             val voiceName = beatriceEngine.getVoiceName(i)
@@ -207,6 +238,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         } else {
             beatriceEngine.setAPI(apiSelection)
             beatriceEngine.setPerformanceMode(performanceMode)
+            beatriceEngine.setAsyncMode(isAsyncMode)
             startEffect()
         }
     }
@@ -220,6 +252,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
             isPlaying = true
             EnableAudioApiUI(false)
             EnablePerformanceModeUI(false)
+            EnableAsyncModeUI(false)
         } else {
             statusText.setText(R.string.status_open_failed)
             isPlaying = false
@@ -236,6 +269,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
 
         val enabled = findViewById<RadioButton>(R.id.aaudioButton).isChecked
         EnablePerformanceModeUI(enabled)
+        EnableAsyncModeUI(enabled)
     }
 
     private fun setSpinnersEnabled(isEnabled: Boolean) {
@@ -292,4 +326,12 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
             startForegroundService()
         }
     }
+
+    protected override fun onPause() {
+        super.onPause()
+        if (isPlaying) {
+            stopEffect()
+        }
+    }
+
 }

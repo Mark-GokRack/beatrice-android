@@ -4,6 +4,7 @@
 #include <common/processor_core_1.h>
 #include <common/processor_core_2.h>
 #include <logging_macros.h>
+#include <oboe/LatencyTuner.h>
 
 #include <cassert>
 
@@ -51,6 +52,10 @@ void beatriceEngine::setPerformanceMode(oboe::PerformanceMode mode) {
   mPerformanceMode = mode;
 }
 
+void beatriceEngine::setAsyncMode(bool isAsyncMode) {
+  mIsAsyncMode = isAsyncMode;
+}
+
 void beatriceEngine::setPlaybackDeviceId(int32_t deviceId) {
   mPlaybackDeviceId = deviceId;
 }
@@ -92,8 +97,10 @@ oboe::Result beatriceEngine::openStreams() {
   oboe::AudioStreamBuilder inBuilder, outBuilder;
   setupPlaybackStreamParameters(&outBuilder);
   oboe::Result result = outBuilder.openStream(mPlayStream);
-  auto outBurstSize = mPlayStream->getFramesPerBurst();
-  mPlayStream->setBufferSizeInFrames(std::max(480 * 2, 2 * outBurstSize));
+  // auto outBurstSize = mPlayStream->getFramesPerBurst();
+  // mPlayStream->setBufferSizeInFrames(std::max(480 * 2, 2 * outBurstSize));
+
+  mLatencyTuner = std::make_shared<oboe::LatencyTuner>(*mPlayStream);
 
   // auto outBufferSize = mPlayStream->getBufferSizeInFrames();
   // auto outBufferCapacity = mPlayStream->getBufferCapacityInFrames();
@@ -162,8 +169,8 @@ oboe::Result beatriceEngine::openStreams() {
   mBeatriceProcessorCore->SetMaxSourcePitch(mBeatriceParameters.maxSourcePitch);
   mBeatriceProcessorCore->SetVQNumNeighbors(mBeatriceParameters.vqNumNeighbors);
 
-  mDuplexStream =
-      std::make_unique<BeatriceFullDuplexPass>(mBeatriceProcessorCore);
+  mDuplexStream = std::make_unique<BeatriceFullDuplexPass>(
+      mBeatriceProcessorCore, mLatencyTuner, mIsAsyncMode, 480, 2);
   mDuplexStream->setSharedInputStream(mRecordingStream);
   mDuplexStream->setSharedOutputStream(mPlayStream);
   mDuplexStream->start();
@@ -196,9 +203,13 @@ oboe::AudioStreamBuilder* beatriceEngine::setupCommonStreamParameters(
   builder->setAudioApi(mAudioApi)
       ->setFormat(mFormat)
       ->setFormatConversionAllowed(true)
-      ->setSharingMode(oboe::SharingMode::Exclusive)
-      ->setPerformanceMode(mPerformanceMode);
-  builder->setFramesPerDataCallback(480);
+      ->setSharingMode(oboe::SharingMode::Exclusive);
+  if (mAudioApi == oboe::AudioApi::AAudio) {
+    builder->setPerformanceMode(mPerformanceMode);
+  } else {
+    builder->setPerformanceMode(oboe::PerformanceMode::None);
+  }
+  // builder->setFramesPerDataCallback(480);
   builder->setUsage(oboe::Usage::Game);
   return builder;
 }

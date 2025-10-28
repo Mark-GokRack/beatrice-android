@@ -18,6 +18,7 @@ object beatriceEngine {
     external fun setRecordingDeviceId(deviceId: Int)
     external fun setPlaybackDeviceId(deviceId: Int)
     external fun setPerformanceMode(performanceMode: Int): Boolean
+    external fun setAsyncMode(isAsyncMode: Boolean): Boolean
     external fun setVoiceID(voiceID: Int): Boolean
     external fun getVoiceName(voiceID: Int): String
     external fun setPitchShift(pitchShift: Float): Boolean
