@@ -312,3 +312,19 @@ void beatriceEngine::setFormantShift(float formantShift) {
     mBeatriceProcessorCore->SetFormantShift(mBeatriceParameters.formantShift);
   }
 }
+
+void beatriceEngine::setInputGain(float gain) {
+  mBeatriceParameters.inputGain = gain;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetInputGain(mBeatriceParameters.inputGain);
+  }
+}
+
+void beatriceEngine::setOutputGain(float gain) {
+  mBeatriceParameters.outputGain = gain;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetOutputGain(mBeatriceParameters.outputGain);
+  }
+}

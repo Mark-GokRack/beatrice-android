@@ -230,6 +230,58 @@
         android:stepSize="0.5"
         android:value="0" />
 
+    <TextView
+        android:id="@+id/InputGainLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/input_gain"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/formant_shift_slider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/input_gain_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/InputGainLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/formant_shift_slider"
+        android:valueFrom="-60.0"
+        android:valueTo="20.0"
+        android:stepSize="0.1"
+        android:value="0" />
+
+    <TextView
+        android:id="@+id/OutputGainLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/output_gain"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_gain_slider" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/output_gain_slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/OutputGainLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_gain_slider"
+        android:valueFrom="-60.0"
+        android:valueTo="20.0"
+        android:stepSize="0.1"
+        android:value="0" />
+
 
     <Button
         android:id="@+id/button_toggle_effect"
@@ -242,7 +294,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.53"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pitch_shift_slider" />
+        app:layout_constraintTop_toBottomOf="@+id/output_gain_slider" />
 
     <TextView
         android:id="@+id/status_view_text"

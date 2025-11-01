@@ -30,6 +30,9 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
     private lateinit var voiceSpinner: Spinner
     private lateinit var pitchShiftSlider: com.google.android.material.slider.Slider
     private lateinit var formantShiftSlider: com.google.android.material.slider.Slider
+    private lateinit var inputGainSlider: com.google.android.material.slider.Slider
+    private lateinit var outputGainSlider: com.google.android.material.slider.Slider
+
 
     private var performanceMode = 0
     private var isAsyncMode = false
@@ -87,6 +90,16 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         formantShiftSlider = findViewById(R.id.formant_shift_slider)
         formantShiftSlider.addOnChangeListener { slider, value, fromUser ->
             beatriceEngine.setFormantShift(value)
+        }
+
+        inputGainSlider = findViewById(R.id.input_gain_slider)
+        inputGainSlider.addOnChangeListener { slider, value, fromUser ->
+            beatriceEngine.setInputGain(value)
+        }
+
+        outputGainSlider = findViewById(R.id.output_gain_slider)
+        outputGainSlider.addOnChangeListener { slider, value, fromUser ->
+            beatriceEngine.setOutputGain(value)
         }
 
         findViewById<RadioGroup>(R.id.apiSelectionGroup).check(R.id.aaudioButton)
