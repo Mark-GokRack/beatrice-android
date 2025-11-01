@@ -119,16 +119,9 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
       buffer_index_ = next_buffer_index_;
     } else {
       processorCore_->Process(inputFloats, outputFloats, samplesToProcess);
+      latencyTuner_->tune();
     }
-    /*if( error != beatrice::common::ErrorCode::kSuccess){
-      return oboe::DataCallbackResult::Stop;
-    }*/
 
-    latencyTuner_->tune();
-
-    //__android_log_print(ANDROID_LOG_INFO, "BEATRICE-ANDROID", "Buffer
-    // Size: %d",
-    //                   getOutputStream()->getBufferSizeInFrames());
     return oboe::DataCallbackResult::Continue;
   }
 

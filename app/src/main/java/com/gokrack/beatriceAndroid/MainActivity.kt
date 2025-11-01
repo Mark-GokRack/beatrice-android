@@ -136,6 +136,7 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
                 EnablePerformanceModeUI(true)
             }            
         }
+        findViewById<CheckBox>(R.id.asyncProcessingCheckbox).setChecked(true)
 
         beatriceEngine.setDefaultStreamValues(this)
         volumeControlStream = AudioManager.STREAM_MUSIC
