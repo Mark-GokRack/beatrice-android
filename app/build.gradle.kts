@@ -5,17 +5,14 @@ plugins {
 
 android {
     signingConfigs {
-        getByName("debug") {
-            storeFile = file("C:\\Users\\gokqo\\AndroidStudioProjects\\releasekey.jks")
-            storePassword = "releasekey"
-            keyAlias = "key0"
-            keyPassword = "releasekey"
+        getByName("debug"){
+            storeFile = rootProject.file("debug.keystore")
         }
         create("release") {
-            storeFile = file("C:\\Users\\gokqo\\AndroidStudioProjects\\releasekey.jks")
-            storePassword = "releasekey"
-            keyAlias = "key0"
-            keyPassword = "releasekey"
+            storeFile = rootProject.file("release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
     namespace = "com.gokrack.beatriceAndroid"
