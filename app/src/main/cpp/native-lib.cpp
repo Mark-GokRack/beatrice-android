@@ -204,6 +204,36 @@ Java_com_gokrack_beatriceAndroid_beatriceEngine_setFormantShift(
 }
 
 JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setInputGain(JNIEnv* env,
+                                                             jclass type,
+                                                             jfloat gain) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setInputGain(gain);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceAndroid_beatriceEngine_setOutputGain(JNIEnv* env,
+                                                              jclass type,
+                                                              jfloat gain) {
+  if (engine == nullptr) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setInputGain(gain);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceAndroid_beatriceEngine_setAPI(JNIEnv* env, jclass type,
                                                        jint apiType) {
   if (engine == nullptr) {

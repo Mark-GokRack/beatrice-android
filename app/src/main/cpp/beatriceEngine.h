@@ -34,6 +34,9 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   void setPitchShift(float pitchShift);
   void setFormantShift(float formantShift);
 
+  void setInputGain(float gain);
+  void setOutputGain(float gain);
+
   oboe::DataCallbackResult onAudioReady(oboe::AudioStream* oboeStream,
                                         void* audioData,
                                         int32_t numFrames) override;

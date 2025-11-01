@@ -23,7 +23,11 @@
     <string name="power_saving">PowerSaving</string>
     <string name="async_proc">use Async Processing</string>
 
-    <string name="pitch_shift">PitchShift</string>
     <string name="voice_select">Voice</string>
+
+    <string name="pitch_shift">PitchShift</string>
     <string name="formant_shift">FormantShift</string>
+
+    <string name="input_gain">InputGain</string>
+    <string name="output_gain">OutputGain</string>
 </resources>
