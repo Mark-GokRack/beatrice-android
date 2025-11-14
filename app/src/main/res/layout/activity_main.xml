@@ -23,8 +23,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Beatrice Android"
-            android:textColor="@android:color/black"
+            android:text="Beatrice App for Android"
+            android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -158,6 +158,38 @@
         app:layout_constraintTop_toBottomOf="@+id/recording_devices_spinner" />
 
     <TextView
+        android:id="@+id/ModelLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/model_label"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/button_model_select" />
+
+    <Button
+        android:id="@+id/button_model_select"
+        android:layout_width="94dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/model_select"
+        app:layout_constraintLeft_toRightOf="@+id/ModelLabel"
+        app:layout_constraintTop_toBottomOf="@+id/playback_devices_spinner" />
+
+    <TextView
+        android:id="@+id/ModelName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/model_name"
+        app:layout_constraintLeft_toRightOf="@+id/button_model_select"
+        app:layout_constraintBottom_toBottomOf="@+id/button_model_select" />
+
+    <TextView
         android:id="@+id/VoiceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -166,7 +198,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/voice_select"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playback_devices_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/button_model_select" />
 
     <Spinner
         android:id="@+id/voice_select_spinner"

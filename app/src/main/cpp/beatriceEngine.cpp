@@ -284,6 +284,10 @@ void beatriceEngine::setVoiceID(int32_t voiceID) {
   }
 }
 
+std::u8string beatriceEngine::getModelName(void) {
+  return mBeatriceModelConfig.model.name;
+}
+
 std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
     LOGW("Invalid voiceID: %d", voiceID);

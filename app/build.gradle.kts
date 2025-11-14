@@ -15,17 +15,17 @@ android {
             keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
-    namespace = "com.gokrack.beatriceAndroid"
+    namespace = "com.gokrack.beatriceapp"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.gokrack.beatriceAndroid"
+        applicationId = "com.gokrack.beatriceapp"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
-        versionName = "0.0.1"
+        versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("com.google.oboe:oboe:1.10.0")
     implementation(project(":audio-device"))
+    implementation(libs.androidx.documentfile)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

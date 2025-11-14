@@ -28,6 +28,8 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   void setPerformanceMode(oboe::PerformanceMode mode);
   void setAsyncMode(bool isAsyncMode);
 
+  std::u8string getModelName(void);
+
   void setVoiceID(int32_t voiceID);
   std::u8string getVoiceName(int32_t voiceID);
 

@@ -1,4 +1,4 @@
-package com.gokrack.beatriceAndroid
+package com.gokrack.beatriceapp
 
 import android.Manifest
 import android.app.Activity
@@ -13,9 +13,17 @@ import android.widget.*
 import androidx.core.app.ActivityCompat
 import com.google.oboe.samples.audio_device.AudioDeviceListEntry
 import com.google.oboe.samples.audio_device.AudioDeviceSpinner
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.documentfile.provider.DocumentFile
+import java.io.File
+import java.io.FileOutputStream
+import android.provider.DocumentsContract
+import androidx.activity.result.ActivityResultLauncher
 
-class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallback {
-
+class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
+    
     companion object {
         private val TAG = MainActivity::class.java.name
         private const val AUDIO_EFFECT_REQUEST = 0
@@ -33,13 +41,40 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
     private lateinit var inputGainSlider: com.google.android.material.slider.Slider
     private lateinit var outputGainSlider: com.google.android.material.slider.Slider
 
-
     private var performanceMode = 0
     private var isAsyncMode = false
 
     private var isPlaying = false
     private var apiSelection = OBOE_API_AAUDIO
     private var mAAudioRecommended = true
+
+    private var modelPickerLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val treeUri = result.data?.data ?: return@registerForActivityResult
+            // 永続的なアクセス許可を取得（必要に応じて）
+            contentResolver.takePersistableUriPermission(
+                treeUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+
+            // treeUri を使って DocumentFile を取得
+            val rootDir = DocumentFile.fromTreeUri(this, treeUri)
+            val tomlFiles = rootDir?.listFiles()?.filter { file ->
+                file.isFile && file.name?.endsWith(".toml", ignoreCase = true) == true
+            } ?: emptyList()
+
+            if (tomlFiles.isNotEmpty()) {
+                //Log.d("TOML", "Found ${tomlFiles.size} TOML file(s):")
+                //tomlFiles.forEach { Log.d("TOML", it.name ?: "Unnamed") }
+                // 例: 最初の toml ファイルを処理
+                copyModelFilesToExtDir(tomlFiles.first().uri)
+            } else {
+                Toast.makeText(this, "TOMLファイルを含むフォルダを選択してください", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +107,16 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
 
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
+        }
+
+        val model_select_button = findViewById<Button>(R.id.button_model_select)
+        model_select_button.setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            }
+            modelPickerLauncher.launch(intent)
         }
 
         voiceSpinner = findViewById(R.id.voice_select_spinner)
@@ -211,11 +256,81 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         super.onDestroy()
     }
 
+    fun deleteDirectoryContents(dir: File): Boolean {
+        if (!dir.exists() || !dir.isDirectory) return false
+
+        var success = true
+        dir.listFiles()?.forEach { file ->
+            success = success && deleteRecursively(file)
+        }
+        return success
+    }
+    fun deleteRecursively(file: File): Boolean {
+        return if (file.isDirectory) {
+            file.listFiles()?.forEach { child ->
+                if (!deleteRecursively(child)) return false
+            }
+            file.delete()
+        } else {
+            file.delete()
+        }
+    }
+    fun copyFilteredFilesRecursively(
+        source: DocumentFile,
+        destRoot: File,
+        relativePath: String
+    ) {
+        for (file in source.listFiles()) {
+            val newRelativePath = if (relativePath.isEmpty()) file.name ?: "" else "$relativePath/${file.name}"
+            if (file.isDirectory) {
+                copyFilteredFilesRecursively(file, destRoot, newRelativePath)
+            } else if (file.isFile && isTargetExtension(file.name)) {
+                val destFile = File(destRoot, newRelativePath)
+                destFile.parentFile?.mkdirs()
+                copyFile(file, destFile)
+            }
+        }
+    }
+    fun copyFile(source: DocumentFile, dest: File) {
+        try {
+            contentResolver.openInputStream(source.uri)?.use { input ->
+                FileOutputStream(dest).use { output ->
+                    input.copyTo(output)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("CopyFile", "Failed to copy ${source.name}", e)
+        }
+    }
+    fun isTargetExtension(name: String): Boolean {
+        return name.endsWith(".toml", ignoreCase = true) ||
+            name.endsWith(".bin", ignoreCase = true) ||
+            name.endsWith(".png", ignoreCase = true)
+    }
+
+    private fun copyModelFilesToExtDir(tomlUri: Uri) {
+        val tomlFile = DocumentFile.fromSingleUri(this, tomlUri) ?: return
+
+        val docId = DocumentsContract.getDocumentId(tomlUri)
+        val parentDocId = docId.substringBeforeLast("/")
+        val parentUri = DocumentsContract.buildTreeDocumentUri(
+            tomlUri.authority ?: return,
+            parentDocId
+        )
+        val parentDir = requireNotNull( DocumentFile.fromTreeUri(this, parentUri) )
+
+        val destRoot = getExternalFilesDir(null) ?: filesDir
+        deleteDirectoryContents(destRoot)
+        copyFilteredFilesRecursively(parentDir, destRoot, "")
+        beatriceEngine.readModel(tomlFile.name?.let { destRoot.resolve(it).absolutePath } ?: return)
+        updateModelInfo()
+    }
+
+
     private fun onStartTest() {
-        
         beatriceEngine.create(
             getAssets(),
-            this.filesDir.absolutePath
+            this.getExternalFilesDir(null)?.absolutePath ?: this.filesDir.absolutePath
         )
         mAAudioRecommended = beatriceEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
@@ -225,6 +340,15 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         beatriceEngine.setAPI(apiSelection)
         beatriceEngine.setPerformanceMode(performanceMode)
         beatriceEngine.setAsyncMode(isAsyncMode)
+        updateModelInfo()
+    }
+
+    private fun updateModelInfo(){
+
+        val modelName = beatriceEngine.getModelName()
+        val modelLabel = findViewById<TextView>(R.id.ModelName)
+        modelLabel.text = if (modelName.isNotEmpty()) modelName else getString(R.string.model_name)
+
         val voiceNameList = ArrayList<String>()
         for(i in 0 until 256) {
             val voiceName = beatriceEngine.getVoiceName(i)
@@ -238,7 +362,6 @@ class MainActivity : Activity(), ActivityCompat.OnRequestPermissionsResultCallba
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         voiceSpinner.adapter = adapter
         beatriceEngine.setVoiceID(0)
-        beatriceEngine.setPitchShift(0.0f)
     }
 
     private fun onStopTest() {

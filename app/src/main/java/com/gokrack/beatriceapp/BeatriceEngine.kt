@@ -1,4 +1,4 @@
-package com.gokrack.beatriceAndroid
+package com.gokrack.beatriceapp
 
 import android.content.Context
 import android.media.AudioManager
@@ -7,7 +7,7 @@ import android.content.res.AssetManager
 object beatriceEngine {
 
     init {
-        System.loadLibrary("beatriceAndroid")
+        System.loadLibrary("beatriceapp")
     }
 
     // Native methods
@@ -19,6 +19,8 @@ object beatriceEngine {
     external fun setPlaybackDeviceId(deviceId: Int)
     external fun setPerformanceMode(performanceMode: Int): Boolean
     external fun setAsyncMode(isAsyncMode: Boolean): Boolean
+    external fun readModel( modelPath : String ):Boolean
+    external fun getModelName():String
     external fun setVoiceID(voiceID: Int): Boolean
     external fun getVoiceName(voiceID: Int): String
     external fun setPitchShift(pitchShift: Float): Boolean

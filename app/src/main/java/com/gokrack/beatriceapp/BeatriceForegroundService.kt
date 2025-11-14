@@ -1,4 +1,4 @@
-package com.gokrack.beatriceAndroid
+package com.gokrack.beatriceapp
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -10,7 +10,7 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.gokrack.beatriceAndroid.R
+import com.gokrack.beatriceapp.R
 
 class BeatriceForegroundService : Service() {
 
