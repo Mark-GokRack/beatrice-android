@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22.1)
 
-project(beatriceAndroid LANGUAGES C CXX)
+project(beatriceapp LANGUAGES C CXX)
 
 find_package (oboe REQUIRED CONFIG)
 

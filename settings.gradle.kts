@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "beatriceAndroid"
+rootProject.name = "beatriceapp"
 include(":app")
 include(":audio-device")
 project( ":audio-device").projectDir = file( "lib/oboe/samples/audio-device")
