@@ -15,7 +15,7 @@ This repository is licensed under the MIT License.
 See the LICENSE file for details.  
 詳細は LICENSE ファイルをご覧ください。
 
-## 📦 Third-party Libraries and Licenses
+## Third-party Libraries and Licenses
 
 This project uses the following third-party libraries as Git submodules  
 このプロジェクトでは、以下のサードパーティライブラリを Git サブモジュールとして使用しています
