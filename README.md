@@ -29,7 +29,7 @@ And this application uses the inference library beatrice.lib under permission fr
 また、このアプリは [Project Beatrice](https://prj-beatrice.com/) の許諾を受け、 Beatrice の推論ライブラリ beatrice.lib を利用しています。
 
 For running on Arm platforms, it uses a modified version of beatrice.lib adapted by [w-okada](https://github.com/w-okada) for the M1 Mac version of [VCClient](https://github.com/w-okada/voice-changer), with permission from w-okada.  
-なお、Arm で動かすにあたり [w-okada](https://github.com/w-okada) の許諾を受け、w-okada氏が M1 Mac向け [VCClient](https://github.com/w-okada/voice-changer) のために改変した beatrice.lib を利用しています。
+なお、Arm で動かすにあたり [w-okada](https://github.com/w-okada) 氏の許諾を受け、w-okada氏が M1 Mac向け [VCClient](https://github.com/w-okada/voice-changer) のために改変した beatrice.lib を利用しています。
 
 These permission is limited to reasonable use for the development of beatrice-android, and to distribution or transfer of beatrice-android without modification.  
 これらの許諾は、beatrice-android の開発に要する合理的な範囲での利用及び beatrice-android を改変せずに頒布・譲渡する行為のみを認めるものです。
