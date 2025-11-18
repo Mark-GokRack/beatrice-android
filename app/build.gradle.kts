@@ -1,3 +1,6 @@
+import java.net.URI
+import java.io.FileOutputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -83,4 +86,79 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+val downloadBeatriceLib by tasks.registering {
+    val targetDir = file("../lib/beatrice-api/")
+    val targetFile = File(targetDir, "libbeatrice.a")
+    val fileUri = URI("https://huggingface.co/GokRack/beatrice-api-for-android/resolve/rc.0/libbeatrice.a")
+
+    outputs.file(targetFile)
+
+    doLast {
+        targetDir.mkdirs()
+        fileUri.toURL().openStream().use { input ->
+            FileOutputStream(targetFile).use { output ->
+                input.copyTo(output)
+            }
+        }
+        println("Downloaded to: ${targetFile.absolutePath}")
+    }
+    onlyIf{
+        !targetFile.exists()
+    }
+}
+
+
+val downloadDefaultModelForAssets by tasks.registering {
+    val assetList = listOf(
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/beatrice_paraphernalia_jvs.toml"),
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/embedding_setter.bin"),
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/noimage.png"),
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/phone_extractor.bin"),
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/pitch_estimator.bin"),
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/speaker_embeddings.bin"),
+        URI("https://huggingface.co/fierce-cats/beatrice-2.0.0-alpha/resolve/rc.0/rc.0/beatrice_paraphernalia_jvs_156_03000000/waveform_generator.bin")
+    )
+    val outputDir = file("src/main/assets/beatrice_paraphernalia_jvs/")
+
+    // 出力ファイル群を Gradle に認識させる
+    outputs.files(assetList.map { uri ->
+        val fileName = uri.path.substringAfterLast("/")
+        File(outputDir, fileName)
+    })
+
+    doLast {
+        outputDir.mkdirs()
+        assetList.forEach { uri ->
+            val fileName = uri.path.substringAfterLast("/")
+            val outputFile = File(outputDir, fileName)
+
+            if (!outputFile.exists()) {
+                println("Downloading: $fileName")
+                uri.toURL().openStream().use { input ->
+                    FileOutputStream(outputFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                println("Saved to: ${outputFile.absolutePath}")
+            } else {
+                println("Already exists: $fileName — skipping")
+            }
+        }
+    }
+
+    // すべてのファイルが存在しないときだけ実行
+    onlyIf {
+        assetList.any { uri ->
+            val fileName = uri.path.substringAfterLast("/")
+            val outputFile = File(outputDir, fileName)
+            !outputFile.exists()
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(downloadBeatriceLib)
+    dependsOn(downloadDefaultModelForAssets)
 }
