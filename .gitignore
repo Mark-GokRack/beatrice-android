@@ -37,5 +37,6 @@ google-services.json
 
 .vscode
 
-app/src/main/assets/
+app/src/main/assets/beatrice_paraphernalia_jvs/
+lib/beatrice-api/libbeatrice.a
 tmp
