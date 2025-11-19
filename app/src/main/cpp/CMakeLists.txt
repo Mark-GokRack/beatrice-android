@@ -7,7 +7,7 @@ find_package (oboe REQUIRED CONFIG)
 get_filename_component(PROJECT_ROOT_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../.. ABSOLUTE)
 
-set( BEATRICE_API_DIR ${PROJECT_ROOT_DIR}/lib/beatrice-api )
+set( BEATRICE_API_DIR ${PROJECT_ROOT_DIR}/lib/beatrice-api/${ANDROID_ABI} )
 set( BEATRICE_VST_DIR ${PROJECT_ROOT_DIR}/lib/beatrice-vst )
 set( OBOE_DIR ${PROJECT_ROOT_DIR}/lib/oboe )
 set( ASIO_DIR ${PROJECT_ROOT_DIR}/lib/asio )
@@ -15,7 +15,6 @@ set( ASIO_DIR ${PROJECT_ROOT_DIR}/lib/asio )
 add_library(${CMAKE_PROJECT_NAME} SHARED
         native-lib.cpp
         beatriceEngine.cpp
-        beatriceFullDuplexPass.cpp
         
         ${OBOE_DIR}/samples/debug-utils/trace.cpp
 

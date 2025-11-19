@@ -347,4 +347,87 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setAsyncMode(JNIEnv* env,
   return JNI_TRUE;
 }
 
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setIntonationIntensity(
+    JNIEnv* env, jclass type, jfloat intensity) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setIntonationIntensity(intensity);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrection(
+    JNIEnv* env, jclass type, jfloat correction) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setPitchCorrection(correction);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionType(JNIEnv* env,
+                                                                   jclass type,
+                                                                   jint mode) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setPitchCorrectionMode(mode);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setSourcePitchRange(
+    JNIEnv* env, jclass type, jfloat minPitch, jfloat maxPitch) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+
+  engine->setSourcePitchRange(minPitch, maxPitch);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setVQNumNeighbors(
+    JNIEnv* env, jclass type, jint numNeighbors) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+  engine->setVQNumNeighbors(numNeighbors);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeight(
+    JNIEnv* env, jclass type, jint target_spk, jfloat weight) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return JNI_FALSE;
+  }
+  engine->setSpeakerMorphingWeight(target_spk, weight);
+  return JNI_TRUE;
+}
+
 }  // extern "C"

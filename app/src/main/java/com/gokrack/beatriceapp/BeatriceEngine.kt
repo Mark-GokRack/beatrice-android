@@ -23,10 +23,16 @@ object beatriceEngine {
     external fun getModelName():String
     external fun setVoiceID(voiceID: Int): Boolean
     external fun getVoiceName(voiceID: Int): String
-    external fun setPitchShift(pitchShift: Float): Boolean
-    external fun setFormantShift(formantShift: Float): Boolean
-    external fun setInputGain(dB: Float): Boolean
-    external fun setOutputGain(dB: Float): Boolean
+    external fun setPitchShift(pitchShift: Double): Boolean
+    external fun setFormantShift(formantShift: Double): Boolean
+    external fun setInputGain(dB: Double): Boolean
+    external fun setOutputGain(dB: Double): Boolean
+    external fun setIntonationIntensity(intensity: Double): Boolean
+    external fun setPitchCorrection(correction: Double): Boolean
+    external fun setPitchCorrectionMode(mode: Int): Boolean
+    external fun setSourcePitchRange(minPitch: Double, maxPitch: Double): Boolean
+    external fun setVQNumNeighbors(numNeighbors: Int): Boolean
+    external fun setSpeakerMorphingWeight(targetSpk: Int, weight: Double): Boolean
 
     external fun delete()
     external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)
