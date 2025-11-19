@@ -233,7 +233,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getVoiceName(JNIEnv* env,
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPitchShift(JNIEnv* env,
                                                           jclass type,
-                                                          jfloat pitchShift) {
+                                                          jdouble pitchShift) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -247,7 +247,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPitchShift(JNIEnv* env,
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setFormantShift(
-    JNIEnv* env, jclass type, jfloat formantShift) {
+    JNIEnv* env, jclass type, jdouble formantShift) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -262,7 +262,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setFormantShift(
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setInputGain(JNIEnv* env,
                                                          jclass type,
-                                                         jfloat gain) {
+                                                         jdouble gain) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -277,7 +277,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setInputGain(JNIEnv* env,
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setOutputGain(JNIEnv* env,
                                                           jclass type,
-                                                          jfloat gain) {
+                                                          jdouble gain) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -349,7 +349,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setAsyncMode(JNIEnv* env,
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setIntonationIntensity(
-    JNIEnv* env, jclass type, jfloat intensity) {
+    JNIEnv* env, jclass type, jdouble intensity) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -363,7 +363,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setIntonationIntensity(
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrection(
-    JNIEnv* env, jclass type, jfloat correction) {
+    JNIEnv* env, jclass type, jdouble correction) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -392,7 +392,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionType(JNIEnv* env,
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setSourcePitchRange(
-    JNIEnv* env, jclass type, jfloat minPitch, jfloat maxPitch) {
+    JNIEnv* env, jclass type, jdouble minPitch, jdouble maxPitch) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -419,7 +419,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setVQNumNeighbors(
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeight(
-    JNIEnv* env, jclass type, jint target_spk, jfloat weight) {
+    JNIEnv* env, jclass type, jint target_spk, jdouble weight) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
