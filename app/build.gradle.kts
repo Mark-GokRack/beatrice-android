@@ -32,13 +32,13 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
-            abiFilters += listOf("arm64-v8a")
+            abiFilters += listOf("arm64-v8a")//, "x86_64")
         }
         externalNativeBuild {
             cmake {
                 cppFlags += "-std=c++20"
                 arguments += "-DANDROID_STL=c++_shared"
-                abiFilters += listOf("arm64-v8a")
+                abiFilters += listOf("arm64-v8a")//, "x86_64")
             }
         }
     }
@@ -88,10 +88,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-val downloadBeatriceLib by tasks.registering {
-    val targetDir = file("../lib/beatrice-api/")
+val downloadBeatriceLib_ARM by tasks.registering {
+    val targetDir = file("../lib/beatrice-api/arm64-v8a/")
     val targetFile = File(targetDir, "libbeatrice.a")
-    val fileUri = URI("https://huggingface.co/GokRack/beatrice-api-for-android/resolve/rc.0/libbeatrice.a")
+    val fileUri = URI("https://huggingface.co/GokRack/beatrice-api-for-android/resolve/rc.0/arm64-v8a/libbeatrice.a")
 
     outputs.file(targetFile)
 
@@ -109,6 +109,28 @@ val downloadBeatriceLib by tasks.registering {
     }
 }
 
+/*
+val downloadBeatriceLib_x64 by tasks.registering {
+    val targetDir = file("../lib/beatrice-api/x86_64/")
+    val targetFile = File(targetDir, "libbeatrice.a")
+    val fileUri = URI("https://huggingface.co/GokRack/beatrice-api-for-android/resolve/rc.0/x86_64/libbeatrice.a")
+
+    outputs.file(targetFile)
+
+    doLast {
+        targetDir.mkdirs()
+        fileUri.toURL().openStream().use { input ->
+            FileOutputStream(targetFile).use { output ->
+                input.copyTo(output)
+            }
+        }
+        println("Downloaded to: ${targetFile.absolutePath}")
+    }
+    onlyIf{
+        !targetFile.exists()
+    }
+}
+*/
 
 val downloadDefaultModelForAssets by tasks.registering {
     val assetList = listOf(
@@ -159,6 +181,7 @@ val downloadDefaultModelForAssets by tasks.registering {
 }
 
 tasks.named("preBuild") {
-    dependsOn(downloadBeatriceLib)
+    dependsOn(downloadBeatriceLib_ARM)
+    //dependsOn(downloadBeatriceLib_x64)
     dependsOn(downloadDefaultModelForAssets)
 }

@@ -33,11 +33,20 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   void setVoiceID(int32_t voiceID);
   std::u8string getVoiceName(int32_t voiceID);
 
-  void setPitchShift(float pitchShift);
-  void setFormantShift(float formantShift);
+  void setPitchShift(double pitchShift);
+  void setFormantShift(double formantShift);
 
-  void setInputGain(float gain);
-  void setOutputGain(float gain);
+  void setInputGain(double gain);
+  void setOutputGain(double gain);
+
+  void setIntonationIntensity(double intensity);
+  void setPitchCorrection(double correction);
+  void setPitchCorrectionMode(int32_t mode);
+
+  void setSourcePitchRange(double minPitch, double maxPitch);
+  void setVQNumNeighbors(int32_t numNeighbors);
+
+  void setSpeakerMorphingWeight(int32_t target_spk, double weight);
 
   oboe::DataCallbackResult onAudioReady(oboe::AudioStream* oboeStream,
                                         void* audioData,

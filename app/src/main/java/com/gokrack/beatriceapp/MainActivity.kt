@@ -129,22 +129,22 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
         pitchShiftSlider = findViewById(R.id.pitch_shift_slider)
         pitchShiftSlider.addOnChangeListener { slider, value, fromUser ->
-            beatriceEngine.setPitchShift(value)
+            beatriceEngine.setPitchShift(value.toDouble())
         }
 
         formantShiftSlider = findViewById(R.id.formant_shift_slider)
         formantShiftSlider.addOnChangeListener { slider, value, fromUser ->
-            beatriceEngine.setFormantShift(value)
+            beatriceEngine.setFormantShift(value.toDouble())
         }
 
         inputGainSlider = findViewById(R.id.input_gain_slider)
         inputGainSlider.addOnChangeListener { slider, value, fromUser ->
-            beatriceEngine.setInputGain(value)
+            beatriceEngine.setInputGain(value.toDouble())
         }
 
         outputGainSlider = findViewById(R.id.output_gain_slider)
         outputGainSlider.addOnChangeListener { slider, value, fromUser ->
-            beatriceEngine.setOutputGain(value)
+            beatriceEngine.setOutputGain(value.toDouble())
         }
 
         findViewById<RadioGroup>(R.id.apiSelectionGroup).check(R.id.aaudioButton)
@@ -284,7 +284,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             val newRelativePath = if (relativePath.isEmpty()) file.name ?: "" else "$relativePath/${file.name}"
             if (file.isDirectory) {
                 copyFilteredFilesRecursively(file, destRoot, newRelativePath)
-            } else if (file.isFile && isTargetExtension(file.name)) {
+            } else if (file.isFile && isTargetExtension(requireNotNull(file.name))) {
                 val destFile = File(destRoot, newRelativePath)
                 destFile.parentFile?.mkdirs()
                 copyFile(file, destFile)

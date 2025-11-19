@@ -297,7 +297,7 @@ std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   return mBeatriceModelConfig.voices[voiceID].name;
 }
 
-void beatriceEngine::setPitchShift(float pitchShift) {
+void beatriceEngine::setPitchShift(double pitchShift) {
   mBeatriceParameters.pitchShift = pitchShift;
 
   if (mBeatriceProcessorCore) {
@@ -309,7 +309,7 @@ void beatriceEngine::setPitchShift(float pitchShift) {
   }
 }
 
-void beatriceEngine::setFormantShift(float formantShift) {
+void beatriceEngine::setFormantShift(double formantShift) {
   mBeatriceParameters.formantShift = formantShift;
 
   if (mBeatriceProcessorCore) {
@@ -317,7 +317,7 @@ void beatriceEngine::setFormantShift(float formantShift) {
   }
 }
 
-void beatriceEngine::setInputGain(float gain) {
+void beatriceEngine::setInputGain(double gain) {
   mBeatriceParameters.inputGain = gain;
 
   if (mBeatriceProcessorCore) {
@@ -325,10 +325,71 @@ void beatriceEngine::setInputGain(float gain) {
   }
 }
 
-void beatriceEngine::setOutputGain(float gain) {
+void beatriceEngine::setOutputGain(double gain) {
   mBeatriceParameters.outputGain = gain;
 
   if (mBeatriceProcessorCore) {
     mBeatriceProcessorCore->SetOutputGain(mBeatriceParameters.outputGain);
+  }
+}
+
+void beatriceEngine::setIntonationIntensity(double intensity) {
+  mBeatriceParameters.intonationIntensity = intensity;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetIntonationIntensity(
+        mBeatriceParameters.intonationIntensity);
+  }
+}
+
+void beatriceEngine::setPitchCorrection(double correction) {
+  mBeatriceParameters.pitchCorrection = correction;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetPitchCorrection(
+        mBeatriceParameters.pitchCorrection);
+  }
+}
+
+void beatriceEngine::setPitchCorrectionMode(int32_t mode) {
+  mBeatriceParameters.pitchCorrectionMode = mode;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetPitchCorrectionType(
+        mBeatriceParameters.pitchCorrectionMode);
+  }
+}
+
+void beatriceEngine::setSourcePitchRange(double minPitch, double maxPitch) {
+  mBeatriceParameters.minSourcePitch = minPitch;
+  mBeatriceParameters.maxSourcePitch = maxPitch;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetMinSourcePitch(
+        mBeatriceParameters.minSourcePitch);
+    mBeatriceProcessorCore->SetMaxSourcePitch(
+        mBeatriceParameters.maxSourcePitch);
+  }
+}
+
+void beatriceEngine::setVQNumNeighbors(int32_t numNeighbors) {
+  mBeatriceParameters.vqNumNeighbors = numNeighbors;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetVQNumNeighbors(
+        mBeatriceParameters.vqNumNeighbors);
+  }
+}
+
+void beatriceEngine::setSpeakerMorphingWeight(int32_t target_spk,
+                                              double weight) {
+  if (target_spk < 0 || target_spk >= beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid target_spk: %d", target_spk);
+    return;
+  }
+  mBeatriceParameters.speakerMorphingWeights[target_spk] = weight;
+
+  if (mBeatriceProcessorCore) {
+    mBeatriceProcessorCore->SetSpeakerMorphingWeight(target_spk, weight);
   }
 }
