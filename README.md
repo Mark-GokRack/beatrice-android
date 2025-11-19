@@ -26,16 +26,16 @@ This project uses the following third-party libraries as Git submodules
 
 
 And this application uses the inference library beatrice.lib under permission from [Project Beatrice](https://prj-beatrice.com/).  
-また、このアプリは [Project Beatrice](https://prj-beatrice.com/) の許諾を受け、 Beatrice の推論ライブラリ beatrice.lib を利用しています。
+また、このアプリは [Project Beatrice](https://prj-beatrice.com/) の許諾を受けて Beatrice の推論ライブラリ beatrice.lib を利用しています。
 
 For running on Arm platforms, it uses a modified version of beatrice.lib adapted by [w-okada](https://github.com/w-okada) for the M1 Mac version of [VCClient](https://github.com/w-okada/voice-changer), with permission from w-okada.  
-なお、Arm で動かすにあたり [w-okada](https://github.com/w-okada) 氏の許諾を受け、w-okada氏が M1 Mac向け [VCClient](https://github.com/w-okada/voice-changer) のために改変した beatrice.lib を利用しています。
+なお、Arm で動かすにあたり[w-okada](https://github.com/w-okada)氏が M1 Mac向け [VCClient](https://github.com/w-okada/voice-changer) のために改変した beatrice.lib を w-okada 氏の許諾を受けて利用しています。
 
-These permission is limited to reasonable use for the development of beatrice-android, and to distribution or transfer of beatrice-android without modification.  
+These permission are limited to reasonable use for the development of beatrice-android, and to distribution or transfer of beatrice-android without modification.  
 これらの許諾は、beatrice-android の開発に要する合理的な範囲での利用及び beatrice-android を改変せずに頒布・譲渡する行為のみを認めるものです。
 
-Any use beyond this scope requires explicit permission from Project Beatrice.  
-この範囲を超えて利用する場合は Project Beatrice に許諾を得る必要があります。
+Any use beyond this scope requires explicit permission from Project Beatrice and w-okada.  
+この範囲を超えて利用する場合は Project Beatrice ならびに w-okada 氏に許諾を得る必要があります。
 
 Libraries used by beatrice.lib  
 beatrice.lib は以下のライブラリを使用しています。
