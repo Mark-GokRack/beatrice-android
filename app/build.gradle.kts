@@ -23,6 +23,12 @@ android {
         version = release(36)
     }
 
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     defaultConfig {
         applicationId = "com.gokrack.beatriceapp"
         minSdk = 30
@@ -73,6 +79,7 @@ android {
         viewBinding = true
         prefab = true
     }
+    ndkVersion = "29.0.14206865"
 }
 
 dependencies {
@@ -109,7 +116,6 @@ val downloadBeatriceLib_ARM by tasks.registering {
     }
 }
 
-/*
 val downloadBeatriceLib_x64 by tasks.registering {
     val targetDir = file("../lib/beatrice-api/x86_64/")
     val targetFile = File(targetDir, "libbeatrice.a")
@@ -130,7 +136,6 @@ val downloadBeatriceLib_x64 by tasks.registering {
         !targetFile.exists()
     }
 }
-*/
 
 val downloadDefaultModelForAssets by tasks.registering {
     val assetList = listOf(
