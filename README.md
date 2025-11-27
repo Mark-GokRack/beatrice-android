@@ -1,6 +1,8 @@
 # beatrice-android
 
-[https://github.com/prj-beatrice/beatrice-vst] の Android へ移植したアプリです。
+<img src="./app/src/main/res/icon_round.png" width="50%">
+
+[beatrice-vst](https://github.com/prj-beatrice/beatrice-vst) を Android へ移植したアプリです。
 
 ## How to Use
 
@@ -9,11 +11,9 @@ TBD...
 
 ## Project License
 
-This repository is licensed under the MIT License.  
-このリポジトリは MIT ライセンスの下で公開されています。
+This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.  
 
-See the LICENSE file for details.  
-詳細は LICENSE ファイルをご覧ください。
+このリポジトリは MIT ライセンスの下で公開されています。詳細は [LICENSE](LICENSE) ファイルをご覧ください。
 
 ## Third-party Libraries and Licenses
 
