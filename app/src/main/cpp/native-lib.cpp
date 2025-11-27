@@ -110,8 +110,9 @@ Java_com_gokrack_beatriceapp_beatriceEngine_readModel(JNIEnv* env, jclass,
       env->GetStringUTFChars(static_cast<jstring>(model_path_), JNI_FALSE);
   auto model_path = std::string(c_model_path);
 
+  auto params = engine ? engine->getParameters() : BeatriceParameters{};
   engine = std::make_unique<beatriceEngine>(model_path);
-
+  engine->setParameters(params);
   env->ReleaseStringUTFChars(static_cast<jstring>(model_path_), c_model_path);
   return (engine) ? JNI_TRUE : JNI_FALSE;
 }
