@@ -393,3 +393,29 @@ void beatriceEngine::setSpeakerMorphingWeight(int32_t target_spk,
     mBeatriceProcessorCore->SetSpeakerMorphingWeight(target_spk, weight);
   }
 }
+
+BeatriceParameters beatriceEngine::getParameters() const {
+  return mBeatriceParameters;
+}
+
+void beatriceEngine::setParameters(const BeatriceParameters& params) {
+  if (params.targetSpeaker >= 0 &&
+      params.targetSpeaker <= mBeatriceModelConfig.voices.size()) {
+    // == mBeatriceModelConfig.voices.size() は Voice Morph 用
+    setVoiceID(params.targetSpeaker);
+  } else {
+    setVoiceID(0);
+  }
+  setFormantShift(params.formantShift);
+  setPitchShift(params.pitchShift);
+  setInputGain(params.inputGain);
+  setOutputGain(params.outputGain);
+  setIntonationIntensity(params.intonationIntensity);
+  setPitchCorrection(params.pitchCorrection);
+  setPitchCorrectionMode(params.pitchCorrectionMode);
+  setSourcePitchRange(params.minSourcePitch, params.maxSourcePitch);
+  setVQNumNeighbors(params.vqNumNeighbors);
+  for (int32_t i = 0; i < beatrice::common::kMaxNSpeakers; ++i) {
+    setSpeakerMorphingWeight(i, params.speakerMorphingWeights[i]);
+  }
+}

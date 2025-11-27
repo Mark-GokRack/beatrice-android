@@ -57,6 +57,9 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   void onErrorAfterClose(oboe::AudioStream* oboeStream,
                          oboe::Result error) override;
 
+  BeatriceParameters getParameters() const;
+  void setParameters(const BeatriceParameters& params);
+
  private:
   bool mIsEffectOn = false;
   int32_t mRecordingDeviceId = oboe::kUnspecified;
