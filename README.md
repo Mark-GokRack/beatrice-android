@@ -6,7 +6,7 @@
 
 ## How to Use
 
-TBD...
+[テスト方法について簡単にまとめましたので、こちらを参照してください。](./doc/HowToUse.md)
 
 
 ## Project License
