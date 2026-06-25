@@ -90,6 +90,8 @@ dependencies {
     implementation("com.google.oboe:oboe:1.10.0")
     implementation(project(":audio-device"))
     implementation(libs.androidx.documentfile)
+    implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.lifecycle.viewmodel)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/vst_bg_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Section: Audio API -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_audio_api"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/apiSelectionGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/aaudioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/aaudio"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="14sp"
+                android:layout_marginEnd="16dp" />
+
+            <RadioButton
+                android:id="@+id/slesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sles"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="14sp" />
+
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/vst_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Section: Latency Mode -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_latency"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/LatencySelectionGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/LowLatencyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/low_latency"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp"
+                android:layout_marginEnd="12dp" />
+
+            <RadioButton
+                android:id="@+id/NormalLatencyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/normal_latency"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp"
+                android:layout_marginEnd="12dp" />
+
+            <RadioButton
+                android:id="@+id/PowerSavingButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/power_saving"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp" />
+
+        </RadioGroup>
+
+        <CheckBox
+            android:id="@+id/asyncProcessingCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/async_proc"
+            android:textColor="@color/vst_text_primary"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/vst_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Section: Devices -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_devices"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/recording_device"
+            android:textColor="@color/vst_text_secondary"
+            android:textSize="13sp"
+            android:layout_marginBottom="4dp" />
+
+        <com.google.oboe.samples.audio_device.AudioDeviceSpinner
+            android:id="@+id/recording_devices_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:popupBackground="@color/vst_bg_card"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/playback_device"
+            android:textColor="@color/vst_text_secondary"
+            android:textSize="13sp"
+            android:layout_marginBottom="4dp" />
+
+        <com.google.oboe.samples.audio_device.AudioDeviceSpinner
+            android:id="@+id/playback_devices_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:popupBackground="@color/vst_bg_card" />
+
+    </LinearLayout>
+</ScrollView>

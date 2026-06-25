@@ -4,12 +4,11 @@
     <string name="start_effect">Start</string>
     <string name="stop_effect">Stop</string>
     <string name="need_record_audio_permission">"This sample needs RECORD_AUDIO permission"</string>
-    <string name="status_playing">Engine Playing ....</string>
+    <string name="status_playing">Engine Playing …</string>
     <string name="status_open_failed">Engine Failed to Open Streams!</string>
     <string name="status_record_audio_denied">Error: Permission for RECORD_AUDIO was denied</string>
     <string name="status_touch_to_begin">RECORD_AUDIO permission granted, touch START to begin</string>
-    <string name="status_warning">Warning: If you run this sample using the built-in microphone
-        and speaker you may create a feedback loop which will not be pleasant to listen to.</string>
+    <string name="status_warning">Warning: Using built-in mic and speaker may create feedback.</string>
     <string name="recording_device">Recording device</string>
     <string name="playback_device">Playback device</string>
 
@@ -21,7 +20,7 @@
     <string name="low_latency">LowLatency</string>
     <string name="normal_latency">Normal</string>
     <string name="power_saving">PowerSaving</string>
-    <string name="async_proc">use Async Processing</string>
+    <string name="async_proc">Use Async Processing</string>
 
     <string name="model_label">Model</string>
     <string name="model_select">Open</string>
@@ -30,7 +29,32 @@
 
     <string name="pitch_shift">PitchShift</string>
     <string name="formant_shift">FormantShift</string>
+    <string name="intonation_intensity">IntonationIntensity</string>
+    <string name="pitch_correction">PitchCorrection</string>
+    <string name="pitch_correction_mode">PitchCorrectionMode</string>
+    <string name="pcm_off">Off</string>
+    <string name="pcm_chromatic">Chromatic</string>
+    <string name="pcm_scale">Scale</string>
+    <string name="source_pitch_range">SourcePitchRange</string>
 
     <string name="input_gain">InputGain</string>
     <string name="output_gain">OutputGain</string>
+    <string name="vq_neighbors">VQ Neighbors</string>
+
+    <!-- Tab titles -->
+    <string name="tab_voice">Voice</string>
+    <string name="tab_pitch">Pitch</string>
+    <string name="tab_gain">Gain</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Section headers -->
+    <string name="section_model">Model</string>
+    <string name="section_voice">Voice</string>
+    <string name="section_pitch_formant">Pitch / Formant</string>
+    <string name="section_advanced_pitch">Advanced</string>
+    <string name="section_gain">Gain</string>
+    <string name="section_quality">Quality</string>
+    <string name="section_audio_api">Audio API</string>
+    <string name="section_latency">Latency Mode</string>
+    <string name="section_devices">Devices</string>
 </resources>

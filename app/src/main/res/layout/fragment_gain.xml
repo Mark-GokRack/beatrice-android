@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/vst_bg_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Section: Gain -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_gain"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="10dp" />
+
+        <!-- InputGain row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/input_gain"
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/input_gain_value"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp"
+                android:gravity="end"
+                android:text="0.0 dB" />
+
+        </LinearLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/input_gain_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="-60.0"
+            android:valueTo="20.0"
+            android:stepSize="0.1"
+            android:value="0.0"
+            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorInactive="@color/vst_slider_inactive"
+            app:thumbColor="@color/vst_accent_purple" />
+
+        <!-- OutputGain row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/output_gain"
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/output_gain_value"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp"
+                android:gravity="end"
+                android:text="0.0 dB" />
+
+        </LinearLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/output_gain_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="-60.0"
+            android:valueTo="20.0"
+            android:stepSize="0.1"
+            android:value="0.0"
+            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorInactive="@color/vst_slider_inactive"
+            app:thumbColor="@color/vst_accent_purple" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/vst_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Section: Quality -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_quality"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="10dp" />
+
+        <!-- VQ Neighbors row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/vq_neighbors"
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/vq_neighbors_value"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp"
+                android:gravity="end"
+                android:text="8" />
+
+        </LinearLayout>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/vq_neighbors_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="1.0"
+            android:valueTo="32.0"
+            android:stepSize="1.0"
+            android:value="8.0"
+            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorInactive="@color/vst_slider_inactive"
+            app:thumbColor="@color/vst_accent_purple" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/vst_bg_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Section: Model -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_model"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:text="@string/model_label"
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/button_model_select"
+                android:layout_width="80dp"
+                android:layout_height="36dp"
+                android:text="@string/model_select"
+                android:textAllCaps="true"
+                android:textSize="13sp"
+                android:backgroundTint="@color/vst_accent_purple"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <TextView
+                android:id="@+id/ModelName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="@string/model_name"
+                android:textColor="@color/vst_text_primary"
+                android:textSize="13sp"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/vst_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Section: Voice -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_voice"
+            android:textColor="@color/vst_accent_purple"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:text="@string/voice_select"
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="13sp" />
+
+            <Spinner
+                android:id="@+id/voice_select_spinner"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:popupBackground="@color/vst_bg_card" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default values for source pitch range slider: 80 Hz and 180 Hz -->
+    <array name="source_pitch_range_defaults">
+        <item>80.0</item>
+        <item>180.0</item>
+    </array>
+</resources>

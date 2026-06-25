@@ -1,345 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.google.oboe.samples.liveEffect.MainActivity"
-    android:fitsSystemWindows="true"
-    tools:layout_editor_absoluteY="81dp">
+    android:orientation="vertical"
+    android:background="@color/vst_bg_primary">
 
+    <!-- Title bar -->
     <LinearLayout
-        android:id="@+id/title_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="56dp"
         android:orientation="horizontal"
-        android:elevation="4dp"
         android:gravity="center_vertical"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/vst_bg_secondary"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:elevation="4dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Beatrice App for Android"
-            android:textColor="@android:color/white"
+            android:text="@string/app_name"
+            android:textColor="@color/vst_text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
 
     </LinearLayout>
 
-    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/apiSelectionGroup"
-        android:layout_width="fill_parent"
+    <!-- Tab layout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:orientation="horizontal"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title_bar" >
+        android:background="@color/vst_bg_secondary"
+        app:tabTextColor="@color/vst_text_secondary"
+        app:tabSelectedTextColor="@color/vst_text_primary"
+        app:tabIndicatorColor="@color/vst_accent_purple"
+        app:tabIndicatorHeight="3dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill" />
+
+    <!-- Swipeable fragment container -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/vst_bg_primary" />
+
+    <!-- Bottom bar  Ealways visible -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/vst_bg_secondary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:elevation="8dp">
 
         <TextView
-            android:id="@+id/apiTextView"
-            android:layout_width="wrap_content"
+            android:id="@+id/status_view_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/apiSelection" />
+            android:text="@string/status_warning"
+            android:textColor="@color/vst_text_secondary"
+            android:textSize="11sp"
+            android:maxLines="2"
+            android:layout_marginBottom="8dp" />
 
-        <RadioButton
-            android:id="@+id/aaudioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:text="@string/aaudio" />
+        <Button
+            android:id="@+id/button_toggle_effect"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="@string/start_effect"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/vst_accent_purple"
+            style="@style/Widget.MaterialComponents.Button" />
 
-        <RadioButton
-            android:id="@+id/slesButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:text="@string/sles" />
-    </RadioGroup>
+    </LinearLayout>
 
-    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/LatencySelectionGroup"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:orientation="horizontal"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/apiSelectionGroup" >
+</LinearLayout>
 
-        <TextView
-            android:id="@+id/latencyTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/latencySelection" />
-
-        <RadioButton
-            android:id="@+id/LowLatencyButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:text="@string/low_latency" />
-
-        <RadioButton
-            android:id="@+id/NormalLatencyButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:text="@string/normal_latency" />
-
-        <RadioButton
-            android:id="@+id/PowerSavingButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:text="@string/power_saving" />
-
-    </RadioGroup>
-
-    <CheckBox
-        android:id="@+id/asyncProcessingCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/async_proc"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LatencySelectionGroup" />
-
-    <TextView
-        android:id="@+id/recDeviceLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/recording_device"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/asyncProcessingCheckbox"/>
-
-    <com.google.oboe.samples.audio_device.AudioDeviceSpinner
-        android:id="@+id/recording_devices_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/recDeviceLabel"
-        app:layout_constraintTop_toBottomOf="@+id/asyncProcessingCheckbox" />
-
-    <TextView
-        android:id="@+id/playDeviceLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/playback_device"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recording_devices_spinner" />
-
-    <com.google.oboe.samples.audio_device.AudioDeviceSpinner
-        android:id="@+id/playback_devices_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/playDeviceLabel"
-        app:layout_constraintTop_toBottomOf="@+id/recording_devices_spinner" />
-
-    <TextView
-        android:id="@+id/ModelLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/model_label"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/button_model_select" />
-
-    <Button
-        android:id="@+id/button_model_select"
-        android:layout_width="94dp"
-        android:layout_height="35dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/model_select"
-        app:layout_constraintLeft_toRightOf="@+id/ModelLabel"
-        app:layout_constraintTop_toBottomOf="@+id/playback_devices_spinner" />
-
-    <TextView
-        android:id="@+id/ModelName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/model_name"
-        app:layout_constraintLeft_toRightOf="@+id/button_model_select"
-        app:layout_constraintBottom_toBottomOf="@+id/button_model_select" />
-
-    <TextView
-        android:id="@+id/VoiceLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/voice_select"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_model_select" />
-
-    <Spinner
-        android:id="@+id/voice_select_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/VoiceLabel"
-        app:layout_constraintTop_toTopOf="@+id/VoiceLabel" />
-
-    <TextView
-        android:id="@+id/PitchShiftLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/pitch_shift"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/voice_select_spinner" />
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/pitch_shift_slider"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/PitchShiftLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/voice_select_spinner"
-        android:valueFrom="-24.0"
-        android:valueTo="24.0"
-        android:stepSize="0.125"
-        android:value="0" />
-
-    <TextView
-        android:id="@+id/FormantShiftLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/formant_shift"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pitch_shift_slider" />
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/formant_shift_slider"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/FormantShiftLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pitch_shift_slider"
-        android:valueFrom="-2.0"
-        android:valueTo="2.0"
-        android:stepSize="0.5"
-        android:value="0" />
-
-    <TextView
-        android:id="@+id/InputGainLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/input_gain"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formant_shift_slider" />
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/input_gain_slider"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/InputGainLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formant_shift_slider"
-        android:valueFrom="-60.0"
-        android:valueTo="20.0"
-        android:stepSize="0.1"
-        android:value="0" />
-
-    <TextView
-        android:id="@+id/OutputGainLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/output_gain"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_gain_slider" />
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/output_gain_slider"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/OutputGainLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_gain_slider"
-        android:valueFrom="-60.0"
-        android:valueTo="20.0"
-        android:stepSize="0.1"
-        android:value="0" />
-
-
-    <Button
-        android:id="@+id/button_toggle_effect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:gravity="center"
-        android:text="@string/start_effect"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.53"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/output_gain_slider" />
-
-    <TextView
-        android:id="@+id/status_view_text"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_group_margin"
-        android:lines="6"
-        android:text="@string/status_warning"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_toggle_effect"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>

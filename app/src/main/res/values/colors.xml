@@ -8,6 +8,18 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorBlue">#4444CC</color>
-    <color name="colorPrimaryDark">#ffffff</color>
+    <color name="colorPrimaryDark">#1A1A1A</color>
     <color name="icon_background">#2F1D00</color>
+
+    <!-- VST dark theme -->
+    <color name="vst_bg_primary">#1A1A1A</color>
+    <color name="vst_bg_secondary">#242424</color>
+    <color name="vst_bg_card">#2E2E2E</color>
+    <color name="vst_accent_purple">#9966FF</color>
+    <color name="vst_accent_purple_dark">#7744CC</color>
+    <color name="vst_accent_teal">#26C6A0</color>
+    <color name="vst_text_primary">#E8E8E8</color>
+    <color name="vst_text_secondary">#8A8A8A</color>
+    <color name="vst_divider">#363636</color>
+    <color name="vst_slider_inactive">#4A3A70</color>
 </resources>
