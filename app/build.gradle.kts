@@ -7,15 +7,26 @@ plugins {
 }
 
 android {
+    val localProps = Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) load(f.inputStream())
+    }
+    
     signingConfigs {
         getByName("debug"){
             storeFile = rootProject.file("debug.keystore")
         }
         create("release") {
-            storeFile = rootProject.file("release.keystore")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            storeFile = file(
+                (System.getenv("KEYSTORE_PATH")
+                    ?: localProps.getProperty("KEYSTORE_PATH", "release.keystore")).trim()
+            )
+            storePassword = (System.getenv("KEYSTORE_PASSWORD")
+                ?: localProps.getProperty("KEYSTORE_PASSWORD"))?.trim()
+            keyAlias = (System.getenv("KEY_ALIAS")
+                ?: localProps.getProperty("KEY_ALIAS"))?.trim()
+            keyPassword = (System.getenv("KEY_PASSWORD")
+                ?: localProps.getProperty("KEY_PASSWORD"))?.trim()
         }
     }
     namespace = "com.gokrack.beatriceapp"
