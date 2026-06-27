@@ -7,10 +7,10 @@ class MainPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activi
     override fun getItemCount() = 4
 
     override fun createFragment(position: Int) = when (position) {
-        0 -> VoiceFragment()
-        1 -> PitchFragment()
-        2 -> GainFragment()
-        3 -> SettingsFragment()
-        else -> VoiceFragment()
+        0 -> SettingsFragment()
+        1 -> VoiceFragment()
+        2 -> BasicFragment()
+        3 -> AdvancedFragment()
+        else -> SettingsFragment()
     }
 }

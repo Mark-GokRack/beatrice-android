@@ -22,4 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "beatriceapp"
 include(":app")
 include(":audio-device")
-project( ":audio-device").projectDir = file( "lib/oboe/samples/audio-device")
+project( ":audio-device").projectDir = file( "app/src/audio-device")

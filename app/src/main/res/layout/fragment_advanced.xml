@@ -11,100 +11,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Section: Pitch / Formant -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/section_pitch_formant"
-            android:textColor="@color/vst_accent_purple"
-            android:textSize="11sp"
-            android:textAllCaps="true"
-            android:letterSpacing="0.12"
-            android:layout_marginBottom="10dp" />
-
-        <!-- PitchShift row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/pitch_shift"
-                android:textColor="@color/vst_text_secondary"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/pitch_shift_value"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:textColor="@color/vst_text_primary"
-                android:textSize="13sp"
-                android:gravity="end"
-                android:text="0.00" />
-
-        </LinearLayout>
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/pitch_shift_slider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:valueFrom="-24.0"
-            android:valueTo="24.0"
-            android:stepSize="0.125"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
-
-        <!-- FormantShift row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/formant_shift"
-                android:textColor="@color/vst_text_secondary"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/formant_shift_value"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:textColor="@color/vst_text_primary"
-                android:textSize="13sp"
-                android:gravity="end"
-                android:text="0.0" />
-
-        </LinearLayout>
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/formant_shift_slider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:valueFrom="-2.0"
-            android:valueTo="2.0"
-            android:stepSize="0.5"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/vst_divider"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp" />
-
         <!-- Section: Advanced Pitch -->
         <TextView
             android:layout_width="match_parent"
@@ -237,12 +143,19 @@
 
         </RadioGroup>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/vst_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
         <!-- SourcePitchRange -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:layout_width="0dp"
