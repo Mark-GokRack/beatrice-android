@@ -20,7 +20,7 @@ android {
         create("release") {
             storeFile = file(
                 (System.getenv("KEYSTORE_PATH")
-                    ?: localProps.getProperty("KEYSTORE_PATH", "release.keystore")).trim()
+                    ?: localProps.getProperty("KEYSTORE_PATH", "../release.keystore")).trim()
             )
             storePassword = (System.getenv("KEYSTORE_PASSWORD")
                 ?: localProps.getProperty("KEYSTORE_PASSWORD"))?.trim()
