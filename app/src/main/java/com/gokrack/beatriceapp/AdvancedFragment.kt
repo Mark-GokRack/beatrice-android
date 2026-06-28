@@ -43,9 +43,8 @@ class AdvancedFragment : Fragment() {
         view.findViewById<RadioGroup>(R.id.pitch_correction_mode_group)
             .setOnCheckedChangeListener { _, checkedId ->
                 val mode = when (checkedId) {
-                    R.id.pcm_off -> 0
-                    R.id.pcm_chromatic -> 1
-                    R.id.pcm_scale -> 2
+                    R.id.pcm_hard0 -> 0
+                    R.id.pcm_hard1 -> 1
                     else -> 0
                 }
                 beatriceEngine.setPitchCorrectionMode(mode)
@@ -56,10 +55,10 @@ class AdvancedFragment : Fragment() {
         val rangeSlider = view.findViewById<RangeSlider>(R.id.source_pitch_range_slider)
         rangeSlider.addOnChangeListener { slider, _, _ ->
             val vals = slider.values
-            rangeText.text = "${vals[0].toInt()} - ${vals[1].toInt()} Hz"
+            rangeText.text = "${vals[0]} - ${vals[1]}"
             beatriceEngine.setSourcePitchRange(vals[0].toDouble(), vals[1].toDouble())
         }
         val initVals = rangeSlider.values
-        rangeText.text = "${initVals[0].toInt()} - ${initVals[1].toInt()} Hz"
+        rangeText.text = "${initVals[0]} - ${initVals[1]}"
     }
 }
