@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
+      KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -34,7 +34,7 @@ jobs:
       - name: Decode keystore file from secret
         shell: bash
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "release.keystore"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$KEYSTORE_PATH"
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
