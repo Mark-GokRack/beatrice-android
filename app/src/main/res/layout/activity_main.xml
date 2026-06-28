@@ -25,7 +25,7 @@
         android:background="@color/vst_bg_secondary"
         app:tabTextColor="@color/vst_text_secondary"
         app:tabSelectedTextColor="@color/vst_text_primary"
-        app:tabIndicatorColor="@color/vst_accent_purple"
+        app:tabIndicatorColor="@color/vst_accent"
         app:tabIndicatorHeight="3dp"
         app:tabMode="fixed"
         app:tabGravity="fill" />
@@ -69,7 +69,7 @@
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:backgroundTint="@color/vst_accent_purple"
+            android:backgroundTint="@color/vst_accent"
             style="@style/Widget.MaterialComponents.Button" />
 
     </LinearLayout>

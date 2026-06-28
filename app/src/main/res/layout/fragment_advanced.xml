@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_advanced_pitch"
-            android:textColor="@color/vst_accent_purple"
+            android:textColor="@color/vst_accent"
             android:textSize="11sp"
             android:textAllCaps="true"
             android:letterSpacing="0.12"
@@ -52,13 +52,13 @@
             android:id="@+id/intonation_intensity_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="0.0"
-            android:valueTo="2.0"
-            android:stepSize="0.05"
+            android:valueFrom="-1.0"
+            android:valueTo="3.0"
+            android:stepSize="0.1"
             android:value="1.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
         <!-- PitchCorrection row -->
         <LinearLayout
@@ -94,9 +94,9 @@
             android:valueTo="1.0"
             android:stepSize="0.05"
             android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
         <!-- PitchCorrectionMode -->
         <TextView
@@ -115,31 +115,23 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/pcm_off"
+                android:id="@+id/pcm_hard0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pcm_off"
+                android:text="@string/pcm_hard0"
                 android:textColor="@color/vst_text_primary"
                 android:textSize="13sp"
                 android:checked="true"
                 android:layout_marginEnd="8dp" />
 
             <RadioButton
-                android:id="@+id/pcm_chromatic"
+                android:id="@+id/pcm_hard1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pcm_chromatic"
+                android:text="@string/pcm_hard1"
                 android:textColor="@color/vst_text_primary"
                 android:textSize="13sp"
                 android:layout_marginEnd="8dp" />
-
-            <RadioButton
-                android:id="@+id/pcm_scale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pcm_scale"
-                android:textColor="@color/vst_text_primary"
-                android:textSize="13sp" />
 
         </RadioGroup>
 
@@ -172,7 +164,7 @@
                 android:textColor="@color/vst_text_primary"
                 android:textSize="13sp"
                 android:gravity="end"
-                android:text="80 - 180 Hz" />
+                android:text="33.125 - 80.875" />
 
         </LinearLayout>
 
@@ -180,13 +172,13 @@
             android:id="@+id/source_pitch_range_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="50.0"
-            android:valueTo="400.0"
-            android:stepSize="10.0"
+            android:valueFrom="20.0"
+            android:valueTo="100.0"
+            android:stepSize="0.125"
             app:values="@array/source_pitch_range_defaults"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
     </LinearLayout>
 </ScrollView>

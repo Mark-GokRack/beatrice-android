@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_gain"
-            android:textColor="@color/vst_accent_purple"
+            android:textColor="@color/vst_accent"
             android:textSize="11sp"
             android:textAllCaps="true"
             android:letterSpacing="0.12"
@@ -56,9 +56,9 @@
             android:valueTo="20.0"
             android:stepSize="0.1"
             android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
         <!-- OutputGain row -->
         <LinearLayout
@@ -94,9 +94,9 @@
             android:valueTo="20.0"
             android:stepSize="0.1"
             android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
         <View
             android:layout_width="match_parent"
@@ -110,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_pitch_formant"
-            android:textColor="@color/vst_accent_purple"
+            android:textColor="@color/vst_accent"
             android:textSize="11sp"
             android:textAllCaps="true"
             android:letterSpacing="0.12"
@@ -150,9 +150,9 @@
             android:valueTo="24.0"
             android:stepSize="0.125"
             android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
         <!-- FormantShift row -->
         <LinearLayout
@@ -188,9 +188,9 @@
             android:valueTo="2.0"
             android:stepSize="0.5"
             android:value="0.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
         <View
             android:layout_width="match_parent"
@@ -204,7 +204,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_quality"
-            android:textColor="@color/vst_accent_purple"
+            android:textColor="@color/vst_accent"
             android:textSize="11sp"
             android:textAllCaps="true"
             android:letterSpacing="0.12"
@@ -240,13 +240,13 @@
             android:id="@+id/vq_neighbors_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="1.0"
-            android:valueTo="32.0"
+            android:valueFrom="0.0"
+            android:valueTo="8.0"
             android:stepSize="1.0"
-            android:value="8.0"
-            app:trackColorActive="@color/vst_accent_purple"
+            android:value="1.0"
+            app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent_purple" />
+            app:thumbColor="@color/vst_accent" />
 
     </LinearLayout>
 </ScrollView>

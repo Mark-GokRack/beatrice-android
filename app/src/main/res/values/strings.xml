@@ -32,9 +32,8 @@
     <string name="intonation_intensity">IntonationIntensity</string>
     <string name="pitch_correction">PitchCorrection</string>
     <string name="pitch_correction_mode">PitchCorrectionMode</string>
-    <string name="pcm_off">Off</string>
-    <string name="pcm_chromatic">Chromatic</string>
-    <string name="pcm_scale">Scale</string>
+    <string name="pcm_hard0">Hard 0</string>
+    <string name="pcm_hard1">Hard 1</string>
     <string name="source_pitch_range">SourcePitchRange</string>
 
     <string name="input_gain">InputGain</string>
