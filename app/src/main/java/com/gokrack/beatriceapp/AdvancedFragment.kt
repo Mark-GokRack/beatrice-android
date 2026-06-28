@@ -10,34 +10,16 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
 
-class PitchFragment : Fragment() {
+class AdvancedFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_pitch, container, false)
+    ): View = inflater.inflate(R.layout.fragment_advanced, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // PitchShift
-        val pitchShiftValue = view.findViewById<TextView>(R.id.pitch_shift_value)
-        val pitchShiftSlider = view.findViewById<Slider>(R.id.pitch_shift_slider)
-        pitchShiftSlider.addOnChangeListener { _, value, _ ->
-            pitchShiftValue.text = "%.2f".format(value)
-            beatriceEngine.setPitchShift(value.toDouble())
-        }
-        pitchShiftValue.text = "%.2f".format(pitchShiftSlider.value)
-
-        // FormantShift
-        val formantShiftValue = view.findViewById<TextView>(R.id.formant_shift_value)
-        val formantShiftSlider = view.findViewById<Slider>(R.id.formant_shift_slider)
-        formantShiftSlider.addOnChangeListener { _, value, _ ->
-            formantShiftValue.text = "%.1f".format(value)
-            beatriceEngine.setFormantShift(value.toDouble())
-        }
-        formantShiftValue.text = "%.1f".format(formantShiftSlider.value)
 
         // IntonationIntensity
         val intonationValue = view.findViewById<TextView>(R.id.intonation_intensity_value)

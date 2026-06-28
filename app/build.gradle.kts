@@ -1,5 +1,6 @@
 import java.net.URI
 import java.io.FileOutputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,8 +19,8 @@ android {
         }
         create("release") {
             storeFile = file(
-                (System.getenv("KEYSTORE_PATH")
-                    ?: localProps.getProperty("KEYSTORE_PATH", "release.keystore")).trim()
+                (System.getenv("KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
+                    ?: localProps.getProperty("KEYSTORE_PATH", "../release.keystore")).trim()
             )
             storePassword = (System.getenv("KEYSTORE_PASSWORD")
                 ?: localProps.getProperty("KEYSTORE_PASSWORD"))?.trim()

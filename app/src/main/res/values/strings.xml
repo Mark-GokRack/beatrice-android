@@ -42,9 +42,10 @@
     <string name="vq_neighbors">VQ Neighbors</string>
 
     <!-- Tab titles -->
+    <string name="tab_system">System</string>
     <string name="tab_voice">Voice</string>
-    <string name="tab_pitch">Pitch</string>
-    <string name="tab_gain">Gain</string>
+    <string name="tab_basic">Basic</string>
+    <string name="tab_advanced">Advanced</string>
     <string name="tab_settings">Settings</string>
 
     <!-- Section headers -->
