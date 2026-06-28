@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_model"
-            android:textColor="@color/vst_accent_purple"
+            android:textColor="@color/vst_accent"
             android:textSize="11sp"
             android:textAllCaps="true"
             android:letterSpacing="0.12"
@@ -42,7 +42,7 @@
                 android:text="@string/model_select"
                 android:textAllCaps="true"
                 android:textSize="13sp"
-                android:backgroundTint="@color/vst_accent_purple"
+                android:backgroundTint="@color/vst_accent"
                 style="@style/Widget.MaterialComponents.Button" />
 
             <TextView
@@ -71,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/section_voice"
-            android:textColor="@color/vst_accent_purple"
+            android:textColor="@color/vst_accent"
             android:textSize="11sp"
             android:textAllCaps="true"
             android:letterSpacing="0.12"

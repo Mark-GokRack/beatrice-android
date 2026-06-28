@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.beatriceapp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/vst_accent_purple</item>
-        <item name="colorPrimaryVariant">@color/vst_accent_purple_dark</item>
+        <item name="colorPrimary">@color/vst_accent</item>
+        <item name="colorPrimaryVariant">@color/vst_accent_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/vst_accent_teal</item>
         <item name="colorSecondaryVariant">@color/vst_accent_teal</item>
@@ -13,7 +13,7 @@
         <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
         <item name="android:textColorPrimary">@color/vst_text_primary</item>
         <item name="android:textColorSecondary">@color/vst_text_secondary</item>
-        <item name="colorControlActivated">@color/vst_accent_purple</item>
+        <item name="colorControlActivated">@color/vst_accent</item>
         <item name="colorPrimaryDark">@color/vst_bg_primary</item>
     </style>
 </resources>
