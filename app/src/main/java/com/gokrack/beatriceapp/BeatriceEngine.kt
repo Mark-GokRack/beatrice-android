@@ -40,6 +40,8 @@ object beatriceEngine {
 
     external fun delete()
     external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)
+    external fun getSampleRate(): Int
+    external fun getFramesPerBurst(): Int
 
     fun setDefaultStreamValues(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

@@ -64,6 +64,9 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   BeatriceParameters getParameters() const;
   void setParameters(const BeatriceParameters& params);
 
+  int32_t getSampleRate() const;
+  int32_t getFramesPerBurst() const;
+
  private:
   bool mIsEffectOn = false;
   int32_t mRecordingDeviceId = oboe::kUnspecified;

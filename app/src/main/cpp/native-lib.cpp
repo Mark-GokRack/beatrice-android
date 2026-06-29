@@ -499,4 +499,28 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeight(
   return JNI_TRUE;
 }
 
+JNIEXPORT jint JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getSampleRate(JNIEnv* env,
+                                                          jclass type) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return 0;
+  }
+  return engine->getSampleRate();
+}
+
+JNIEXPORT jint JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getFramesPerBurst(JNIEnv* env,
+                                                              jclass type) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return 0;
+  }
+  return engine->getFramesPerBurst();
+}
+
 }  // extern "C"

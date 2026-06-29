@@ -96,32 +96,38 @@ void beatriceEngine::closeStreams() {
 oboe::Result beatriceEngine::openStreams() {
   oboe::AudioStreamBuilder inBuilder, outBuilder;
 
-  // First, open playback stream with optimal settings to detect its sample rate.
+  // First, open playback stream with optimal settings to detect its sample
+  // rate.
   setupPlaybackStreamParameters(&outBuilder);
   oboe::Result result = outBuilder.openStream(mPlayStream);
   if (result != oboe::Result::OK) {
-    LOGE("Failed to open output stream for rate detection. Error %s", oboe::convertToText(result));
+    LOGE("Failed to open output stream for rate detection. Error %s",
+         oboe::convertToText(result));
     return result;
   }
   int32_t rateP = mPlayStream->getSampleRate();
 
-  // Next, open recording stream with unspecified sample rate to detect its optimal rate.
+  // Next, open recording stream with unspecified sample rate to detect its
+  // optimal rate.
   setupRecordingStreamParameters(&inBuilder, oboe::kUnspecified);
   result = inBuilder.openStream(mRecordingStream);
   if (result != oboe::Result::OK) {
-    LOGE("Failed to open input stream for rate detection. Error %s", oboe::convertToText(result));
+    LOGE("Failed to open input stream for rate detection. Error %s",
+         oboe::convertToText(result));
     closeStream(mPlayStream);
     return result;
   }
   int32_t rateR = mRecordingStream->getSampleRate();
 
-  // Compare rates and use the lower one to ensure compatibility (especially for Bluetooth).
+  // Compare rates and use the lower one to ensure compatibility (especially for
+  // Bluetooth).
   if (rateP == rateR) {
     mSampleRate = rateP;
     LOGI("Playback and Recording rates match: %d Hz", mSampleRate);
   } else {
     mSampleRate = std::min(rateP, rateR);
-    LOGI("Sample rates differ (P:%d, R:%d). Using lower rate: %d Hz", rateP, rateR, mSampleRate);
+    LOGI("Sample rates differ (P:%d, R:%d). Using lower rate: %d Hz", rateP,
+         rateR, mSampleRate);
 
     // Close and reopen both streams with the common sample rate.
     closeStream(mPlayStream);
@@ -131,16 +137,20 @@ oboe::Result beatriceEngine::openStreams() {
     outBuilder.setSampleRate(mSampleRate);
     result = outBuilder.openStream(mPlayStream);
     if (result != oboe::Result::OK) {
-      LOGE("Failed to re-open output stream with common rate. Error %s", oboe::convertToText(result));
+      LOGE("Failed to re-open output stream with common rate. Error %s",
+           oboe::convertToText(result));
       return result;
     }
 
     setupRecordingStreamParameters(&inBuilder, mSampleRate);
-    // Use the playback stream's capacity as a reference for recording buffer capacity.
-    inBuilder.setBufferCapacityInFrames(mPlayStream->getBufferCapacityInFrames() * 2);
+    // Use the playback stream's capacity as a reference for recording buffer
+    // capacity.
+    inBuilder.setBufferCapacityInFrames(
+        mPlayStream->getBufferCapacityInFrames() * 2);
     result = inBuilder.openStream(mRecordingStream);
     if (result != oboe::Result::OK) {
-      LOGE("Failed to re-open input stream with common rate. Error %s", oboe::convertToText(result));
+      LOGE("Failed to re-open input stream with common rate. Error %s",
+           oboe::convertToText(result));
       closeStream(mPlayStream);
       return result;
     }
@@ -467,4 +477,13 @@ void beatriceEngine::setParameters(const BeatriceParameters& params) {
   for (int32_t i = 0; i < beatrice::common::kMaxNSpeakers; ++i) {
     setSpeakerMorphingWeight(i, params.speakerMorphingWeights[i]);
   }
+}
+
+int32_t beatriceEngine::getSampleRate() const { return mSampleRate; }
+
+int32_t beatriceEngine::getFramesPerBurst() const {
+  if (mPlayStream) {
+    return mPlayStream->getFramesPerBurst();
+  }
+  return 0;
 }
