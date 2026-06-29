@@ -115,7 +115,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         Log.d(TAG, "Attempting to start")
         val success = beatriceEngine.setEffectOn(true)
         if (success) {
-            statusText.setText(R.string.status_playing)
+            val sampleRate = beatriceEngine.getSampleRate()
+            val framesPerBurst = beatriceEngine.getFramesPerBurst()
+            statusText.text = getString(R.string.status_playing) +
+                "\nsampling frequency : ${sampleRate} Hz \t frame size: ${framesPerBurst} samples"
             toggleEffectButton.setText(R.string.stop_effect)
             viewModel.isEngineRunning.value = true
         } else {

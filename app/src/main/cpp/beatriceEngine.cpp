@@ -95,40 +95,68 @@ void beatriceEngine::closeStreams() {
 
 oboe::Result beatriceEngine::openStreams() {
   oboe::AudioStreamBuilder inBuilder, outBuilder;
+
+  // First, open playback stream with optimal settings to detect its sample
+  // rate.
   setupPlaybackStreamParameters(&outBuilder);
   oboe::Result result = outBuilder.openStream(mPlayStream);
-  // auto outBurstSize = mPlayStream->getFramesPerBurst();
-  // mPlayStream->setBufferSizeInFrames(std::max(480 * 2, 2 * outBurstSize));
-
-  mLatencyTuner = std::make_shared<oboe::LatencyTuner>(*mPlayStream);
-
-  // auto outBufferSize = mPlayStream->getBufferSizeInFrames();
-  // auto outBufferCapacity = mPlayStream->getBufferCapacityInFrames();
-
   if (result != oboe::Result::OK) {
-    LOGE("Failed to open output stream. Error %s", oboe::convertToText(result));
-    mSampleRate = oboe::kUnspecified;
+    LOGE("Failed to open output stream for rate detection. Error %s",
+         oboe::convertToText(result));
     return result;
-  } else {
-    mSampleRate = mPlayStream->getSampleRate();
   }
-  // warnIfNotLowLatency(mPlayStream);
+  int32_t rateP = mPlayStream->getSampleRate();
 
-  setupRecordingStreamParameters(&inBuilder, mSampleRate);
-  inBuilder.setBufferCapacityInFrames(outBuilder.getBufferCapacityInFrames() *
-                                      2);
+  // Next, open recording stream with unspecified sample rate to detect its
+  // optimal rate.
+  setupRecordingStreamParameters(&inBuilder, oboe::kUnspecified);
   result = inBuilder.openStream(mRecordingStream);
-
-  // auto inBurstSize = mRecordingStream->getFramesPerBurst();
-  // auto inBufferSize = mRecordingStream->getBufferSizeInFrames();
-  // auto inBufferCapacity = mRecordingStream->getBufferCapacityInFrames();
-
   if (result != oboe::Result::OK) {
-    LOGE("Failed to open input stream. Error %s", oboe::convertToText(result));
+    LOGE("Failed to open input stream for rate detection. Error %s",
+         oboe::convertToText(result));
     closeStream(mPlayStream);
     return result;
   }
-  // warnIfNotLowLatency(mRecordingStream);
+  int32_t rateR = mRecordingStream->getSampleRate();
+
+  // Compare rates and use the lower one to ensure compatibility (especially for
+  // Bluetooth).
+  if (rateP == rateR) {
+    mSampleRate = rateP;
+    LOGI("Playback and Recording rates match: %d Hz", mSampleRate);
+  } else {
+    mSampleRate = std::min(rateP, rateR);
+    LOGI("Sample rates differ (P:%d, R:%d). Using lower rate: %d Hz", rateP,
+         rateR, mSampleRate);
+
+    // Close and reopen both streams with the common sample rate.
+    closeStream(mPlayStream);
+    closeStream(mRecordingStream);
+
+    setupPlaybackStreamParameters(&outBuilder);
+    outBuilder.setSampleRate(mSampleRate);
+    result = outBuilder.openStream(mPlayStream);
+    if (result != oboe::Result::OK) {
+      LOGE("Failed to re-open output stream with common rate. Error %s",
+           oboe::convertToText(result));
+      return result;
+    }
+
+    setupRecordingStreamParameters(&inBuilder, mSampleRate);
+    // Use the playback stream's capacity as a reference for recording buffer
+    // capacity.
+    inBuilder.setBufferCapacityInFrames(
+        mPlayStream->getBufferCapacityInFrames() * 2);
+    result = inBuilder.openStream(mRecordingStream);
+    if (result != oboe::Result::OK) {
+      LOGE("Failed to re-open input stream with common rate. Error %s",
+           oboe::convertToText(result));
+      closeStream(mPlayStream);
+      return result;
+    }
+  }
+
+  mLatencyTuner = std::make_shared<oboe::LatencyTuner>(*mPlayStream);
 
   if (mBeatriceModelConfig.model.VersionInt() == 0) {
     mBeatriceProcessorCore =
@@ -288,6 +316,10 @@ std::u8string beatriceEngine::getModelName(void) {
   return mBeatriceModelConfig.model.name;
 }
 
+std::u8string beatriceEngine::getModelDescription(void) {
+  return mBeatriceModelConfig.model.description;
+}
+
 std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
     LOGW("Invalid voiceID: %d", voiceID);
@@ -295,6 +327,33 @@ std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   }
 
   return mBeatriceModelConfig.voices[voiceID].name;
+}
+
+std::u8string beatriceEngine::getVoiceDescription(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].description;
+}
+
+std::u8string beatriceEngine::getVoicePortraitPath(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].portrait.path;
+}
+
+std::u8string beatriceEngine::getVoicePortraitDescription(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].portrait.description;
 }
 
 void beatriceEngine::setPitchShift(double pitchShift) {
@@ -418,4 +477,13 @@ void beatriceEngine::setParameters(const BeatriceParameters& params) {
   for (int32_t i = 0; i < beatrice::common::kMaxNSpeakers; ++i) {
     setSpeakerMorphingWeight(i, params.speakerMorphingWeights[i]);
   }
+}
+
+int32_t beatriceEngine::getSampleRate() const { return mSampleRate; }
+
+int32_t beatriceEngine::getFramesPerBurst() const {
+  if (mPlayStream) {
+    return mPlayStream->getFramesPerBurst();
+  }
+  return 0;
 }

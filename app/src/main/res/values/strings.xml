@@ -8,7 +8,7 @@
     <string name="status_open_failed">Engine Failed to Open Streams!</string>
     <string name="status_record_audio_denied">Error: Permission for RECORD_AUDIO was denied</string>
     <string name="status_touch_to_begin">RECORD_AUDIO permission granted, touch START to begin</string>
-    <string name="status_warning">Warning: Using built-in mic and speaker may create feedback.</string>
+    <string name="status_warning">Warnings:\n\t\tUsing the built-in microphone and speaker may cause acoustic feedback.\n\t\tBluetooth headsets may experience audio issues or latency.\n\t\tA wired connection is strongly recommended.</string>
     <string name="recording_device">Recording device</string>
     <string name="playback_device">Playback device</string>
 

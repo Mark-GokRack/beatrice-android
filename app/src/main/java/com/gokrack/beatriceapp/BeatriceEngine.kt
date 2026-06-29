@@ -21,8 +21,12 @@ object beatriceEngine {
     external fun setAsyncMode(isAsyncMode: Boolean): Boolean
     external fun readModel( modelPath : String ):Boolean
     external fun getModelName():String
+    external fun getModelDescription():String
     external fun setVoiceID(voiceID: Int): Boolean
     external fun getVoiceName(voiceID: Int): String
+    external fun getVoiceDescription(voiceID: Int): String
+    external fun getVoicePortraitPath(voiceID: Int): String
+    external fun getVoicePortraitDescription(voiceID: Int): String
     external fun setPitchShift(pitchShift: Double): Boolean
     external fun setFormantShift(formantShift: Double): Boolean
     external fun setInputGain(dB: Double): Boolean
@@ -36,6 +40,8 @@ object beatriceEngine {
 
     external fun delete()
     external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)
+    external fun getSampleRate(): Int
+    external fun getFramesPerBurst(): Int
 
     fun setDefaultStreamValues(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

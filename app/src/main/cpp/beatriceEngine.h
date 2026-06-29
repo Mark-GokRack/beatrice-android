@@ -29,9 +29,13 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   void setAsyncMode(bool isAsyncMode);
 
   std::u8string getModelName(void);
+  std::u8string getModelDescription(void);
 
   void setVoiceID(int32_t voiceID);
   std::u8string getVoiceName(int32_t voiceID);
+  std::u8string getVoiceDescription(int32_t voiceID);
+  std::u8string getVoicePortraitPath(int32_t voiceID);
+  std::u8string getVoicePortraitDescription(int32_t voiceID);
 
   void setPitchShift(double pitchShift);
   void setFormantShift(double formantShift);
@@ -59,6 +63,9 @@ class beatriceEngine : public oboe::AudioStreamCallback {
 
   BeatriceParameters getParameters() const;
   void setParameters(const BeatriceParameters& params);
+
+  int32_t getSampleRate() const;
+  int32_t getFramesPerBurst() const;
 
  private:
   bool mIsEffectOn = false;

@@ -96,6 +96,59 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:popupBackground="@color/vst_bg_card" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/vst_divider"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/model_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/vst_text_primary"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+
+
+            <ImageView
+                android:id="@+id/voice_portrait_image"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/voice_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/vst_text_primary"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+
+            <TextView
+                android:id="@+id/voice_portrait_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="10sp"
+                android:gravity="center" />
 
         </LinearLayout>
 
