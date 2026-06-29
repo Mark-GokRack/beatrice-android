@@ -154,8 +154,9 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
       std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
           .from_bytes(reinterpret_cast<const char*>(u8str.c_str()));
 
-  model_description = env->NewString(reinterpret_cast<const jchar*>(u16str.c_str()),
-                                     static_cast<jsize>(u16str.length()));
+  model_description =
+      env->NewString(reinterpret_cast<const jchar*>(u16str.c_str()),
+                     static_cast<jsize>(u16str.length()));
 
   return model_description;
 }
@@ -264,8 +265,9 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getVoiceDescription(JNIEnv* env,
     return nullptr;
   }
   std::u8string voiceDescription = engine->getVoiceDescription(voiceID);
-  return env->NewStringUTF(reinterpret_cast<const char*>(voiceDescription.c_str()));
-} 
+  return env->NewStringUTF(
+      reinterpret_cast<const char*>(voiceDescription.c_str()));
+}
 
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitPath(JNIEnv* env,
@@ -278,21 +280,23 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitPath(JNIEnv* env,
     return nullptr;
   }
   std::u8string voicePortraitPath = engine->getVoicePortraitPath(voiceID);
-  return env->NewStringUTF(reinterpret_cast<const char*>(voicePortraitPath.c_str()));
+  return env->NewStringUTF(
+      reinterpret_cast<const char*>(voicePortraitPath.c_str()));
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitDescription(JNIEnv* env,
-                                                                        jclass type,
-                                                                        jint voiceID) {
+Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitDescription(
+    JNIEnv* env, jclass type, jint voiceID) {
   if (!engine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return nullptr;
   }
-  std::u8string voicePortraitDescription = engine->getVoicePortraitDescription(voiceID);
-  return env->NewStringUTF(reinterpret_cast<const char*>(voicePortraitDescription.c_str()));
+  std::u8string voicePortraitDescription =
+      engine->getVoicePortraitDescription(voiceID);
+  return env->NewStringUTF(
+      reinterpret_cast<const char*>(voicePortraitDescription.c_str()));
 }
 
 JNIEXPORT jboolean JNICALL
