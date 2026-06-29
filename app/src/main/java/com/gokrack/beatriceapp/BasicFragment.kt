@@ -27,6 +27,16 @@ class BasicFragment : Fragment() {
             beatriceEngine.setInputGain(value.toDouble())
         }
         inputGainValue.text = "%.1f dB".format(inputGainSlider.value)
+        view.findViewById<android.widget.Button>(R.id.input_gain_decrement).setOnClickListener {
+            val newValue = (inputGainSlider.value - inputGainSlider.stepSize)
+                .coerceAtLeast(inputGainSlider.valueFrom)
+            inputGainSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.input_gain_increment).setOnClickListener {
+            val newValue = (inputGainSlider.value + inputGainSlider.stepSize)
+                .coerceAtMost(inputGainSlider.valueTo)
+            inputGainSlider.value = newValue
+        }
 
         // OutputGain
         val outputGainValue = view.findViewById<TextView>(R.id.output_gain_value)
@@ -36,6 +46,16 @@ class BasicFragment : Fragment() {
             beatriceEngine.setOutputGain(value.toDouble())
         }
         outputGainValue.text = "%.1f dB".format(outputGainSlider.value)
+        view.findViewById<android.widget.Button>(R.id.output_gain_decrement).setOnClickListener {
+            val newValue = (outputGainSlider.value - outputGainSlider.stepSize)
+                .coerceAtLeast(outputGainSlider.valueFrom)
+            outputGainSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.output_gain_increment).setOnClickListener {
+            val newValue = (outputGainSlider.value + outputGainSlider.stepSize)
+                .coerceAtMost(outputGainSlider.valueTo)
+            outputGainSlider.value = newValue
+        }
 
         // PitchShift
         val pitchShiftValue = view.findViewById<TextView>(R.id.pitch_shift_value)
@@ -45,6 +65,16 @@ class BasicFragment : Fragment() {
             beatriceEngine.setPitchShift(value.toDouble())
         }
         pitchShiftValue.text = "%.2f".format(pitchShiftSlider.value)
+        view.findViewById<android.widget.Button>(R.id.pitch_shift_decrement).setOnClickListener {
+            val newValue = (pitchShiftSlider.value - pitchShiftSlider.stepSize)
+                .coerceAtLeast(pitchShiftSlider.valueFrom)
+            pitchShiftSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.pitch_shift_increment).setOnClickListener {
+            val newValue = (pitchShiftSlider.value + pitchShiftSlider.stepSize)
+                .coerceAtMost(pitchShiftSlider.valueTo)
+            pitchShiftSlider.value = newValue
+        }
 
         // FormantShift
         val formantShiftValue = view.findViewById<TextView>(R.id.formant_shift_value)
@@ -54,6 +84,16 @@ class BasicFragment : Fragment() {
             beatriceEngine.setFormantShift(value.toDouble())
         }
         formantShiftValue.text = "%.1f".format(formantShiftSlider.value)
+        view.findViewById<android.widget.Button>(R.id.formant_shift_decrement).setOnClickListener {
+            val newValue = (formantShiftSlider.value - formantShiftSlider.stepSize)
+                .coerceAtLeast(formantShiftSlider.valueFrom)
+            formantShiftSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.formant_shift_increment).setOnClickListener {
+            val newValue = (formantShiftSlider.value + formantShiftSlider.stepSize)
+                .coerceAtMost(formantShiftSlider.valueTo)
+            formantShiftSlider.value = newValue
+        }
 
         // VQ Neighbors
         val vqValue = view.findViewById<TextView>(R.id.vq_neighbors_value)
@@ -64,5 +104,15 @@ class BasicFragment : Fragment() {
             beatriceEngine.setVQNumNeighbors(intValue)
         }
         vqValue.text = vqSlider.value.toInt().toString()
+        view.findViewById<android.widget.Button>(R.id.vq_neighbors_decrement).setOnClickListener {
+            val newValue = (vqSlider.value - vqSlider.stepSize)
+                .coerceAtLeast(vqSlider.valueFrom)
+            vqSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.vq_neighbors_increment).setOnClickListener {
+            val newValue = (vqSlider.value + vqSlider.stepSize)
+                .coerceAtMost(vqSlider.valueTo)
+            vqSlider.value = newValue
+        }
     }
 }

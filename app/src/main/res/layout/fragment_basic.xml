@@ -48,17 +48,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/input_gain_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="-60.0"
-            android:valueTo="20.0"
-            android:stepSize="0.1"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/input_gain_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/input_gain_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="-60.0"
+                android:valueTo="20.0"
+                android:stepSize="0.1"
+                android:value="0.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/input_gain_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <!-- OutputGain row -->
         <LinearLayout
@@ -86,17 +119,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/output_gain_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="-60.0"
-            android:valueTo="20.0"
-            android:stepSize="0.1"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/output_gain_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/output_gain_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="-60.0"
+                android:valueTo="20.0"
+                android:stepSize="0.1"
+                android:value="0.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/output_gain_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -142,17 +208,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/pitch_shift_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="-24.0"
-            android:valueTo="24.0"
-            android:stepSize="0.125"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/pitch_shift_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/pitch_shift_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="-24.0"
+                android:valueTo="24.0"
+                android:stepSize="0.125"
+                android:value="0.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/pitch_shift_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <!-- FormantShift row -->
         <LinearLayout
@@ -180,17 +279,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/formant_shift_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="-2.0"
-            android:valueTo="2.0"
-            android:stepSize="0.5"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/formant_shift_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/formant_shift_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="-2.0"
+                android:valueTo="2.0"
+                android:stepSize="0.5"
+                android:value="0.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/formant_shift_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -236,17 +368,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/vq_neighbors_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="0.0"
-            android:valueTo="8.0"
-            android:stepSize="1.0"
-            android:value="1.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/vq_neighbors_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/vq_neighbors_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="0.0"
+                android:valueTo="8.0"
+                android:stepSize="1.0"
+                android:value="1.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/vq_neighbors_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

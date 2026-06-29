@@ -48,17 +48,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/intonation_intensity_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="-1.0"
-            android:valueTo="3.0"
-            android:stepSize="0.1"
-            android:value="1.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/intonation_intensity_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/intonation_intensity_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="-1.0"
+                android:valueTo="3.0"
+                android:stepSize="0.1"
+                android:value="1.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/intonation_intensity_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <!-- PitchCorrection row -->
         <LinearLayout
@@ -86,17 +119,50 @@
 
         </LinearLayout>
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/pitch_correction_slider"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:valueFrom="0.0"
-            android:valueTo="1.0"
-            android:stepSize="0.05"
-            android:value="0.0"
-            app:trackColorActive="@color/vst_accent"
-            app:trackColorInactive="@color/vst_slider_inactive"
-            app:thumbColor="@color/vst_accent" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/pitch_correction_decrement"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="−"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/pitch_correction_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:valueFrom="0.0"
+                android:valueTo="1.0"
+                android:stepSize="0.05"
+                android:value="0.0"
+                app:trackColorActive="@color/vst_accent"
+                app:trackColorInactive="@color/vst_slider_inactive"
+                app:thumbColor="@color/vst_accent" />
+
+            <Button
+                android:id="@+id/pitch_correction_increment"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="+"
+                android:textColor="@color/vst_accent"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <!-- PitchCorrectionMode -->
         <TextView

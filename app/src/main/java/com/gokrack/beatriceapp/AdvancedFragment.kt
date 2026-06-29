@@ -29,6 +29,16 @@ class AdvancedFragment : Fragment() {
             beatriceEngine.setIntonationIntensity(value.toDouble())
         }
         intonationValue.text = "%.2f".format(intonationSlider.value)
+        view.findViewById<android.widget.Button>(R.id.intonation_intensity_decrement).setOnClickListener {
+            val newValue = (intonationSlider.value - intonationSlider.stepSize)
+                .coerceAtLeast(intonationSlider.valueFrom)
+            intonationSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.intonation_intensity_increment).setOnClickListener {
+            val newValue = (intonationSlider.value + intonationSlider.stepSize)
+                .coerceAtMost(intonationSlider.valueTo)
+            intonationSlider.value = newValue
+        }
 
         // PitchCorrection
         val pitchCorrectionValue = view.findViewById<TextView>(R.id.pitch_correction_value)
@@ -38,6 +48,16 @@ class AdvancedFragment : Fragment() {
             beatriceEngine.setPitchCorrection(value.toDouble())
         }
         pitchCorrectionValue.text = "%.2f".format(pitchCorrectionSlider.value)
+        view.findViewById<android.widget.Button>(R.id.pitch_correction_decrement).setOnClickListener {
+            val newValue = (pitchCorrectionSlider.value - pitchCorrectionSlider.stepSize)
+                .coerceAtLeast(pitchCorrectionSlider.valueFrom)
+            pitchCorrectionSlider.value = newValue
+        }
+        view.findViewById<android.widget.Button>(R.id.pitch_correction_increment).setOnClickListener {
+            val newValue = (pitchCorrectionSlider.value + pitchCorrectionSlider.stepSize)
+                .coerceAtMost(pitchCorrectionSlider.valueTo)
+            pitchCorrectionSlider.value = newValue
+        }
 
         // PitchCorrectionMode
         view.findViewById<RadioGroup>(R.id.pitch_correction_mode_group)
