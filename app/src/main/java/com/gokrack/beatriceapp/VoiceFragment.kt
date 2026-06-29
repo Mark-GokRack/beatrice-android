@@ -13,13 +13,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileOutputStream
 
@@ -29,6 +32,10 @@ class VoiceFragment : Fragment() {
     private lateinit var modelPickerLauncher: ActivityResultLauncher<Intent>
     private lateinit var voiceSpinner: Spinner
     private lateinit var modelNameText: TextView
+    private lateinit var modelDescriptionText: TextView
+    private lateinit var voiceDescriptionText: TextView
+    private lateinit var voicePortraitDescriptionText: TextView
+    private lateinit var voicePortraitImage: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +79,10 @@ class VoiceFragment : Fragment() {
 
         modelNameText = view.findViewById(R.id.ModelName)
         voiceSpinner = view.findViewById(R.id.voice_select_spinner)
+        modelDescriptionText = view.findViewById(R.id.model_description)
+        voiceDescriptionText = view.findViewById(R.id.voice_description)
+        voicePortraitDescriptionText = view.findViewById(R.id.voice_portrait_description)
+        voicePortraitImage = view.findViewById(R.id.voice_portrait_image)
 
         view.findViewById<Button>(R.id.button_model_select).setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
@@ -87,6 +98,7 @@ class VoiceFragment : Fragment() {
                 parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
                 beatriceEngine.setVoiceID(position)
+                updateVoiceDetails(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
@@ -104,6 +116,8 @@ class VoiceFragment : Fragment() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             voiceSpinner.adapter = adapter
         }
+
+        updateModelInfo()
     }
 
     // ---- Model file management ----
@@ -130,6 +144,9 @@ class VoiceFragment : Fragment() {
         val name = beatriceEngine.getModelName()
         viewModel.modelName.postValue(name)
 
+        val description = beatriceEngine.getModelDescription()
+        modelDescriptionText.text = description
+
         val voiceNameList = ArrayList<String>()
         for (i in 0 until 256) {
             val voiceName = beatriceEngine.getVoiceName(i)
@@ -137,6 +154,35 @@ class VoiceFragment : Fragment() {
         }
         viewModel.voiceNames.postValue(voiceNameList)
         beatriceEngine.setVoiceID(0)
+        updateVoiceDetails(0)
+    }
+
+    private fun updateVoiceDetails(position: Int) {
+        val description = beatriceEngine.getVoiceDescription(position)
+        val relativePortraitPath = beatriceEngine.getVoicePortraitPath(position)
+        val portraitDesc = beatriceEngine.getVoicePortraitDescription(position)
+
+        voiceDescriptionText.text = description
+        voicePortraitDescriptionText.text = portraitDesc
+
+        if (relativePortraitPath.isNotEmpty()) {
+            try {
+                val modelRoot = requireActivity().getExternalFilesDir(null) ?: requireActivity().filesDir
+                val absolutePortraitPath = File(modelRoot, relativePortraitPath).absolutePath
+                val bitmap = BitmapFactory.decodeFile(absolutePortraitPath)
+                if (bitmap != null) {
+                    voicePortraitImage.setImageBitmap(bitmap)
+                    voicePortraitImage.visibility = View.VISIBLE
+                } else {
+                    voicePortraitImage.visibility = View.GONE
+                }
+            } catch (e: Exception) {
+                Log.e("VoiceFragment", "Failed to load portrait image from $relativePortraitPath", e)
+                voicePortraitImage.visibility = View.GONE
+            }
+        } else {
+            voicePortraitImage.visibility = View.GONE
+        }
     }
 
     private fun deleteDirectoryContents(dir: File): Boolean {

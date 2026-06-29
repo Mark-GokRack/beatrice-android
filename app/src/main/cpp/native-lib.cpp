@@ -138,6 +138,28 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getModelName(JNIEnv* env, jclass) {
   return model_name;
 }
 
+JNIEXPORT jstring JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
+                                                                jclass) {
+  jstring model_description = jstring("<<empty>>");
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return model_description;
+  }
+
+  auto u8str = engine->getModelDescription();
+  std::u16string u16str =
+      std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
+          .from_bytes(reinterpret_cast<const char*>(u8str.c_str()));
+
+  model_description = env->NewString(reinterpret_cast<const jchar*>(u16str.c_str()),
+                                     static_cast<jsize>(u16str.length()));
+
+  return model_description;
+}
+
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setEffectOn(JNIEnv* env, jclass,
                                                         jboolean isEffectOn) {
@@ -229,6 +251,48 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getVoiceName(JNIEnv* env,
   }
   std::u8string voiceName = engine->getVoiceName(voiceID);
   return env->NewStringUTF(reinterpret_cast<const char*>(voiceName.c_str()));
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getVoiceDescription(JNIEnv* env,
+                                                                jclass type,
+                                                                jint voiceID) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return nullptr;
+  }
+  std::u8string voiceDescription = engine->getVoiceDescription(voiceID);
+  return env->NewStringUTF(reinterpret_cast<const char*>(voiceDescription.c_str()));
+} 
+
+JNIEXPORT jstring JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitPath(JNIEnv* env,
+                                                                 jclass type,
+                                                                 jint voiceID) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return nullptr;
+  }
+  std::u8string voicePortraitPath = engine->getVoicePortraitPath(voiceID);
+  return env->NewStringUTF(reinterpret_cast<const char*>(voicePortraitPath.c_str()));
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitDescription(JNIEnv* env,
+                                                                        jclass type,
+                                                                        jint voiceID) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return nullptr;
+  }
+  std::u8string voicePortraitDescription = engine->getVoicePortraitDescription(voiceID);
+  return env->NewStringUTF(reinterpret_cast<const char*>(voicePortraitDescription.c_str()));
 }
 
 JNIEXPORT jboolean JNICALL

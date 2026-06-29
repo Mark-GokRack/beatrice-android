@@ -288,6 +288,10 @@ std::u8string beatriceEngine::getModelName(void) {
   return mBeatriceModelConfig.model.name;
 }
 
+std::u8string beatriceEngine::getModelDescription(void) {
+  return mBeatriceModelConfig.model.description;
+}
+
 std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
     LOGW("Invalid voiceID: %d", voiceID);
@@ -295,6 +299,33 @@ std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   }
 
   return mBeatriceModelConfig.voices[voiceID].name;
+}
+
+std::u8string beatriceEngine::getVoiceDescription(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].description;
+}
+
+std::u8string beatriceEngine::getVoicePortraitPath(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].portrait.path;
+}
+
+std::u8string beatriceEngine::getVoicePortraitDescription(int32_t voiceID) {
+  if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
+    LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+
+  return mBeatriceModelConfig.voices[voiceID].portrait.description;
 }
 
 void beatriceEngine::setPitchShift(double pitchShift) {
