@@ -42,6 +42,8 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 
 ### System タブ
 
+<img src="./fig/system_tab.png" width="50%">
+
 音声 API やデバイス選択など、システム寄りの設定を行います。
 
 - **Audio API**
@@ -59,6 +61,9 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 
 ### Voice タブ
 
+<img src="./fig/voice_tab.png" width="50%">
+
+
 使用するモデルと話者を選択します。
 
 - **Model**
@@ -70,6 +75,8 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 ---
 
 ### Basic タブ
+
+<img src="./fig/basic_tab.png" width="50%">
 
 日常的によく使う音声変換パラメータを調整します。各スライダーの左右にある **−** / **+** ボタンで微調整ができます。
 
@@ -88,6 +95,8 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 
 ### Advanced タブ
 
+<img src="./fig/advanced_tab.png" width="50%">
+
 ピッチ処理に関する高度なパラメータを調整します。
 
 - **IntonationIntensity**
@@ -103,6 +112,8 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 
 ### Morphing タブ
 
+<img src="./fig/morphing_tab.png" width="50%">
+
 **Voice Morphing Mode** を選択した際にモデルに含まれる複数の話者を混ぜ合わせる重みを調整します。  
 各話者に対応したスライダーが一覧表示されるので、合成したい割合に合わせて調整してください。
 なお、処理不可を抑えるため、 rc.0 版以降のモデルについては混ぜ合わせることの出来る話者数に上限を設定しています(現在は **8** に設定中)。
@@ -115,4 +126,6 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 2. **Voice タブ**でモデルを読み込み、話者を選ぶ。
 3. **Basic タブ**で PitchShift・FormantShift などを好みに合わせて調整する。
 4. 画面下部の **Start** ボタンをタップして音声変換を開始する。
+<img src="./fig/bottom_button.png" width="50%">
 5. 停止するには **Stop** ボタンをタップする（他のアプリに切り替えると自動的に停止します）。
+
