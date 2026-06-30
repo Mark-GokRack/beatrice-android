@@ -22,6 +22,7 @@ object beatriceEngine {
     external fun readModel( modelPath : String ):Boolean
     external fun getModelName():String
     external fun getModelDescription():String
+    external fun getModelVersion():Int
     external fun setVoiceID(voiceID: Int): Boolean
     external fun getVoiceName(voiceID: Int): String
     external fun getVoiceDescription(voiceID: Int): String

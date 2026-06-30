@@ -148,9 +148,16 @@ class VoiceFragment : Fragment() {
         modelDescriptionText.text = description
 
         val voiceNameList = ArrayList<String>()
+        var voiceCount = 0
         for (i in 0 until 256) {
             val voiceName = beatriceEngine.getVoiceName(i)
-            if (voiceName.isNotEmpty()) voiceNameList.add(voiceName) else break
+            if (voiceName.isNotEmpty()){ 
+                voiceNameList.add(voiceName)
+                voiceCount++
+            }else{ break }
+        }
+        if( voiceCount > 1 ){
+            voiceNameList.add( "VoiceMorphingMode");
         }
         viewModel.voiceNames.postValue(voiceNameList)
         beatriceEngine.setVoiceID(0)

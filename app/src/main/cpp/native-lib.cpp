@@ -161,6 +161,19 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
   return model_description;
 }
 
+JNIEXPORT jint JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getModelVersion(JNIEnv* env,
+                                                            jclass) {
+  if (!engine) {
+    LOGE(
+        "Engine is null, you must call createEngine before calling this "
+        "method");
+    return -1;
+  }
+
+  return engine->getModelVersion();
+}
+
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setEffectOn(JNIEnv* env, jclass,
                                                         jboolean isEffectOn) {

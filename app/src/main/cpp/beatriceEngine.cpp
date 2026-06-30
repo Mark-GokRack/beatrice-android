@@ -320,6 +320,10 @@ std::u8string beatriceEngine::getModelDescription(void) {
   return mBeatriceModelConfig.model.description;
 }
 
+int32_t beatriceEngine::getModelVersion(void) {
+  return mBeatriceModelConfig.model.VersionInt();
+}
+
 std::u8string beatriceEngine::getVoiceName(int32_t voiceID) {
   if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
     LOGW("Invalid voiceID: %d", voiceID);
@@ -334,6 +338,19 @@ std::u8string beatriceEngine::getVoiceDescription(int32_t voiceID) {
     LOGW("Invalid voiceID: %d", voiceID);
     return u8"";
   }
+  if (voiceID == static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
+    std::u8string description = u8"Voice Morphing Mode: \n";
+    for (auto i = 0; i < mBeatriceModelConfig.voices.size(); ++i) {
+      if (mBeatriceParameters.speakerMorphingWeights[i] <= 0.0) {
+        continue;
+      }
+      description += mBeatriceModelConfig.voices[i].description + u8"\n";
+    }
+    return description;
+  }
+  if (voiceID > static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
+    return u8"";
+  }
 
   return mBeatriceModelConfig.voices[voiceID].description;
 }
@@ -343,6 +360,9 @@ std::u8string beatriceEngine::getVoicePortraitPath(int32_t voiceID) {
     LOGW("Invalid voiceID: %d", voiceID);
     return u8"";
   }
+  if (voiceID >= static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
+    return u8"";
+  }
 
   return mBeatriceModelConfig.voices[voiceID].portrait.path;
 }
@@ -350,6 +370,9 @@ std::u8string beatriceEngine::getVoicePortraitPath(int32_t voiceID) {
 std::u8string beatriceEngine::getVoicePortraitDescription(int32_t voiceID) {
   if (voiceID < 0 || voiceID > beatrice::common::kMaxNSpeakers) {
     LOGW("Invalid voiceID: %d", voiceID);
+    return u8"";
+  }
+  if (voiceID >= static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
     return u8"";
   }
 

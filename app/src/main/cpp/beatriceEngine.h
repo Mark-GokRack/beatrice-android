@@ -30,6 +30,7 @@ class beatriceEngine : public oboe::AudioStreamCallback {
 
   std::u8string getModelName(void);
   std::u8string getModelDescription(void);
+  int32_t getModelVersion(void);
 
   void setVoiceID(int32_t voiceID);
   std::u8string getVoiceName(int32_t voiceID);

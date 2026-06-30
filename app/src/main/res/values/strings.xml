@@ -53,7 +53,7 @@
     <string name="section_pitch_formant">Pitch / Formant</string>
     <string name="section_advanced_pitch">Advanced</string>
     <string name="section_gain">Gain</string>
-    <string name="section_quality">Quality</string>
+    <string name="section_quality">Voice Similarity</string>
     <string name="section_audio_api">Audio API</string>
     <string name="section_latency">Latency Mode</string>
     <string name="section_devices">Devices</string>
