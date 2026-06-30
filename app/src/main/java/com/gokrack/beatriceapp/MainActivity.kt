@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             getString(R.string.tab_system),
             getString(R.string.tab_voice),
             getString(R.string.tab_basic),
-            getString(R.string.tab_advanced)
+            getString(R.string.tab_advanced),
+            getString(R.string.tab_morphing)
         )
         TabLayoutMediator(findViewById(R.id.tab_layout), viewPager) { tab, position ->
             tab.text = tabTitles[position]
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 if (voiceName.isNotEmpty()) voiceNameList.add(voiceName) else break
             }
             viewModel.voiceNames.value = voiceNameList
+            viewModel.onMorphingModelLoaded(voiceNameList.size, voiceNameList.toList())
         }
     }
 

@@ -117,6 +117,10 @@ class VoiceFragment : Fragment() {
             voiceSpinner.adapter = adapter
         }
 
+        viewModel.morphingDescriptionTrigger.observe(viewLifecycleOwner) {
+            updateVoiceDetails(voiceSpinner.selectedItemPosition)
+        }
+
         updateModelInfo()
     }
 
@@ -156,6 +160,8 @@ class VoiceFragment : Fragment() {
                 voiceCount++
             }else{ break }
         }
+        // Notify ViewModel about morphing voices BEFORE appending VoiceMorphingMode
+        viewModel.onMorphingModelLoaded(voiceCount, voiceNameList.toList())
         if( voiceCount > 1 ){
             voiceNameList.add( "VoiceMorphingMode");
         }

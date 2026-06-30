@@ -45,6 +45,7 @@
     <string name="tab_voice">Voice</string>
     <string name="tab_basic">Basic</string>
     <string name="tab_advanced">Advanced</string>
+    <string name="tab_morphing">Morphing</string>
     <string name="tab_settings">Settings</string>
 
     <!-- Section headers -->
