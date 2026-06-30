@@ -163,7 +163,7 @@ class VoiceFragment : Fragment() {
         // Notify ViewModel about morphing voices BEFORE appending VoiceMorphingMode
         viewModel.onMorphingModelLoaded(voiceCount, voiceNameList.toList())
         if( voiceCount > 1 ){
-            voiceNameList.add( "VoiceMorphingMode");
+            voiceNameList.add( "Voice Morphing Mode");
         }
         viewModel.voiceNames.postValue(voiceNameList)
         beatriceEngine.setVoiceID(0)

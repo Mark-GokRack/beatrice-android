@@ -62,7 +62,7 @@
             android:layout_weight="1"
             android:valueFrom="0.0"
             android:valueTo="1.0"
-            android:stepSize="0.1"
+            android:stepSize="0.01"
             android:value="0.0"
             app:trackColorActive="@color/vst_accent"
             app:trackColorInactive="@color/vst_slider_inactive"
