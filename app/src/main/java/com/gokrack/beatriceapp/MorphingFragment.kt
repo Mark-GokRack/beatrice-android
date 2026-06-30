@@ -82,7 +82,7 @@ class MorphingFragment : Fragment() {
         private fun bindFull(holder: ViewHolder, position: Int) {
             val w = weights[position]
             holder.nameLabel.text = voiceNameList.getOrElse(position) { "Voice $position" }
-            holder.valueText.text = "%.1f".format(w)
+            holder.valueText.text = "%.2f".format(w)
 
             // Clear listener before setting value to prevent recursive callbacks during bind
             holder.slider.clearOnChangeListeners()
@@ -94,46 +94,51 @@ class MorphingFragment : Fragment() {
                 if (!fromUser) return@addOnChangeListener
                 val pos = holder.bindingAdapterPosition
                 if (pos == RecyclerView.NO_ID.toInt()) return@addOnChangeListener
-
-                val rounded = Math.round(value * 10) / 10f
-                val oldWeight = weights[pos]
-                if (rounded == oldWeight) return@addOnChangeListener
-
-                val wasZero = oldWeight < 0.001f
-                val isNowZero = rounded < 0.001f
-
-                weights[pos] = rounded
-                // Mutate ViewModel array in-place (no postValue — avoids observer loop)
-                viewModel.morphingWeights.value?.set(pos, rounded)
-                beatriceEngine.setSpeakerMorphingWeight(pos, rounded.toDouble())
-
-                holder.valueText.text = "%.1f".format(rounded)
-
-                if (wasZero != isNowZero) {
-                    // Non-zero count changed: update grayout for all items after touch completes
-                    viewModel.morphingDescriptionTrigger.postValue(Unit)
-                    holder.slider.post {
-                        for (i in 0 until voiceCount) {
-                            notifyItemChanged(i, PAYLOAD_GRAYOUT)
-                        }
-                    }
-                }
+                applyWeight(pos, value, holder)
             }
 
             holder.decrementBtn.setOnClickListener {
                 val pos = holder.bindingAdapterPosition
                 if (pos == RecyclerView.NO_ID.toInt()) return@setOnClickListener
-                val rounded = Math.round(weights[pos] * 10)
-                val newVal = (rounded - 1).coerceAtLeast(0) / 10f
-                holder.slider.value = newVal
+                val newVal = (Math.round(weights[pos] * 100) - 1).coerceAtLeast(0) / 100f
+                // This will trigger the slider listener, which does not call applyWeight again because fromUser is false. So we call applyWeight explicitly here.
+                holder.slider.value = newVal 
+                applyWeight(pos, newVal, holder)
             }
 
             holder.incrementBtn.setOnClickListener {
                 val pos = holder.bindingAdapterPosition
                 if (pos == RecyclerView.NO_ID.toInt()) return@setOnClickListener
-                val rounded = Math.round(weights[pos] * 10)
-                val newVal = (rounded + 1).coerceAtMost(10) / 10f
+                val newVal = (Math.round(weights[pos] * 100) + 1).coerceAtMost(100) / 100f
+                // This will trigger the slider listener, which does not call applyWeight again because fromUser is false. So we call applyWeight explicitly here.
                 holder.slider.value = newVal
+                applyWeight(pos, newVal, holder)
+            }
+        }
+
+        private fun applyWeight(pos: Int, newVal: Float, holder: ViewHolder) {
+            val rounded = Math.round(newVal * 100) / 100f
+            val oldWeight = weights[pos]
+            if (rounded == oldWeight) return
+
+            val wasZero = oldWeight < 0.0001f
+            val isNowZero = rounded < 0.0001f
+
+            weights[pos] = rounded
+            // Mutate ViewModel array in-place (no postValue — avoids observer loop)
+            viewModel.morphingWeights.value?.set(pos, rounded)
+            beatriceEngine.setSpeakerMorphingWeight(pos, rounded.toDouble())
+
+            holder.valueText.text = "%.2f".format(rounded)
+
+            if (wasZero != isNowZero) {
+                // Non-zero count changed: update grayout for all items after touch completes
+                viewModel.morphingDescriptionTrigger.postValue(Unit)
+                holder.slider.post {
+                    for (i in 0 until voiceCount) {
+                        notifyItemChanged(i, PAYLOAD_GRAYOUT)
+                    }
+                }
             }
         }
 
@@ -148,11 +153,11 @@ class MorphingFragment : Fragment() {
             holder.slider.isEnabled = enabled
 
             // Decrement is enabled only when there is a value to decrease (regardless of limit)
-            val canDecrement = w > 0.001f
+            val canDecrement = w > 0.0001f
             holder.decrementBtn.isEnabled = canDecrement
             holder.decrementBtn.alpha = if (canDecrement) 1.0f else alpha
 
-            holder.incrementBtn.isEnabled = enabled && w < 0.999f
+            holder.incrementBtn.isEnabled = enabled && w < 0.9999f
             holder.incrementBtn.alpha = alpha
         }
 
@@ -164,7 +169,7 @@ class MorphingFragment : Fragment() {
          */
         private fun isSliderEnabled(position: Int, currentWeight: Float): Boolean {
             if (beatriceEngine.getModelVersion() < 2) return true
-            if (currentWeight > 0.001f) return true
+            if (currentWeight > 0.0001f) return true
             return countNonZero() < 8
         }
 

@@ -48,6 +48,12 @@ class EngineStateViewModel : ViewModel() {
             }
         }
 
+        // If all weights within valid voices are zero, default the first voice to 1.0
+        if (voiceCount > 0 && (0 until voiceCount).all { weights[it] == 0f }) {
+            weights[0] = 1.0f
+            beatriceEngine.setSpeakerMorphingWeight(0, 1.0)
+        }
+
         morphingWeights.postValue(weights)
         morphingVoiceNames.postValue(voiceNames)
     }

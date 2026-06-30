@@ -117,6 +117,12 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         Log.d(TAG, "Attempting to start")
         val success = beatriceEngine.setEffectOn(true)
         if (success) {
+            // Re-apply all morphing weights in case the stream lost them on restart
+            viewModel.morphingWeights.value?.let { weights ->
+                for (i in weights.indices) {
+                    beatriceEngine.setSpeakerMorphingWeight(i, weights[i].toDouble())
+                }
+            }
             val sampleRate = beatriceEngine.getSampleRate()
             val framesPerBurst = beatriceEngine.getFramesPerBurst()
             statusText.text = getString(R.string.status_playing) +
