@@ -26,21 +26,21 @@ beatriceEngine::beatriceEngine(const std::string& toml_path_str) {
 
   // Voice Morph の AverageTargetPitch を計算
   // 今のところは各 Voice の値の単純平均を採用することとする
-  auto voice_counter = kMaxNSpeakers;
+  mBeatriceVoiceCount = kMaxNSpeakers;
   for (auto i = 0; i < kMaxNSpeakers; ++i) {
     const auto& voice = mBeatriceModelConfig.voices[i];
     if (voice.name.empty() && voice.description.empty() &&
         voice.portrait.path.empty() && voice.portrait.description.empty()) {
-      voice_counter = i;
+      mBeatriceVoiceCount = i;
       break;
     }
   }
   double morphed_average_pitch = 0;
-  for (auto i = 0; i < voice_counter; ++i) {
+  for (auto i = 0; i < mBeatriceVoiceCount; ++i) {
     morphed_average_pitch += mBeatriceModelConfig.voices[i].average_pitch;
   }
-  morphed_average_pitch /= voice_counter;
-  mBeatriceParameters.averageTargetPitchBase[kMaxNSpeakers] =
+  morphed_average_pitch /= mBeatriceVoiceCount;
+  mBeatriceParameters.averageTargetPitchBase[mBeatriceVoiceCount] =
       morphed_average_pitch;
 }
 
@@ -338,17 +338,33 @@ std::u8string beatriceEngine::getVoiceDescription(int32_t voiceID) {
     LOGW("Invalid voiceID: %d", voiceID);
     return u8"";
   }
-  if (voiceID == static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
-    std::u8string description = u8"Voice Morphing Mode: \n";
-    for (auto i = 0; i < mBeatriceModelConfig.voices.size(); ++i) {
+  if (voiceID == static_cast<int32_t>(mBeatriceVoiceCount)) {
+    std::u8string description = u8"<< Voice Morphing Mode >>\n";
+
+    description += u8"[注意 / Caution]";
+    description += u8"\n";
+    description +=
+        u8"Voice Morphing Mode では、未選択の Voice の学習データが\n"
+        u8"変換結果に影響を与えやすくなる可能性があります。\n"
+        u8"意図せぬ声質の類似や権利侵害にご注意ください。\n";
+    description +=
+        u8"In Voice Morphing Mode, the training data of unselected Voices "
+        u8"could "
+        u8"be more prone to influencing the conversion results. Please be "
+        u8"mindful of unintended similarities in timbre and possible rights "
+        u8"infringement.\n";
+    description += u8"\n";
+
+    for (auto i = 0; i < mBeatriceVoiceCount; ++i) {
       if (mBeatriceParameters.speakerMorphingWeights[i] <= 0.0) {
         continue;
       }
+      description += u8"[" + mBeatriceModelConfig.voices[i].name + u8"]\n";
       description += mBeatriceModelConfig.voices[i].description + u8"\n";
     }
     return description;
   }
-  if (voiceID > static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
+  if (voiceID > static_cast<int32_t>(mBeatriceVoiceCount)) {
     return u8"";
   }
 
@@ -360,7 +376,7 @@ std::u8string beatriceEngine::getVoicePortraitPath(int32_t voiceID) {
     LOGW("Invalid voiceID: %d", voiceID);
     return u8"";
   }
-  if (voiceID >= static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
+  if (voiceID >= static_cast<int32_t>(mBeatriceVoiceCount)) {
     return u8"";
   }
 
@@ -372,7 +388,7 @@ std::u8string beatriceEngine::getVoicePortraitDescription(int32_t voiceID) {
     LOGW("Invalid voiceID: %d", voiceID);
     return u8"";
   }
-  if (voiceID >= static_cast<int32_t>(mBeatriceModelConfig.voices.size())) {
+  if (voiceID >= static_cast<int32_t>(mBeatriceVoiceCount)) {
     return u8"";
   }
 
@@ -482,8 +498,8 @@ BeatriceParameters beatriceEngine::getParameters() const {
 
 void beatriceEngine::setParameters(const BeatriceParameters& params) {
   if (params.targetSpeaker >= 0 &&
-      params.targetSpeaker <= mBeatriceModelConfig.voices.size()) {
-    // == mBeatriceModelConfig.voices.size() は Voice Morph 用
+      params.targetSpeaker <= mBeatriceVoiceCount) {
+    // == mBeatriceVoiceCount は Voice Morph 用
     setVoiceID(params.targetSpeaker);
   } else {
     setVoiceID(0);

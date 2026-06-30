@@ -103,6 +103,7 @@ class beatriceEngine : public oboe::AudioStreamCallback {
   beatrice::common::ModelConfig mBeatriceModelConfig;
   std::filesystem::path mBeatriceModelPath;
   BeatriceParameters mBeatriceParameters;
+  size_t mBeatriceVoiceCount = 0;
 };
 
 #endif  // BEATRICE_ENGINE_H
