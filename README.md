@@ -6,8 +6,7 @@
 
 ## How to Use
 
-[テスト方法について簡単にまとめましたので、こちらを参照してください。](./doc/HowToUse.md)
-
+[インストール方法や使用方法については、こちらを参照してください。](./doc/HowToUse.md)
 
 ## Project License
 
