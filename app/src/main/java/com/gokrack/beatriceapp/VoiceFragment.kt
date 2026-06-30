@@ -117,6 +117,10 @@ class VoiceFragment : Fragment() {
             voiceSpinner.adapter = adapter
         }
 
+        viewModel.morphingDescriptionTrigger.observe(viewLifecycleOwner) {
+            updateVoiceDetails(voiceSpinner.selectedItemPosition)
+        }
+
         updateModelInfo()
     }
 
@@ -148,9 +152,18 @@ class VoiceFragment : Fragment() {
         modelDescriptionText.text = description
 
         val voiceNameList = ArrayList<String>()
+        var voiceCount = 0
         for (i in 0 until 256) {
             val voiceName = beatriceEngine.getVoiceName(i)
-            if (voiceName.isNotEmpty()) voiceNameList.add(voiceName) else break
+            if (voiceName.isNotEmpty()){ 
+                voiceNameList.add(voiceName)
+                voiceCount++
+            }else{ break }
+        }
+        // Notify ViewModel about morphing voices BEFORE appending VoiceMorphingMode
+        viewModel.onMorphingModelLoaded(voiceCount, voiceNameList.toList())
+        if( voiceCount > 1 ){
+            voiceNameList.add( "Voice Morphing Mode");
         }
         viewModel.voiceNames.postValue(voiceNameList)
         beatriceEngine.setVoiceID(0)

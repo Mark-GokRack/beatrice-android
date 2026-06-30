@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             getString(R.string.tab_system),
             getString(R.string.tab_voice),
             getString(R.string.tab_basic),
-            getString(R.string.tab_advanced)
+            getString(R.string.tab_advanced),
+            getString(R.string.tab_morphing)
         )
         TabLayoutMediator(findViewById(R.id.tab_layout), viewPager) { tab, position ->
             tab.text = tabTitles[position]
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 if (voiceName.isNotEmpty()) voiceNameList.add(voiceName) else break
             }
             viewModel.voiceNames.value = voiceNameList
+            viewModel.onMorphingModelLoaded(voiceNameList.size, voiceNameList.toList())
         }
     }
 
@@ -115,6 +117,12 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         Log.d(TAG, "Attempting to start")
         val success = beatriceEngine.setEffectOn(true)
         if (success) {
+            // Re-apply all morphing weights in case the stream lost them on restart
+            viewModel.morphingWeights.value?.let { weights ->
+                for (i in weights.indices) {
+                    beatriceEngine.setSpeakerMorphingWeight(i, weights[i].toDouble())
+                }
+            }
             val sampleRate = beatriceEngine.getSampleRate()
             val framesPerBurst = beatriceEngine.getFramesPerBurst()
             statusText.text = getString(R.string.status_playing) +
