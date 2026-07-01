@@ -119,15 +119,6 @@
                 android:textColor="@color/vst_text_primary"
                 android:textSize="10sp"
                 android:gravity="center"
-                android:layout_marginBottom="16dp" />
-
-
-            <ImageView
-                android:id="@+id/voice_portrait_image"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
-                android:scaleType="centerCrop"
-                android:visibility="gone"
                 android:layout_marginBottom="8dp" />
 
             <TextView
@@ -140,6 +131,13 @@
                 android:gravity="center"
                 android:layout_marginBottom="4dp" />
 
+            <ImageView
+                android:id="@+id/voice_portrait_image"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp" />
 
             <TextView
                 android:id="@+id/voice_portrait_description"

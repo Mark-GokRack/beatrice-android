@@ -338,9 +338,12 @@ std::u8string beatriceEngine::getVoiceDescription(int32_t voiceID) {
     LOGW("Invalid voiceID: %d", voiceID);
     return u8"";
   }
-  if (voiceID == static_cast<int32_t>(mBeatriceVoiceCount)) {
-    std::u8string description = u8"<< Voice Morphing Mode >>\n";
-
+  std::u8string description = u8"";
+  if (voiceID < static_cast<int32_t>(mBeatriceVoiceCount)) {
+    description += u8"[" + mBeatriceModelConfig.voices[voiceID].name + u8"]\n";
+    description += mBeatriceModelConfig.voices[voiceID].description;
+  } else if (voiceID == static_cast<int32_t>(mBeatriceVoiceCount)) {
+    description += u8"<< Voice Morphing Mode >>\n";
     description += u8"[注意 / Caution]";
     description += u8"\n";
     description +=
@@ -353,22 +356,17 @@ std::u8string beatriceEngine::getVoiceDescription(int32_t voiceID) {
         u8"be more prone to influencing the conversion results. Please be "
         u8"mindful of unintended similarities in timbre and possible rights "
         u8"infringement.\n";
-    description += u8"\n";
 
     for (auto i = 0; i < mBeatriceVoiceCount; ++i) {
       if (mBeatriceParameters.speakerMorphingWeights[i] <= 0.0) {
         continue;
       }
+      description += u8"\n";
       description += u8"[" + mBeatriceModelConfig.voices[i].name + u8"]\n";
-      description += mBeatriceModelConfig.voices[i].description + u8"\n";
+      description += mBeatriceModelConfig.voices[i].description;
     }
-    return description;
   }
-  if (voiceID > static_cast<int32_t>(mBeatriceVoiceCount)) {
-    return u8"";
-  }
-
-  return mBeatriceModelConfig.voices[voiceID].description;
+  return description;
 }
 
 std::u8string beatriceEngine::getVoicePortraitPath(int32_t voiceID) {

@@ -30,8 +30,9 @@ And this application uses the inference library beatrice.lib under permission fr
 For running on Arm platforms, it uses a modified version of beatrice.lib adapted by [w-okada](https://github.com/w-okada) for the M1 Mac version of [VCClient](https://github.com/w-okada/voice-changer), with permission from w-okada.  
 なお、Arm で動かすにあたり[w-okada](https://github.com/w-okada)氏が M1 Mac向け [VCClient](https://github.com/w-okada/voice-changer) のために改変した beatrice.lib を w-okada 氏の許諾を受けて利用しています。
 
-These permission are limited to reasonable use for the development of beatrice-android, and to distribution or transfer of beatrice-android without modification.  
-これらの許諾は、beatrice-android の開発に要する合理的な範囲での利用及び beatrice-android を改変せずに頒布・譲渡する行為のみを認めるものです。
+These permissions allow only the following actions, regardless of who performs them:
+use within a reasonable scope necessary for the development of beatrice-android, and the distribution or transfer of beatrice-android built using beatrice.lib without modification.
+これらの許諾は、beatrice-android の開発に要する合理的な範囲での利用及び beatrice.lib を利用してビルドした beatrice-android を改変せずに頒布・譲渡する行為のみを、その実施者に関わらず認めるものです。
 
 Any use beyond this scope requires explicit permission from Project Beatrice and w-okada.  
 この範囲を超えて利用する場合は Project Beatrice ならびに w-okada 氏に許諾を得る必要があります。
@@ -41,3 +42,4 @@ beatrice.lib は以下のライブラリを使用しています。
 
 - [PocketFFT](https://gitlab.mpcdf.mpg.de/mtr/pocketfft) : [BSD-3-Clause License](https://gitlab.mpcdf.mpg.de/mtr/pocketfft/-/blob/cpp/LICENSE.md)
 - [fmath](https://github.com/herumi/fmath) : [BSD-3-Clause License](https://github.com/herumi/fmath#license)
+- [SIMD Everywhere](https://github.com/simd-everywhere/simde) : [MIT License](https://github.com/simd-everywhere/simde?tab=MIT-1-ov-file)
