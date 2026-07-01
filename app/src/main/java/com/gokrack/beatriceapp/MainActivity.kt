@@ -7,8 +7,8 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
     }
 
     private lateinit var viewModel: EngineStateViewModel
-    private lateinit var statusText: TextView
     private lateinit var toggleEffectButton: Button
+    private lateinit var bottomBar: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -35,9 +35,9 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
         viewModel = ViewModelProvider(this)[EngineStateViewModel::class.java]
 
-        statusText = findViewById(R.id.status_view_text)
         toggleEffectButton = findViewById(R.id.button_toggle_effect)
         toggleEffectButton.setOnClickListener { toggleEffect() }
+        bottomBar = findViewById(R.id.bottom_bar)
 
         // ViewPager2 + TabLayout
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
@@ -47,12 +47,21 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             getString(R.string.tab_system),
             getString(R.string.tab_voice),
             getString(R.string.tab_basic),
-            getString(R.string.tab_advanced),
             getString(R.string.tab_morphing)
         )
         TabLayoutMediator(findViewById(R.id.tab_layout), viewPager) { tab, position ->
             tab.text = tabTitles[position]
         }.attach()
+
+        // Show bottom bar only on MAIN tab (position 1)
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                bottomBar.visibility = if (position == 1) View.VISIBLE else View.GONE
+            }
+        })
+        bottomBar.visibility = View.GONE
+
+        viewModel.statusText.value = getString(R.string.status_warning)
 
         beatriceEngine.setDefaultStreamValues(this)
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -125,19 +134,19 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             }
             val sampleRate = beatriceEngine.getSampleRate()
             val framesPerBurst = beatriceEngine.getFramesPerBurst()
-            statusText.text = getString(R.string.status_playing) +
+            viewModel.statusText.value = getString(R.string.status_playing) +
                 "\nsampling frequency : ${sampleRate} Hz \t frame size: ${framesPerBurst} samples"
             toggleEffectButton.setText(R.string.stop_effect)
             viewModel.isEngineRunning.value = true
         } else {
-            statusText.setText(R.string.status_open_failed)
+            viewModel.statusText.value = getString(R.string.status_open_failed)
         }
     }
 
     private fun stopEffect() {
         Log.d(TAG, "Attempting to stop")
         beatriceEngine.setEffectOn(false)
-        statusText.setText(R.string.status_warning)
+        viewModel.statusText.value = getString(R.string.status_warning)
         toggleEffectButton.setText(R.string.start_effect)
         viewModel.isEngineRunning.value = false
     }
@@ -166,10 +175,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == AUDIO_EFFECT_REQUEST) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                statusText.setText(R.string.status_touch_to_begin)
+                viewModel.statusText.value = getString(R.string.status_touch_to_begin)
                 startForegroundService()
             } else {
-                statusText.setText(R.string.status_record_audio_denied)
+                viewModel.statusText.value = getString(R.string.status_record_audio_denied)
             }
         }
     }

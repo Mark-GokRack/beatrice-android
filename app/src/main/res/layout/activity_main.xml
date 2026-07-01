@@ -38,7 +38,7 @@
         android:layout_weight="1"
         android:background="@color/vst_bg_primary" />
 
-    <!-- Bottom bar  Ealways visible -->
+    <!-- Bottom bar - visible only on MAIN tab -->
     <LinearLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
@@ -49,17 +49,8 @@
         android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
-        android:elevation="8dp">
-
-        <TextView
-            android:id="@+id/status_view_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/status_warning"
-            android:textColor="@color/vst_text_secondary"
-            android:textSize="11sp"
-            android:maxLines="4"
-            android:layout_marginBottom="8dp" />
+        android:elevation="8dp"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/button_toggle_effect"
@@ -75,4 +66,3 @@
     </LinearLayout>
 
 </LinearLayout>
-

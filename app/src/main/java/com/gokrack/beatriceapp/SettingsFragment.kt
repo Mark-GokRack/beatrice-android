@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.oboe.samples.audio_device.AudioDeviceListEntry
@@ -120,6 +121,12 @@ class SettingsFragment : Fragment() {
 
         viewModel.isAAudioRecommended.observe(viewLifecycleOwner) { recommended ->
             aaudioBtn.isEnabled = recommended && (viewModel.isEngineRunning.value != true)
+        }
+
+        // Status text at the bottom of the System tab
+        val statusView = view.findViewById<TextView>(R.id.status_view_text)
+        viewModel.statusText.observe(viewLifecycleOwner) { text ->
+            if (text.isNotEmpty()) statusView.text = text
         }
     }
 
