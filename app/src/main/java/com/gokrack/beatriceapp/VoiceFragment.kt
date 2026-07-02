@@ -93,6 +93,14 @@ class VoiceFragment : Fragment() {
             modelPickerLauncher.launch(intent)
         }
 
+        val toggleButton = view.findViewById<Button>(R.id.button_toggle_effect)
+        toggleButton.setOnClickListener {
+            (requireActivity() as MainActivity).toggleEffect()
+        }
+        viewModel.isEngineRunning.observe(viewLifecycleOwner) { running ->
+            toggleButton.setText(if (running) R.string.stop_effect else R.string.start_effect)
+        }
+
         voiceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?, position: Int, id: Long

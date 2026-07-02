@@ -38,31 +38,4 @@
         android:layout_weight="1"
         android:background="@color/vst_bg_primary" />
 
-    <!-- Bottom bar - visible only on MAIN tab -->
-    <LinearLayout
-        android:id="@+id/bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/vst_bg_secondary"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:elevation="8dp"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/button_toggle_effect"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="@string/start_effect"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:backgroundTint="@color/vst_accent"
-            style="@style/Widget.MaterialComponents.Button" />
-
-    </LinearLayout>
-
 </LinearLayout>

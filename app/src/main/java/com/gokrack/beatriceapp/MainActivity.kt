@@ -7,8 +7,6 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,8 +23,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
     }
 
     private lateinit var viewModel: EngineStateViewModel
-    private lateinit var toggleEffectButton: Button
-    private lateinit var bottomBar: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -34,10 +30,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this)[EngineStateViewModel::class.java]
-
-        toggleEffectButton = findViewById(R.id.button_toggle_effect)
-        toggleEffectButton.setOnClickListener { toggleEffect() }
-        bottomBar = findViewById(R.id.bottom_bar)
 
         // ViewPager2 + TabLayout
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
@@ -52,14 +44,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         TabLayoutMediator(findViewById(R.id.tab_layout), viewPager) { tab, position ->
             tab.text = tabTitles[position]
         }.attach()
-
-        // Show bottom bar only on MAIN tab (position 1)
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                bottomBar.visibility = if (position == 1) View.VISIBLE else View.GONE
-            }
-        })
-        bottomBar.visibility = View.GONE
 
         viewModel.statusText.value = getString(R.string.status_warning)
 
@@ -111,7 +95,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         super.onDestroy()
     }
 
-    private fun toggleEffect() {
+    internal fun toggleEffect() {
         if (viewModel.isEngineRunning.value == true) {
             stopEffect()
         } else {
@@ -136,7 +120,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             val framesPerBurst = beatriceEngine.getFramesPerBurst()
             viewModel.statusText.value = getString(R.string.status_playing) +
                 "\nsampling frequency : ${sampleRate} Hz \t frame size: ${framesPerBurst} samples"
-            toggleEffectButton.setText(R.string.stop_effect)
             viewModel.isEngineRunning.value = true
         } else {
             viewModel.statusText.value = getString(R.string.status_open_failed)
@@ -147,7 +130,6 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         Log.d(TAG, "Attempting to stop")
         beatriceEngine.setEffectOn(false)
         viewModel.statusText.value = getString(R.string.status_warning)
-        toggleEffectButton.setText(R.string.start_effect)
         viewModel.isEngineRunning.value = false
     }
 
