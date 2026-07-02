@@ -1,16 +1,17 @@
 #ifndef EFFECT_LIMITER_HPP
 #define EFFECT_LIMITER_HPP
 
-#include <algorithm>
-#include <cmath>
+#include "DynamicProcessor.hpp"
 
 /**
  * @brief A simple audio limiter class.
  *
- * A limiter is a compressor with a very high ratio (typically infinity:1)
+ * A limiter is a compressor with a very high ratio (effectively infinity:1)
  * that prevents the signal from exceeding a set threshold level.
+ *
+ * Extends DynamicProcessor with a fixed high ratio.
  */
-class Limiter {
+class Limiter : public DynamicProcessor {
  public:
   /**
    * @brief Constructor for Limiter.
@@ -31,24 +32,13 @@ class Limiter {
    */
   void process(float* buffer, int numSamples);
 
-  // Setters for parameters
-  void setThreshold(float threshold);
-  void setAttack(float attack);
-  void setRelease(float release);
-
  private:
-  // Parameters
-  float m_thresholdDb;
-  float m_attackMs;
-  float m_releaseMs;
+  // Override from DynamicProcessor
+  float computeGain(float envDb, float input, float attackCoef,
+                    float releaseCoef) override;
 
-  // Internal state
-  float m_envelope;
-  float m_sampleRate;
-
-  // Helper functions
-  float dbToLinear(float db);
-  float linearToDb(float linear);
+  // Limiter uses a very high ratio (effectively infinite)
+  static constexpr float kLimiterRatio = 20.0f;
 };
 
 #endif  // EFFECT_LIMITER_HPP

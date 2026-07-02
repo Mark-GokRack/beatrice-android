@@ -1,13 +1,15 @@
 #ifndef EFFECT_COMPRESSOR_HPP
 #define EFFECT_COMPRESSOR_HPP
 
-#include <algorithm>
-#include <cmath>
+#include "DynamicProcessor.hpp"
 
 /**
  * @brief A simple audio compressor class.
+ *
+ * Extends DynamicProcessor to implement compression with a configurable ratio
+ * and makeup gain.
  */
-class Compressor {
+class Compressor : public DynamicProcessor {
  public:
   /**
    * @brief Constructor for Compressor.
@@ -26,33 +28,30 @@ class Compressor {
   /**
    * @brief Processes a buffer of audio samples.
    *
+   * Applies compression followed by makeup gain.
+   *
    * @param buffer Pointer to the audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
   void process(float* buffer, int numSamples);
 
   // Setters for parameters
-  void setThreshold(float threshold);
   void setRatio(float ratio);
-  void setAttack(float attack);
-  void setRelease(float release);
   void setMakeupGain(float makeupGain);
+
+ protected:
+  // DynamicProcessor base handles threshold, attack, release, sampleRate,
+  // envelope
 
  private:
   // Parameters
-  float m_thresholdDb;
   float m_ratio;
-  float m_attackMs;
-  float m_releaseMs;
   float m_makeupGainDb;
+  float m_makeupGainLinear;
 
-  // Internal state
-  float m_envelope;
-  float m_sampleRate;
-
-  // Helper functions
-  float dbToLinear(float db);
-  float linearToDb(float linear);
+  // Override from DynamicProcessor
+  float computeGain(float envDb, float input, float attackCoef,
+                    float releaseCoef) override;
 };
 
 #endif  // EFFECT_COMPRESSOR_HPP
