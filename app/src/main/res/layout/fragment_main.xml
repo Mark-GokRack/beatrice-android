@@ -184,7 +184,7 @@
             android:layout_height="52dp"
             android:text="@string/start_effect"
             android:textAllCaps="false"
-            android:textSize="16sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:backgroundTint="@color/vst_accent"
             style="@style/Widget.MaterialComponents.Button" />

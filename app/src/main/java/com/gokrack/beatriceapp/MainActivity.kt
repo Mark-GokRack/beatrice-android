@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             tab.text = tabTitles[position]
         }.attach()
 
+        viewPager.setCurrentItem(1, false) // Set the initial tab to the first one (System)
+
         viewModel.statusText.value = getString(R.string.status_warning)
 
         beatriceEngine.setDefaultStreamValues(this)

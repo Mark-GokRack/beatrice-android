@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.oboe.samples.audio_device.AudioDeviceListEntry
 import com.google.oboe.samples.audio_device.AudioDeviceSpinner
 
-class SettingsFragment : Fragment() {
+class SystemFragment : Fragment() {
 
     private lateinit var viewModel: EngineStateViewModel
     private lateinit var recordingDeviceSpinner: AudioDeviceSpinner
@@ -26,7 +26,7 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_settings, container, false)
+    ): View = inflater.inflate(R.layout.fragment_system, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

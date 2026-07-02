@@ -26,7 +26,7 @@ import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileOutputStream
 
-class VoiceFragment : Fragment() {
+class MainFragment : Fragment() {
 
     private lateinit var viewModel: EngineStateViewModel
     private lateinit var modelPickerLauncher: ActivityResultLauncher<Intent>
@@ -72,7 +72,7 @@ class VoiceFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_voice, container, false)
+    ): View = inflater.inflate(R.layout.fragment_main, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,7 +84,8 @@ class VoiceFragment : Fragment() {
         voicePortraitDescriptionText = view.findViewById(R.id.voice_portrait_description)
         voicePortraitImage = view.findViewById(R.id.voice_portrait_image)
 
-        view.findViewById<Button>(R.id.button_model_select).setOnClickListener {
+        val modelSelectButton = view.findViewById<Button>(R.id.button_model_select)
+        modelSelectButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
@@ -92,13 +93,13 @@ class VoiceFragment : Fragment() {
             }
             modelPickerLauncher.launch(intent)
         }
-
         val toggleButton = view.findViewById<Button>(R.id.button_toggle_effect)
         toggleButton.setOnClickListener {
             (requireActivity() as MainActivity).toggleEffect()
         }
         viewModel.isEngineRunning.observe(viewLifecycleOwner) { running ->
             toggleButton.setText(if (running) R.string.stop_effect else R.string.start_effect)
+            modelSelectButton.isEnabled = !running
         }
 
         voiceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -198,7 +199,7 @@ class VoiceFragment : Fragment() {
                     voicePortraitImage.visibility = View.GONE
                 }
             } catch (e: Exception) {
-                Log.e("VoiceFragment", "Failed to load portrait image from $relativePortraitPath", e)
+                Log.e("MainFragment", "Failed to load portrait image from $relativePortraitPath", e)
                 voicePortraitImage.visibility = View.GONE
             }
         } else {
@@ -244,7 +245,7 @@ class VoiceFragment : Fragment() {
                 FileOutputStream(dest).use { output -> input.copyTo(output) }
             }
         } catch (e: Exception) {
-            Log.e("VoiceFragment", "Failed to copy ${source.name}", e)
+            Log.e("MainFragment", "Failed to copy ${source.name}", e)
         }
     }
 

@@ -10,13 +10,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
 
-class BasicFragment : Fragment() {
+class ParamsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_basic, container, false)
+    ): View = inflater.inflate(R.layout.fragment_params, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
