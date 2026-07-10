@@ -33,7 +33,7 @@ class Compressor : public DynamicProcessor {
    * @param buffer Pointer to the audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
-  void process(float* buffer, int numSamples);
+  void process(float* buffer, int numSamples) override;
 
   // Setters for parameters
   void setRatio(float ratio);

@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "AudioEffector.hpp"
+
 /**
  * @brief Abstract base class for dynamic range processors.
  *
@@ -13,7 +15,7 @@
  * Derived classes implement computeGain() to define their specific gain
  * reduction behavior.
  */
-class DynamicProcessor {
+class DynamicProcessor : public AudioEffector {
  public:
   /**
    * @brief Constructor.
@@ -29,7 +31,7 @@ class DynamicProcessor {
   /**
    * @brief Virtual destructor.
    */
-  virtual ~DynamicProcessor() = default;
+  ~DynamicProcessor() override = default;
 
   /**
    * @brief Processes a buffer of audio samples.
@@ -40,7 +42,7 @@ class DynamicProcessor {
    * @param buffer Pointer to the audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
-  void process(float* buffer, int numSamples);
+  void process(float* buffer, int numSamples) override;
 
   // Setters for common parameters
   void setThreshold(float threshold);

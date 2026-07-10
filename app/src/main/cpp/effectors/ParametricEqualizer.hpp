@@ -6,6 +6,8 @@
 #include <cmath>
 #include <vector>
 
+#include "AudioEffector.hpp"
+
 /**
  * @brief Biquad filter coefficient structure.
  */
@@ -20,7 +22,7 @@ struct BiquadCoeffs {
  * Supports multiple bands, each with adjustable center frequency, Q factor, and
  * gain. Uses cascaded biquad IIR filters for efficient processing.
  */
-class ParametricEqualizer {
+class ParametricEqualizer : public AudioEffector {
  public:
   /**
    * @brief Represents a single EQ band.
@@ -86,6 +88,19 @@ class ParametricEqualizer {
    */
   void setSampleRate(float sampleRate);
 
+  /**
+   * @brief Computes the frequency response at specified points.
+   *
+   * Uses the biquad coefficients to calculate the magnitude response
+   * via the complex transfer function H(e^(jω)).
+   *
+   * @param frequencies Vector of frequency points in Hz (log-spaced
+   * recommended).
+   * @return Vector of magnitude responses in dB.
+   */
+  std::vector<float> computeFrequencyResponse(
+      const std::vector<float>& frequencies) const;
+
  private:
   // Parameters
   float m_sampleRate;
@@ -105,6 +120,15 @@ class ParametricEqualizer {
   void computeAllCoeffs();
   float processBiquad(float input, int bandIndex);
   float clamp(float value, float minVal, float maxVal);
+  float computeBiquadMagnitude(int bandIndex, float frequency) const;
+  bool isCacheValid(const std::vector<float>& frequencies) const;
+
+  // Cache members
+  mutable std::vector<float> m_cachedResponse;
+  mutable std::vector<float> m_cachedFrequencies;
+  mutable std::vector<Band> m_cachedBands;
+  float m_cachedSampleRate;
+  bool m_cacheValid;
 };
 
 #endif  // EFFECT_PARAMETRIC_EQUALIZER_HPP
