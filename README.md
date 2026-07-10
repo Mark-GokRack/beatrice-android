@@ -31,7 +31,7 @@ For running on Arm platforms, it uses a modified version of beatrice.lib adapted
 なお、Arm で動かすにあたり[w-okada](https://github.com/w-okada)氏が M1 Mac向け [VCClient](https://github.com/w-okada/voice-changer) のために改変した beatrice.lib を w-okada 氏の許諾を受けて利用しています。
 
 These permissions allow only the following actions, regardless of who performs them:
-use within a reasonable scope necessary for the development of beatrice-android, and the distribution or transfer of beatrice-android built using beatrice.lib without modification.
+use within a reasonable scope necessary for the development of beatrice-android, and the distribution or transfer of beatrice-android built using beatrice.lib without modification.  
 これらの許諾は、beatrice-android の開発に要する合理的な範囲での利用及び beatrice.lib を利用してビルドした beatrice-android を改変せずに頒布・譲渡する行為のみを、その実施者に関わらず認めるものです。
 
 Any use beyond this scope requires explicit permission from Project Beatrice and w-okada.  
