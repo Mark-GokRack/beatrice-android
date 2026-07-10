@@ -458,7 +458,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrection(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionType(JNIEnv* env,
+Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionMode(JNIEnv* env,
                                                                    jclass type,
                                                                    jint mode) {
   if (!engine) {

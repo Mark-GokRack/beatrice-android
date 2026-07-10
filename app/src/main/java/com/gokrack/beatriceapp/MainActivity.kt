@@ -29,7 +29,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        SettingsManager.init(this)
+
         viewModel = ViewModelProvider(this)[EngineStateViewModel::class.java]
+        viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
 
         // ViewPager2 + TabLayout
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
@@ -72,19 +75,51 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         beatriceEngine.setAPI(viewModel.apiSelection.value ?: 0)
         beatriceEngine.setPerformanceMode(viewModel.performanceMode.value ?: 0)
         beatriceEngine.setAsyncMode(viewModel.isAsyncMode.value ?: true)
+        applyPersistedUserSettingsToEngine()
 
         // Load model info if a model is already present
         val modelName = beatriceEngine.getModelName()
         if (modelName.isNotEmpty()) {
             viewModel.modelName.value = modelName
             val voiceNameList = ArrayList<String>()
+            var voiceCount = 0
             for (i in 0 until 256) {
                 val voiceName = beatriceEngine.getVoiceName(i)
-                if (voiceName.isNotEmpty()) voiceNameList.add(voiceName) else break
+                if (voiceName.isNotEmpty()) {
+                    voiceNameList.add(voiceName)
+                    voiceCount++
+                } else break
+            }
+            // Notify ViewModel about morphing voices BEFORE appending VoiceMorphingMode
+            viewModel.onMorphingModelLoaded(voiceCount, voiceNameList.toList())
+            if( voiceCount > 1 ){
+                voiceNameList.add( "Voice Morphing Mode");
             }
             viewModel.voiceNames.value = voiceNameList
-            viewModel.onMorphingModelLoaded(voiceNameList.size, voiceNameList.toList())
         }
+    }
+
+    internal fun resetUserAdjustableSettings() {
+        SettingsManager.resetAllToDefaults()
+        viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+        applyPersistedUserSettingsToEngine()
+        viewModel.requestSettingsReset()
+    }
+
+    private fun applyPersistedUserSettingsToEngine() {
+        beatriceEngine.setVoiceID(SettingsManager.loadVoiceId())
+        beatriceEngine.setInputGain(SettingsManager.loadInputGain().toDouble())
+        beatriceEngine.setOutputGain(SettingsManager.loadOutputGain().toDouble())
+        beatriceEngine.setPitchShift(SettingsManager.loadPitchShift().toDouble())
+        beatriceEngine.setFormantShift(SettingsManager.loadFormantShift().toDouble())
+        beatriceEngine.setVQNumNeighbors(SettingsManager.loadVQNeighbors())
+        beatriceEngine.setIntonationIntensity(SettingsManager.loadIntonationIntensity().toDouble())
+        beatriceEngine.setPitchCorrection(SettingsManager.loadPitchCorrection().toDouble())
+        beatriceEngine.setPitchCorrectionMode(SettingsManager.loadPitchCorrectionMode())
+        beatriceEngine.setSourcePitchRange(
+            SettingsManager.loadSourcePitchRangeMin().toDouble(),
+            SettingsManager.loadSourcePitchRangeMax().toDouble()
+        )
     }
 
     override fun onDestroy() {

@@ -364,7 +364,7 @@
                 android:textColor="@color/vst_text_primary"
                 android:textSize="13sp"
                 android:gravity="end"
-                android:text="8" />
+                android:text="1" />
 
         </LinearLayout>
 
