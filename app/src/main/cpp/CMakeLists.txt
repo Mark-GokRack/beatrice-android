@@ -14,7 +14,8 @@ set( ASIO_DIR ${PROJECT_ROOT_DIR}/lib/asio )
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         native-lib.cpp
-        beatriceEngine.cpp
+    beatriceProcessor.cpp
+    beatriceAudioEngine.cpp
         
         ${OBOE_DIR}/samples/debug-utils/trace.cpp
 

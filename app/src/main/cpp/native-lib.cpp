@@ -5,45 +5,61 @@
 #include <logging_macros.h>
 
 #include <codecvt>
+#include <exception>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <locale>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "beatriceEngine.h"
+#include "beatriceAudioEngine.h"
+#include "beatriceProcessor.h"
 
 static const int kOboeApiAAudio = 0;
 static const int kOboeApiOpenSLES = 1;
 
-static std::unique_ptr<beatriceEngine> engine = nullptr;
+using ProcessorFactory = BeatriceAudioEngine::ProcessorFactory;
+
+static std::unique_ptr<BeatriceProcessor> processor = nullptr;
+static std::unique_ptr<BeatriceAudioEngine> audioEngine = nullptr;
+
+namespace {
+
+bool isInitialized() { return processor != nullptr && audioEngine != nullptr; }
+
+std::shared_ptr<beatrice::common::ProcessorCoreBase> createProcessorCore(
+    int32_t sampleRate) {
+  return processor ? processor->createProcessorCore(sampleRate) : nullptr;
+}
 
 void copy_from_asset(AAssetManager* assetManager, std::string filename_in_asst,
                      std::string filename) {
-  {
-    AAsset* asset = AAssetManager_open(assetManager, filename_in_asst.c_str(),
-                                       AASSET_MODE_UNKNOWN);
-    if (!asset) {
-      return;
-    }
-    off_t length = AAsset_getLength(asset);
-    char* buffer = new char[length];
-    AAsset_read(asset, buffer, length);
-    AAsset_close(asset);
-
-    auto ofs = std::ofstream(filename, std::ios::binary | std::ios::trunc);
-    if (ofs) {
-      ofs.write(buffer, length);
-    }
-    ofs.close();
-    delete[] buffer;
+  AAsset* asset = AAssetManager_open(assetManager, filename_in_asst.c_str(),
+                                     AASSET_MODE_UNKNOWN);
+  if (!asset) {
+    return;
   }
+  off_t length = AAsset_getLength(asset);
+  char* buffer = new char[length];
+  AAsset_read(asset, buffer, length);
+  AAsset_close(asset);
+
+  auto ofs = std::ofstream(filename, std::ios::binary | std::ios::trunc);
+  if (ofs) {
+    ofs.write(buffer, length);
+  }
+  ofs.close();
+  delete[] buffer;
 }
+
+}  // namespace
 
 extern "C" {
 
 JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
     JNIEnv* env, jclass, jobject asset_manager_, jobject dir_name_) {
-  // ディレクトリ内に含まれる toml ファイルを検索
   auto c_dir_name =
       env->GetStringUTFChars(static_cast<jstring>(dir_name_), JNI_FALSE);
   auto dir_name = std::string(c_dir_name);
@@ -60,12 +76,9 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
   }
 
   std::string toml_path;
-  if (tomlFiles.size() > 0) {
-    // toml ファイルが存在する場合、最初に見つかったものを使用する
+  if (!tomlFiles.empty()) {
     toml_path = tomlFiles.at(0);
   } else {
-    // ディレクトリ内に toml ファイルが存在しない場合、assets
-    // から必要なファイルをコピーする
     AAssetManager* assetManager = AAssetManager_fromJava(env, asset_manager_);
     auto model_name = std::string("beatrice_paraphernalia_jvs");
     copy_from_asset(assetManager,
@@ -85,22 +98,32 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
                     dir_name + std::string("/noimage.png"));
     toml_path = dir_name + std::string("/beatrice_paraphernalia_jvs.toml");
   }
-  engine.reset();
-  engine = std::make_unique<beatriceEngine>(toml_path);
+
+  try {
+    processor = std::make_unique<BeatriceProcessor>(toml_path);
+    audioEngine = std::make_unique<BeatriceAudioEngine>();
+  } catch (const std::exception& e) {
+    LOGE("Failed to create engine: %s", e.what());
+    processor.reset();
+    audioEngine.reset();
+  }
+
   env->ReleaseStringUTFChars(static_cast<jstring>(dir_name_), c_dir_name);
-  return (engine) ? JNI_TRUE : JNI_FALSE;
+  return isInitialized() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_delete(JNIEnv* env, jclass) {
-  if (!engine) {
+  if (!isInitialized()) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return;
   }
-  engine->setEffectOn(false);
-  engine.reset();
+  audioEngine->closeStreams();
+  processor->resetProcessorCore();
+  audioEngine.reset();
+  processor.reset();
 }
 
 JNIEXPORT jboolean JNICALL
@@ -110,24 +133,35 @@ Java_com_gokrack_beatriceapp_beatriceEngine_readModel(JNIEnv* env, jclass,
       env->GetStringUTFChars(static_cast<jstring>(model_path_), JNI_FALSE);
   auto model_path = std::string(c_model_path);
 
-  auto params = engine ? engine->getParameters() : BeatriceParameters{};
-  engine = std::make_unique<beatriceEngine>(model_path);
-  engine->setParameters(params);
+  auto params = processor ? processor->getParameters() : BeatriceParameters{};
+  if (audioEngine) {
+    audioEngine->closeStreams();
+  }
+  try {
+    auto nextProcessor = std::make_unique<BeatriceProcessor>(model_path);
+    nextProcessor->setParameters(params);
+    processor = std::move(nextProcessor);
+  } catch (const std::exception& e) {
+    LOGE("Failed to read model: %s", e.what());
+    env->ReleaseStringUTFChars(static_cast<jstring>(model_path_), c_model_path);
+    return JNI_FALSE;
+  }
+
   env->ReleaseStringUTFChars(static_cast<jstring>(model_path_), c_model_path);
-  return (engine) ? JNI_TRUE : JNI_FALSE;
+  return isInitialized() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelName(JNIEnv* env, jclass) {
   jstring model_name = jstring("<<empty>>");
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return model_name;
   }
 
-  auto u8str = engine->getModelName();
+  auto u8str = processor->getModelName();
   std::u16string u16str =
       std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
           .from_bytes(reinterpret_cast<const char*>(u8str.c_str()));
@@ -142,14 +176,14 @@ JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
                                                                 jclass) {
   jstring model_description = jstring("<<empty>>");
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return model_description;
   }
 
-  auto u8str = engine->getModelDescription();
+  auto u8str = processor->getModelDescription();
   std::u16string u16str =
       std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
           .from_bytes(reinterpret_cast<const char*>(u8str.c_str()));
@@ -164,59 +198,70 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
 JNIEXPORT jint JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelVersion(JNIEnv* env,
                                                             jclass) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return -1;
   }
 
-  return engine->getModelVersion();
+  return processor->getModelVersion();
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setEffectOn(JNIEnv* env, jclass,
                                                         jboolean isEffectOn) {
-  if (!engine) {
+  if (!isInitialized()) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  return engine->setEffectOn(isEffectOn) ? JNI_TRUE : JNI_FALSE;
+  if (isEffectOn) {
+    return audioEngine->setEffectOn(true,
+                                    [](int32_t sampleRate) {
+                                      return createProcessorCore(sampleRate);
+                                    })
+               ? JNI_TRUE
+               : JNI_FALSE;
+  }
+
+  const bool success = audioEngine->setEffectOn(false, ProcessorFactory{});
+  processor->resetProcessorCore();
+  return success ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setRecordingDeviceId(
     JNIEnv* env, jclass, jint deviceId) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return;
   }
-  engine->setRecordingDeviceId(deviceId);
+  audioEngine->setRecordingDeviceId(deviceId);
 }
 
 JNIEXPORT void JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPlaybackDeviceId(JNIEnv* env,
                                                                 jclass,
                                                                 jint deviceId) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return;
   }
 
-  engine->setPlaybackDeviceId(deviceId);
+  audioEngine->setPlaybackDeviceId(deviceId);
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPerformanceMode(
     JNIEnv* env, jclass type, jint performanceMode_) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
@@ -235,21 +280,21 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPerformanceMode(
       performanceMode = oboe::PerformanceMode::PowerSaving;
       break;
   }
-  engine->setPerformanceMode(performanceMode);
+  audioEngine->setPerformanceMode(performanceMode);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setVoiceID(JNIEnv* env, jclass type,
                                                        jint voiceID) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setVoiceID(voiceID);
+  processor->setVoiceID(voiceID);
   return JNI_TRUE;
 }
 
@@ -257,13 +302,13 @@ JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getVoiceName(JNIEnv* env,
                                                          jclass type,
                                                          jint voiceID) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return nullptr;
   }
-  std::u8string voiceName = engine->getVoiceName(voiceID);
+  std::u8string voiceName = processor->getVoiceName(voiceID);
   return env->NewStringUTF(reinterpret_cast<const char*>(voiceName.c_str()));
 }
 
@@ -271,13 +316,13 @@ JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getVoiceDescription(JNIEnv* env,
                                                                 jclass type,
                                                                 jint voiceID) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return nullptr;
   }
-  std::u8string voiceDescription = engine->getVoiceDescription(voiceID);
+  std::u8string voiceDescription = processor->getVoiceDescription(voiceID);
   return env->NewStringUTF(
       reinterpret_cast<const char*>(voiceDescription.c_str()));
 }
@@ -286,13 +331,13 @@ JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitPath(JNIEnv* env,
                                                                  jclass type,
                                                                  jint voiceID) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return nullptr;
   }
-  std::u8string voicePortraitPath = engine->getVoicePortraitPath(voiceID);
+  std::u8string voicePortraitPath = processor->getVoicePortraitPath(voiceID);
   return env->NewStringUTF(
       reinterpret_cast<const char*>(voicePortraitPath.c_str()));
 }
@@ -300,14 +345,14 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitPath(JNIEnv* env,
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getVoicePortraitDescription(
     JNIEnv* env, jclass type, jint voiceID) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return nullptr;
   }
   std::u8string voicePortraitDescription =
-      engine->getVoicePortraitDescription(voiceID);
+      processor->getVoicePortraitDescription(voiceID);
   return env->NewStringUTF(
       reinterpret_cast<const char*>(voicePortraitDescription.c_str()));
 }
@@ -316,28 +361,28 @@ JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPitchShift(JNIEnv* env,
                                                           jclass type,
                                                           jdouble pitchShift) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setPitchShift(pitchShift);
+  processor->setPitchShift(pitchShift);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setFormantShift(
     JNIEnv* env, jclass type, jdouble formantShift) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setFormantShift(formantShift);
+  processor->setFormantShift(formantShift);
   return JNI_TRUE;
 }
 
@@ -345,14 +390,14 @@ JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setInputGain(JNIEnv* env,
                                                          jclass type,
                                                          jdouble gain) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setInputGain(gain);
+  processor->setInputGain(gain);
   return JNI_TRUE;
 }
 
@@ -360,20 +405,20 @@ JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setOutputGain(JNIEnv* env,
                                                           jclass type,
                                                           jdouble gain) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setInputGain(gain);
+  processor->setOutputGain(gain);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_setAPI(
     JNIEnv* env, jclass type, jint apiType) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine "
         "before calling this method");
@@ -393,19 +438,19 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_setAPI(
       return JNI_FALSE;
   }
 
-  return engine->setAudioApi(audioApi) ? JNI_TRUE : JNI_FALSE;
+  return audioEngine->setAudioApi(audioApi) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_isAAudioRecommended(JNIEnv* env,
                                                                 jclass type) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine "
         "before calling this method");
     return JNI_FALSE;
   }
-  return engine->isAAudioRecommended() ? JNI_TRUE : JNI_FALSE;
+  return audioEngine->isAAudioRecommended() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL
@@ -419,41 +464,41 @@ JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setAsyncMode(JNIEnv* env,
                                                          jclass type,
                                                          jboolean isAsyncMode) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine "
         "before calling this method");
     return JNI_FALSE;
   }
-  engine->setAsyncMode(isAsyncMode);
+  audioEngine->setAsyncMode(isAsyncMode);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setIntonationIntensity(
     JNIEnv* env, jclass type, jdouble intensity) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setIntonationIntensity(intensity);
+  processor->setIntonationIntensity(intensity);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrection(
     JNIEnv* env, jclass type, jdouble correction) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setPitchCorrection(correction);
+  processor->setPitchCorrection(correction);
   return JNI_TRUE;
 }
 
@@ -461,79 +506,79 @@ JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionType(JNIEnv* env,
                                                                    jclass type,
                                                                    jint mode) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setPitchCorrectionMode(mode);
+  processor->setPitchCorrectionMode(mode);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setSourcePitchRange(
     JNIEnv* env, jclass type, jdouble minPitch, jdouble maxPitch) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
 
-  engine->setSourcePitchRange(minPitch, maxPitch);
+  processor->setSourcePitchRange(minPitch, maxPitch);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setVQNumNeighbors(
     JNIEnv* env, jclass type, jint numNeighbors) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
-  engine->setVQNumNeighbors(numNeighbors);
+  processor->setVQNumNeighbors(numNeighbors);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeight(
     JNIEnv* env, jclass type, jint target_spk, jdouble weight) {
-  if (!engine) {
+  if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
-  engine->setSpeakerMorphingWeight(target_spk, weight);
+  processor->setSpeakerMorphingWeight(target_spk, weight);
   return JNI_TRUE;
 }
 
 JNIEXPORT jint JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getSampleRate(JNIEnv* env,
                                                           jclass type) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return 0;
   }
-  return engine->getSampleRate();
+  return audioEngine->getSampleRate();
 }
 
 JNIEXPORT jint JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getFramesPerBurst(JNIEnv* env,
                                                               jclass type) {
-  if (!engine) {
+  if (!audioEngine) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return 0;
   }
-  return engine->getFramesPerBurst();
+  return audioEngine->getFramesPerBurst();
 }
 
 }  // extern "C"
