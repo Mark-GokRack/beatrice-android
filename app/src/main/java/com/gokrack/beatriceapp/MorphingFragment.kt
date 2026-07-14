@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.slider.Slider
+import java.util.Locale
 
 class MorphingFragment : Fragment() {
 
@@ -33,10 +34,14 @@ class MorphingFragment : Fragment() {
         adapter = MorphingAdapter()
         recyclerView.adapter = adapter
 
-        // morphingVoiceNames fires immediately with the current value (including after model load),
-        // and again each time a new model is loaded.
         viewModel.morphingVoiceNames.observe(viewLifecycleOwner) { names ->
-            val weights = viewModel.morphingWeights.value ?: FloatArray(256)
+            val weights = viewModel.morphingWeights.value ?: SettingsManager.loadMorphingWeights()
+            adapter.setData(names, weights)
+        }
+
+        viewModel.settingsResetTrigger.observe(viewLifecycleOwner) {
+            val names = viewModel.morphingVoiceNames.value ?: emptyList()
+            val weights = viewModel.morphingWeights.value ?: SettingsManager.loadMorphingWeights()
             adapter.setData(names, weights)
         }
     }
@@ -80,39 +85,36 @@ class MorphingFragment : Fragment() {
         }
 
         private fun bindFull(holder: ViewHolder, position: Int) {
-            val w = weights[position]
+            val weight = weights[position]
             holder.nameLabel.text = voiceNameList.getOrElse(position) { "Voice $position" }
-            holder.valueText.text = "%.2f".format(w)
+            holder.valueText.text = String.format(Locale.US, "%.2f", weight)
 
-            // Clear listener before setting value to prevent recursive callbacks during bind
             holder.slider.clearOnChangeListeners()
-            holder.slider.value = w
+            holder.slider.value = weight
 
             bindGrayout(holder, position)
 
             holder.slider.addOnChangeListener { _, value, fromUser ->
                 if (!fromUser) return@addOnChangeListener
-                val pos = holder.bindingAdapterPosition
-                if (pos == RecyclerView.NO_ID.toInt()) return@addOnChangeListener
-                applyWeight(pos, value, holder)
+                val adapterPosition = holder.bindingAdapterPosition
+                if (adapterPosition == RecyclerView.NO_POSITION) return@addOnChangeListener
+                applyWeight(adapterPosition, value, holder)
             }
 
             holder.decrementBtn.setOnClickListener {
-                val pos = holder.bindingAdapterPosition
-                if (pos == RecyclerView.NO_ID.toInt()) return@setOnClickListener
-                val newVal = (Math.round(weights[pos] * 100) - 1).coerceAtLeast(0) / 100f
-                // This will trigger the slider listener, which does not call applyWeight again because fromUser is false. So we call applyWeight explicitly here.
-                holder.slider.value = newVal 
-                applyWeight(pos, newVal, holder)
+                val adapterPosition = holder.bindingAdapterPosition
+                if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+                val newValue = (Math.round(weights[adapterPosition] * 100) - 1).coerceAtLeast(0) / 100f
+                holder.slider.value = newValue
+                applyWeight(adapterPosition, newValue, holder)
             }
 
             holder.incrementBtn.setOnClickListener {
-                val pos = holder.bindingAdapterPosition
-                if (pos == RecyclerView.NO_ID.toInt()) return@setOnClickListener
-                val newVal = (Math.round(weights[pos] * 100) + 1).coerceAtMost(100) / 100f
-                // This will trigger the slider listener, which does not call applyWeight again because fromUser is false. So we call applyWeight explicitly here.
-                holder.slider.value = newVal
-                applyWeight(pos, newVal, holder)
+                val adapterPosition = holder.bindingAdapterPosition
+                if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+                val newValue = (Math.round(weights[adapterPosition] * 100) + 1).coerceAtMost(100) / 100f
+                holder.slider.value = newValue
+                applyWeight(adapterPosition, newValue, holder)
             }
         }
 
@@ -125,14 +127,13 @@ class MorphingFragment : Fragment() {
             val isNowZero = rounded < 0.0001f
 
             weights[pos] = rounded
-            // Mutate ViewModel array in-place (no postValue — avoids observer loop)
             viewModel.morphingWeights.value?.set(pos, rounded)
             beatriceEngine.setSpeakerMorphingWeight(pos, rounded.toDouble())
+            SettingsManager.saveMorphingWeights(weights)
 
-            holder.valueText.text = "%.2f".format(rounded)
+            holder.valueText.text = String.format(Locale.US, "%.2f", rounded)
 
             if (wasZero != isNowZero) {
-                // Non-zero count changed: update grayout for all items after touch completes
                 viewModel.morphingDescriptionTrigger.postValue(Unit)
                 holder.slider.post {
                     for (i in 0 until voiceCount) {
@@ -143,8 +144,8 @@ class MorphingFragment : Fragment() {
         }
 
         private fun bindGrayout(holder: ViewHolder, position: Int) {
-            val w = weights[position]
-            val enabled = isSliderEnabled(position, w)
+            val weight = weights[position]
+            val enabled = isSliderEnabled(position, weight)
             val alpha = if (!enabled) 0.4f else 1.0f
 
             holder.nameLabel.alpha = alpha
@@ -152,21 +153,14 @@ class MorphingFragment : Fragment() {
             holder.slider.alpha = alpha
             holder.slider.isEnabled = enabled
 
-            // Decrement is enabled only when there is a value to decrease (regardless of limit)
-            val canDecrement = w > 0.0001f
+            val canDecrement = weight > 0.0001f
             holder.decrementBtn.isEnabled = canDecrement
             holder.decrementBtn.alpha = if (canDecrement) 1.0f else alpha
 
-            holder.incrementBtn.isEnabled = enabled && w < 0.9999f
+            holder.incrementBtn.isEnabled = enabled && weight < 0.9999f
             holder.incrementBtn.alpha = alpha
         }
 
-        /**
-         * A slider at [position] is interactive when:
-         * - Model version < 2 (no limit), OR
-         * - Its current weight is non-zero (can always adjust or zero it out), OR
-         * - The total non-zero count is still below 8 (free slot available)
-         */
         private fun isSliderEnabled(position: Int, currentWeight: Float): Boolean {
             if (beatriceEngine.getModelVersion() < 2) return true
             if (currentWeight > 0.0001f) return true
@@ -175,7 +169,6 @@ class MorphingFragment : Fragment() {
 
         private fun countNonZero(): Int = (0 until voiceCount).count { weights[it] > 0.001f }
 
-        /** Replace all data (called on model load or fragment recreation). */
         fun setData(names: List<String>, newWeights: FloatArray) {
             voiceNameList.clear()
             voiceNameList.addAll(names)

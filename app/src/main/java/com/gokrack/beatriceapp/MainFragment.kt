@@ -56,6 +56,7 @@ class MainFragment : Fragment() {
                 } ?: emptyList()
 
                 if (tomlFiles.isNotEmpty()) {
+                    (requireActivity() as MainActivity).resetUserAdjustableSettings()
                     copyModelFilesToExtDir(tomlFiles.first().uri)
                 } else {
                     Toast.makeText(
@@ -106,8 +107,7 @@ class MainFragment : Fragment() {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
-                beatriceEngine.setVoiceID(position)
-                updateVoiceDetails(position)
+                applyVoiceSelection(position)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
@@ -124,10 +124,15 @@ class MainFragment : Fragment() {
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             voiceSpinner.adapter = adapter
+            applyStoredVoiceSelection(names.size)
         }
 
         viewModel.morphingDescriptionTrigger.observe(viewLifecycleOwner) {
             updateVoiceDetails(voiceSpinner.selectedItemPosition)
+        }
+
+        viewModel.settingsResetTrigger.observe(viewLifecycleOwner) {
+            applyStoredVoiceSelection(voiceSpinner.adapter?.count ?: 0)
         }
 
         updateModelInfo()
@@ -175,8 +180,25 @@ class MainFragment : Fragment() {
             voiceNameList.add( "Voice Morphing Mode");
         }
         viewModel.voiceNames.postValue(voiceNameList)
-        beatriceEngine.setVoiceID(0)
-        updateVoiceDetails(0)
+    }
+
+    private fun applyStoredVoiceSelection(voiceCount: Int) {
+        if (voiceCount <= 0) {
+            applyVoiceSelection(0)
+            return
+        }
+        val savedVoiceId = SettingsManager.loadVoiceId().coerceIn(0, voiceCount - 1)
+        if (voiceSpinner.selectedItemPosition != savedVoiceId) {
+            voiceSpinner.setSelection(savedVoiceId)
+        } else {
+            applyVoiceSelection(savedVoiceId)
+        }
+    }
+
+    private fun applyVoiceSelection(position: Int) {
+        SettingsManager.saveVoiceId(position)
+        beatriceEngine.setVoiceID(position)
+        updateVoiceDetails(position)
     }
 
     private fun updateVoiceDetails(position: Int) {

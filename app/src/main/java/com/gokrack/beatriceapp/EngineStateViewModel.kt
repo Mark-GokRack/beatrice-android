@@ -17,6 +17,11 @@ class EngineStateViewModel : ViewModel() {
     val morphingWeights = MutableLiveData(FloatArray(256) { 0f })
     val morphingVoiceNames = MutableLiveData<List<String>>(emptyList())
     val morphingDescriptionTrigger = MutableLiveData<Unit>()
+    val settingsResetTrigger = MutableLiveData(0)
+
+    fun requestSettingsReset() {
+        settingsResetTrigger.value = (settingsResetTrigger.value ?: 0) + 1
+    }
 
     /**
      * Called on app start and model load. Enforces rules for morphing weights:
@@ -47,12 +52,6 @@ class EngineStateViewModel : ViewModel() {
                     nonZeroCount--
                 }
             }
-        }
-
-        // If all weights within valid voices are zero, default the first voice to 1.0
-        if (voiceCount > 0 && (0 until voiceCount).all { weights[it] == 0f }) {
-            weights[0] = 1.0f
-            beatriceEngine.setSpeakerMorphingWeight(0, 1.0)
         }
 
         morphingWeights.postValue(weights)
