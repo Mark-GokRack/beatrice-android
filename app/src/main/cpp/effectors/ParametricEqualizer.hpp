@@ -16,6 +16,16 @@ struct BiquadCoeffs {
   float a0, a1, a2;
 };
 
+enum class FilterType {
+  PEAKING,
+  LOWPASS,
+  HIGHPASS,
+  LOWSHELF,
+  HIGHSHELF,
+  NOTCH,
+  ALLPASS
+};
+
 /**
  * @brief A parametric equalizer using IIR biquad filters.
  *
@@ -37,9 +47,9 @@ class ParametricEqualizer : public AudioEffector {
    * @brief Constructor for ParametricEqualizer.
    *
    * @param sampleRate Sampling rate in Hz.
-   * @param numBands Number of EQ bands (default 3).
+   * @param numBands Number of EQ bands (default 5).
    */
-  ParametricEqualizer(float sampleRate = 44100.0f, int numBands = 3);
+  ParametricEqualizer(float sampleRate = 44100.0f, int numBands = 5);
 
   /**
    * @brief Processes a buffer of audio samples.
@@ -73,20 +83,86 @@ class ParametricEqualizer : public AudioEffector {
    * @param Q Quality factor.
    * @param gainDb Gain in dB.
    */
-  void setBand(int bandIndex, float centerFrequency, float Q, float gainDb);
+  void setBandAsPeaking(int bandIndex, float centerFrequency, float Q,
+                        float gainDb);
+
+  /**
+   * @brief Sets a band as a low-pass filter.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @param cutoffFrequency Cutoff frequency in Hz.
+   * @param Q Quality factor.
+   */
+  void setBandAsLowpass(int bandIndex, float cutoffFrequency, float Q);
+  /**
+   * @brief Sets a band as a high-pass filter.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @param cutoffFrequency Cutoff frequency in Hz.
+   * @param Q Quality factor.
+   */
+  void setBandAsHighpass(int bandIndex, float cutoffFrequency, float Q);
+
+  /**
+   * @brief Sets a band as a low-shelf filter.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @param cutoffFrequency Cutoff frequency in Hz.
+   * @param Q Quality factor.
+   * @param gainDb Gain in dB.
+   */
+  void setBandAsLowShelf(int bandIndex, float cutoffFrequency, float Q,
+                         float gainDb);
+
+  /**
+   * @brief Sets a band as a high-shelf filter.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @param cutoffFrequency Cutoff frequency in Hz.
+   * @param Q Quality factor.
+   * @param gainDb Gain in dB.
+   */
+  void setBandAsHighShelf(int bandIndex, float cutoffFrequency, float Q,
+                          float gainDb);
+
+  /**
+   * @brief Sets a band as a notch filter.
+   * @param bandIndex Index of the band (0-based).
+   * @param centerFrequency Center frequency in Hz.
+   * @param Q Quality factor.
+   */
+  void setBandAsNotch(int bandIndex, float centerFrequency, float Q);
+
+  /**
+   * @brief Sets a band as an all-pass filter.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @param centerFrequency Center frequency in Hz.
+   * @param Q Quality factor.
+   */
+  void setBandAsAllpass(int bandIndex, float centerFrequency, float Q);
 
   /**
    * @brief Gets the center frequency of a band.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @return Center frequency in Hz.
    */
   float getCenterFrequency(int bandIndex) const;
 
   /**
    * @brief Gets the Q factor of a band.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @return Q factor.
    */
   float getQ(int bandIndex) const;
 
   /**
    * @brief Gets the gain of a band in dB.
+   *
+   * @param bandIndex Index of the band (0-based).
+   * @return Gain in dB.
    */
   float getGain(int bandIndex) const;
 
@@ -123,6 +199,7 @@ class ParametricEqualizer : public AudioEffector {
   float m_sampleRate;
   int m_numBands;
   std::vector<Band> m_bands;
+  std::vector<FilterType> m_filterTypes;
 
   // Biquad filter states
   std::vector<std::vector<float>> m_z1;  // Delay line 1 per band
@@ -134,6 +211,14 @@ class ParametricEqualizer : public AudioEffector {
   // Helper functions
   void computePeakingCoeffs(int bandIndex, float centerFrequency, float Q,
                             float gainDb);
+  void computeLowpassCoeffs(int bandIndex, float cutoffFrequency, float Q);
+  void computeHighpassCoeffs(int bandIndex, float cutoffFrequency, float Q);
+  void computeLowShelfCoeffs(int bandIndex, float cutoffFrequency, float Q,
+                             float gainDb);
+  void computeHighShelfCoeffs(int bandIndex, float cutoffFrequency, float Q,
+                              float gainDb);
+  void computeNotchCoeffs(int bandIndex, float centerFrequency, float Q);
+  void computeAllpassCoeffs(int bandIndex, float centerFrequency, float Q);
   void computeAllCoeffs();
   float processBiquad(float input, int bandIndex);
   float clamp(float value, float minVal, float maxVal);
@@ -144,9 +229,10 @@ class ParametricEqualizer : public AudioEffector {
   mutable std::vector<float> m_cachedResponse;
   mutable std::vector<float> m_cachedFrequencies;
   mutable std::vector<Band> m_cachedBands;
+  mutable std::vector<FilterType> m_cachedFilterTypes;
   float m_cachedSampleRate;
   bool m_cacheValid;
-  bool m_isEnabled = true;  // Default to enabled
+  bool m_isEnabled = false;
 };
 
 #endif  // EFFECT_PARAMETRIC_EQUALIZER_HPP

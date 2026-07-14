@@ -16,26 +16,45 @@
 
 #include "beatriceAudioEngine.h"
 #include "beatriceProcessor.h"
+#include "effectors/Amplifier.hpp"
 #include "effectors/AudioEffectorChain.hpp"
+#include "effectors/Compressor.hpp"
+#include "effectors/Limiter.hpp"
+#include "effectors/NoiseGate.hpp"
+#include "effectors/ParametricEqualizer.hpp"
 
 static const int kOboeApiAAudio = 0;
 static const int kOboeApiOpenSLES = 1;
 
-static std::shared_ptr<BeatriceProcessor> processor = nullptr;
 static std::unique_ptr<BeatriceAudioEngine> audioEngine = nullptr;
 static std::shared_ptr<AudioEffectorChain> effectorChain = nullptr;
+static std::shared_ptr<BeatriceProcessor> processor = nullptr;
+static std::shared_ptr<Amplifier> amplifier = nullptr;
+static std::shared_ptr<Compressor> compressor = nullptr;
+static std::shared_ptr<Limiter> limiter = nullptr;
+static std::shared_ptr<NoiseGate> noiseGate = nullptr;
+static std::shared_ptr<ParametricEqualizer> preEqualizer = nullptr;
+static std::shared_ptr<ParametricEqualizer> postEqualizer = nullptr;
 
 namespace {
-
 bool isInitialized() {
   return processor != nullptr && audioEngine != nullptr &&
-         effectorChain != nullptr;
+         effectorChain != nullptr && amplifier != nullptr &&
+         compressor != nullptr && limiter != nullptr && noiseGate != nullptr &&
+         preEqualizer != nullptr && postEqualizer != nullptr;
 }
 
 void resetEffectorChain() {
   if (effectorChain) {
     effectorChain->clearEffectors();
+
+    effectorChain->addEffector(noiseGate);
+    effectorChain->addEffector(amplifier);
+    effectorChain->addEffector(compressor);
+    effectorChain->addEffector(preEqualizer);
     effectorChain->addEffector(processor);
+    effectorChain->addEffector(postEqualizer);
+    effectorChain->addEffector(limiter);
   }
 }
 
@@ -108,11 +127,23 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
     processor = std::make_shared<BeatriceProcessor>(toml_path);
     audioEngine = std::make_unique<BeatriceAudioEngine>();
     effectorChain = std::make_shared<AudioEffectorChain>();
+    amplifier = std::make_shared<Amplifier>(0.0f);
+    compressor = std::make_shared<Compressor>();
+    limiter = std::make_shared<Limiter>();
+    noiseGate = std::make_shared<NoiseGate>();
+    preEqualizer = std::make_shared<ParametricEqualizer>(44100.0f, 5);
+    postEqualizer = std::make_shared<ParametricEqualizer>(44100.0f, 5);
   } catch (const std::exception& e) {
     LOGE("Failed to create engine: %s", e.what());
     processor.reset();
     audioEngine.reset();
     effectorChain.reset();
+    amplifier.reset();
+    compressor.reset();
+    limiter.reset();
+    noiseGate.reset();
+    preEqualizer.reset();
+    postEqualizer.reset();
   }
 
   resetEffectorChain();

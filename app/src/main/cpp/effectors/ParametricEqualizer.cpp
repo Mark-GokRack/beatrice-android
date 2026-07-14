@@ -7,6 +7,7 @@ ParametricEqualizer::ParametricEqualizer(float sampleRate, int numBands)
     : m_sampleRate(sampleRate),
       m_numBands(std::min(std::max(numBands, 1), 8)),
       m_bands(m_numBands, {1000.0f, 1.0f, 0.0f}),
+      m_filterTypes(m_numBands, FilterType::PEAKING),
       m_z1(m_numBands, std::vector<float>(1, 0.0f)),
       m_z2(m_numBands, std::vector<float>(1, 0.0f)),
       m_coeffs(m_numBands, BiquadCoeffs{0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}),
@@ -18,6 +19,7 @@ void ParametricEqualizer::setNumBands(int numBands) {
   if (bands != m_numBands) {
     m_numBands = bands;
     m_bands.assign(m_numBands, {1000.0f, 1.0f, 0.0f});
+    m_filterTypes.assign(m_numBands, FilterType::PEAKING);
     m_z1.assign(m_numBands, std::vector<float>(1, 0.0f));
     m_z2.assign(m_numBands, std::vector<float>(1, 0.0f));
     m_coeffs.assign(m_numBands,
@@ -27,16 +29,103 @@ void ParametricEqualizer::setNumBands(int numBands) {
   }
 }
 
-void ParametricEqualizer::setBand(int bandIndex, float centerFrequency, float Q,
-                                  float gainDb) {
+void ParametricEqualizer::setBandAsPeaking(int bandIndex, float centerFrequency,
+                                           float Q, float gainDb) {
   if (bandIndex < 0 || bandIndex >= m_numBands) return;
 
   m_bands[bandIndex].centerFrequency = clamp(centerFrequency, 20.0f, 20000.0f);
   m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
   m_bands[bandIndex].gainDb = clamp(gainDb, -24.0f, 24.0f);
+  m_filterTypes[bandIndex] = FilterType::PEAKING;
 
   computePeakingCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
                        m_bands[bandIndex].Q, m_bands[bandIndex].gainDb);
+  m_cacheValid = false;
+}
+
+void ParametricEqualizer::setBandAsLowpass(int bandIndex, float cutoffFrequency,
+                                           float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+
+  m_bands[bandIndex].centerFrequency = clamp(cutoffFrequency, 20.0f, 20000.0f);
+  m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
+  m_bands[bandIndex].gainDb = 0.0f;
+  m_filterTypes[bandIndex] = FilterType::LOWPASS;
+
+  computeLowpassCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
+                       m_bands[bandIndex].Q);
+  m_cacheValid = false;
+}
+
+void ParametricEqualizer::setBandAsHighpass(int bandIndex,
+                                            float cutoffFrequency, float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+
+  m_bands[bandIndex].centerFrequency = clamp(cutoffFrequency, 20.0f, 20000.0f);
+  m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
+  m_bands[bandIndex].gainDb = 0.0f;
+  m_filterTypes[bandIndex] = FilterType::HIGHPASS;
+
+  computeHighpassCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
+                        m_bands[bandIndex].Q);
+  m_cacheValid = false;
+}
+
+void ParametricEqualizer::setBandAsLowShelf(int bandIndex,
+                                            float cutoffFrequency, float Q,
+                                            float gainDb) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+
+  m_bands[bandIndex].centerFrequency = clamp(cutoffFrequency, 20.0f, 20000.0f);
+  m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
+  m_bands[bandIndex].gainDb = clamp(gainDb, -24.0f, 24.0f);
+  m_filterTypes[bandIndex] = FilterType::LOWSHELF;
+
+  computeLowShelfCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
+                        m_bands[bandIndex].Q, m_bands[bandIndex].gainDb);
+  m_cacheValid = false;
+}
+
+void ParametricEqualizer::setBandAsHighShelf(int bandIndex,
+                                             float cutoffFrequency, float Q,
+                                             float gainDb) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+
+  m_bands[bandIndex].centerFrequency = clamp(cutoffFrequency, 20.0f, 20000.0f);
+  m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
+  m_bands[bandIndex].gainDb = clamp(gainDb, -24.0f, 24.0f);
+  m_filterTypes[bandIndex] = FilterType::HIGHSHELF;
+
+  computeHighShelfCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
+                         m_bands[bandIndex].Q, m_bands[bandIndex].gainDb);
+  m_cacheValid = false;
+}
+
+void ParametricEqualizer::setBandAsNotch(int bandIndex, float centerFrequency,
+                                         float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+
+  m_bands[bandIndex].centerFrequency = clamp(centerFrequency, 20.0f, 20000.0f);
+  m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
+  m_bands[bandIndex].gainDb = 0.0f;
+  m_filterTypes[bandIndex] = FilterType::NOTCH;
+
+  computeNotchCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
+                     m_bands[bandIndex].Q);
+  m_cacheValid = false;
+}
+
+void ParametricEqualizer::setBandAsAllpass(int bandIndex, float centerFrequency,
+                                           float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+
+  m_bands[bandIndex].centerFrequency = clamp(centerFrequency, 20.0f, 20000.0f);
+  m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
+  m_bands[bandIndex].gainDb = 0.0f;
+  m_filterTypes[bandIndex] = FilterType::ALLPASS;
+
+  computeAllpassCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
+                       m_bands[bandIndex].Q);
   m_cacheValid = false;
 }
 
@@ -92,8 +181,7 @@ void ParametricEqualizer::computePeakingCoeffs(int bandIndex,
   float cosOmega = std::cos(omega);
   float alpha = sinOmega / (2.0f * Q);
 
-  float gainLinear = std::pow(10.0f, gainDb / 20.0f);
-  float A = gainLinear;
+  float A = std::pow(10.0f, gainDb / 40.0f);
 
   float b0, b1, b2, a0, a1, a2;
 
@@ -114,10 +202,157 @@ void ParametricEqualizer::computePeakingCoeffs(int bandIndex,
   m_coeffs[bandIndex].a2 = a2 / a0;
 }
 
+void ParametricEqualizer::computeLowpassCoeffs(int bandIndex,
+                                               float cutoffFrequency, float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+  if (cutoffFrequency <= 0.0f || Q <= 0.0f || m_sampleRate <= 0.0f) return;
+
+  float omega = 2.0f * M_PI * cutoffFrequency / m_sampleRate;
+  float sinOmega = std::sin(omega);
+  float cosOmega = std::cos(omega);
+  float alpha = sinOmega / (2.0f * Q);
+  float b0 = (1.0f - cosOmega) * 0.5f;
+  float b1 = 1.0f - cosOmega;
+  float b2 = b0;
+  float a0 = 1.0f + alpha;
+  float a1 = -2.0f * cosOmega;
+  float a2 = 1.0f - alpha;
+
+  m_coeffs[bandIndex] = {b0 / a0, b1 / a0, b2 / a0, 1.0f, a1 / a0, a2 / a0};
+}
+
+void ParametricEqualizer::computeHighpassCoeffs(int bandIndex,
+                                                float cutoffFrequency,
+                                                float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+  if (cutoffFrequency <= 0.0f || Q <= 0.0f || m_sampleRate <= 0.0f) return;
+
+  float omega = 2.0f * M_PI * cutoffFrequency / m_sampleRate;
+  float sinOmega = std::sin(omega);
+  float cosOmega = std::cos(omega);
+  float alpha = sinOmega / (2.0f * Q);
+  float b0 = (1.0f + cosOmega) * 0.5f;
+  float b1 = -(1.0f + cosOmega);
+  float b2 = b0;
+  float a0 = 1.0f + alpha;
+  float a1 = -2.0f * cosOmega;
+  float a2 = 1.0f - alpha;
+
+  m_coeffs[bandIndex] = {b0 / a0, b1 / a0, b2 / a0, 1.0f, a1 / a0, a2 / a0};
+}
+
+void ParametricEqualizer::computeLowShelfCoeffs(int bandIndex,
+                                                float cutoffFrequency, float Q,
+                                                float gainDb) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+  if (cutoffFrequency <= 0.0f || Q <= 0.0f || m_sampleRate <= 0.0f) return;
+
+  float omega = 2.0f * M_PI * cutoffFrequency / m_sampleRate;
+  float sinOmega = std::sin(omega);
+  float cosOmega = std::cos(omega);
+  float A = std::pow(10.0f, gainDb / 40.0f);
+  float alpha = sinOmega / (2.0f * Q);
+  float beta = 2.0f * std::sqrt(A) * alpha;
+  float aPlusOne = A + 1.0f;
+  float aMinusOne = A - 1.0f;
+  float b0 = A * (aPlusOne - aMinusOne * cosOmega + beta);
+  float b1 = 2.0f * A * (aMinusOne - aPlusOne * cosOmega);
+  float b2 = A * (aPlusOne - aMinusOne * cosOmega - beta);
+  float a0 = aPlusOne + aMinusOne * cosOmega + beta;
+  float a1 = -2.0f * (aMinusOne + aPlusOne * cosOmega);
+  float a2 = aPlusOne + aMinusOne * cosOmega - beta;
+
+  m_coeffs[bandIndex] = {b0 / a0, b1 / a0, b2 / a0, 1.0f, a1 / a0, a2 / a0};
+}
+
+void ParametricEqualizer::computeHighShelfCoeffs(int bandIndex,
+                                                 float cutoffFrequency, float Q,
+                                                 float gainDb) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+  if (cutoffFrequency <= 0.0f || Q <= 0.0f || m_sampleRate <= 0.0f) return;
+
+  float omega = 2.0f * M_PI * cutoffFrequency / m_sampleRate;
+  float sinOmega = std::sin(omega);
+  float cosOmega = std::cos(omega);
+  float A = std::pow(10.0f, gainDb / 40.0f);
+  float alpha = sinOmega / (2.0f * Q);
+  float beta = 2.0f * std::sqrt(A) * alpha;
+  float aPlusOne = A + 1.0f;
+  float aMinusOne = A - 1.0f;
+  float b0 = A * (aPlusOne + aMinusOne * cosOmega + beta);
+  float b1 = -2.0f * A * (aMinusOne + aPlusOne * cosOmega);
+  float b2 = A * (aPlusOne + aMinusOne * cosOmega - beta);
+  float a0 = aPlusOne - aMinusOne * cosOmega + beta;
+  float a1 = 2.0f * (aMinusOne - aPlusOne * cosOmega);
+  float a2 = aPlusOne - aMinusOne * cosOmega - beta;
+
+  m_coeffs[bandIndex] = {b0 / a0, b1 / a0, b2 / a0, 1.0f, a1 / a0, a2 / a0};
+}
+
+void ParametricEqualizer::computeNotchCoeffs(int bandIndex,
+                                             float centerFrequency, float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+  if (centerFrequency <= 0.0f || Q <= 0.0f || m_sampleRate <= 0.0f) return;
+
+  float omega = 2.0f * M_PI * centerFrequency / m_sampleRate;
+  float sinOmega = std::sin(omega);
+  float cosOmega = std::cos(omega);
+  float alpha = sinOmega / (2.0f * Q);
+  float b0 = 1.0f;
+  float b1 = -2.0f * cosOmega;
+  float b2 = 1.0f;
+  float a0 = 1.0f + alpha;
+  float a1 = b1;
+  float a2 = 1.0f - alpha;
+
+  m_coeffs[bandIndex] = {b0 / a0, b1 / a0, b2 / a0, 1.0f, a1 / a0, a2 / a0};
+}
+
+void ParametricEqualizer::computeAllpassCoeffs(int bandIndex,
+                                               float centerFrequency, float Q) {
+  if (bandIndex < 0 || bandIndex >= m_numBands) return;
+  if (centerFrequency <= 0.0f || Q <= 0.0f || m_sampleRate <= 0.0f) return;
+
+  float omega = 2.0f * M_PI * centerFrequency / m_sampleRate;
+  float sinOmega = std::sin(omega);
+  float cosOmega = std::cos(omega);
+  float alpha = sinOmega / (2.0f * Q);
+  float b0 = 1.0f - alpha;
+  float b1 = -2.0f * cosOmega;
+  float b2 = 1.0f + alpha;
+  float a0 = 1.0f + alpha;
+  float a1 = b1;
+  float a2 = 1.0f - alpha;
+
+  m_coeffs[bandIndex] = {b0 / a0, b1 / a0, b2 / a0, 1.0f, a1 / a0, a2 / a0};
+}
+
 void ParametricEqualizer::computeAllCoeffs() {
   for (int i = 0; i < m_numBands; ++i) {
-    computePeakingCoeffs(i, m_bands[i].centerFrequency, m_bands[i].Q,
-                         m_bands[i].gainDb);
+    const Band& band = m_bands[i];
+    switch (m_filterTypes[i]) {
+      case FilterType::PEAKING:
+        computePeakingCoeffs(i, band.centerFrequency, band.Q, band.gainDb);
+        break;
+      case FilterType::LOWPASS:
+        computeLowpassCoeffs(i, band.centerFrequency, band.Q);
+        break;
+      case FilterType::HIGHPASS:
+        computeHighpassCoeffs(i, band.centerFrequency, band.Q);
+        break;
+      case FilterType::LOWSHELF:
+        computeLowShelfCoeffs(i, band.centerFrequency, band.Q, band.gainDb);
+        break;
+      case FilterType::HIGHSHELF:
+        computeHighShelfCoeffs(i, band.centerFrequency, band.Q, band.gainDb);
+        break;
+      case FilterType::NOTCH:
+        computeNotchCoeffs(i, band.centerFrequency, band.Q);
+        break;
+      case FilterType::ALLPASS:
+        computeAllpassCoeffs(i, band.centerFrequency, band.Q);
+        break;
+    }
   }
   m_cacheValid = true;
 }
@@ -170,6 +405,9 @@ bool ParametricEqualizer::isCacheValid(
   if (m_cachedFrequencies.size() != frequencies.size()) return false;
   if (m_cachedResponse.size() != frequencies.size()) return false;
   if (m_cachedBands.size() != static_cast<size_t>(m_numBands)) return false;
+  if (m_cachedFilterTypes.size() != static_cast<size_t>(m_numBands)) {
+    return false;
+  }
 
   // Check if frequencies match
   for (size_t i = 0; i < frequencies.size(); ++i) {
@@ -183,7 +421,8 @@ bool ParametricEqualizer::isCacheValid(
   for (int i = 0; i < m_numBands; ++i) {
     if (m_bands[i].centerFrequency != m_cachedBands[i].centerFrequency ||
         m_bands[i].Q != m_cachedBands[i].Q ||
-        m_bands[i].gainDb != m_cachedBands[i].gainDb) {
+        m_bands[i].gainDb != m_cachedBands[i].gainDb ||
+        m_filterTypes[i] != m_cachedFilterTypes[i]) {
       return false;
     }
   }
@@ -220,6 +459,7 @@ std::vector<float> ParametricEqualizer::computeFrequencyResponse(
   // Update cache
   m_cachedFrequencies = frequencies;
   m_cachedBands = m_bands;
+  m_cachedFilterTypes = m_filterTypes;
   m_cachedSampleRate = m_sampleRate;
   m_cachedResponse = response;
   m_cacheValid = true;

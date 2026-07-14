@@ -17,6 +17,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         beatriceProcessor.cpp
         beatriceAudioEngine.cpp
 
+        effectors/Amplifier.cpp
         effectors/DynamicProcessor.cpp
         effectors/Compressor.cpp
         effectors/Limiter.cpp

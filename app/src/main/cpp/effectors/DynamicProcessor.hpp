@@ -1,8 +1,6 @@
 #ifndef EFFECT_DYNAMIC_PROCESSOR_HPP
 #define EFFECT_DYNAMIC_PROCESSOR_HPP
 
-#include <cmath>
-
 #include "AudioEffector.hpp"
 
 /**
@@ -68,7 +66,7 @@ class DynamicProcessor : public AudioEffector {
   // Internal state
   float m_envelope;
 
-  bool m_isEnabled = true;
+  bool m_isEnabled = false;
 
   /**
    * @brief Compute the gain reduction for the current envelope level.

@@ -1,5 +1,7 @@
 #include "DynamicProcessor.hpp"
 
+#include <cmath>
+
 DynamicProcessor::DynamicProcessor(float threshold, float attack, float release,
                                    float sampleRate)
     : m_thresholdDb(threshold),
