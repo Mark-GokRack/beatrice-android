@@ -30,10 +30,12 @@ class Compressor : public DynamicProcessor {
    *
    * Applies compression followed by makeup gain.
    *
-   * @param buffer Pointer to the audio buffer.
+   * @param inputBuffer Pointer to the input audio buffer.
+   * @param outputBuffer Pointer to the output audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
-  void process(float* buffer, int numSamples) override;
+  void process(const float* inputBuffer, float* outputBuffer,
+               int numSamples) override;
 
   // Setters for parameters
   void setRatio(float ratio);

@@ -1,7 +1,6 @@
 #ifndef BEATRICE_AUDIO_ENGINE_H
 #define BEATRICE_AUDIO_ENGINE_H
 
-#include <common/processor_core.h>
 #include <oboe/LatencyTuner.h>
 #include <oboe/Oboe.h>
 
@@ -9,12 +8,10 @@
 #include <memory>
 
 #include "beatriceFullDuplexPass.h"
+#include "effectors/AudioEffector.hpp"
 
 class BeatriceAudioEngine : public oboe::AudioStreamCallback {
  public:
-  using ProcessorFactory = std::function<
-      std::shared_ptr<beatrice::common::ProcessorCoreBase>(int32_t sampleRate)>;
-
   void setPlaybackDeviceId(int32_t deviceId);
   void setRecordingDeviceId(int32_t deviceId);
   void setPerformanceMode(oboe::PerformanceMode mode);
@@ -22,7 +19,8 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
 
   bool isAAudioRecommended() const;
   bool setAudioApi(oboe::AudioApi api);
-  bool setEffectOn(bool isOn, const ProcessorFactory& processorFactory);
+  bool setEffectOn(bool isOn,
+                   std::shared_ptr<AudioEffector> audioEffector = nullptr);
 
   int32_t getSampleRate() const;
   int32_t getFramesPerBurst() const;
@@ -35,7 +33,8 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
   void onErrorAfterClose(oboe::AudioStream* oboeStream,
                          oboe::Result error) override;
 
-  oboe::Result openStreams(const ProcessorFactory& processorFactory);
+  oboe::Result openStreams(
+      std::shared_ptr<AudioEffector> audioEffector = nullptr);
   void closeStreams();
 
  private:
@@ -63,8 +62,7 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
   std::shared_ptr<oboe::AudioStream> mRecordingStream;
   std::shared_ptr<oboe::AudioStream> mPlayStream;
   std::shared_ptr<oboe::LatencyTuner> mLatencyTuner;
-  ProcessorFactory mProcessorFactory;
-  std::shared_ptr<beatrice::common::ProcessorCoreBase> mProcessorCore;
+  std::shared_ptr<AudioEffector> mAudioEffector;
 };
 
 #endif  // BEATRICE_AUDIO_ENGINE_H

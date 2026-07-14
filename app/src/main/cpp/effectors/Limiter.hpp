@@ -27,18 +27,17 @@ class Limiter : public DynamicProcessor {
   /**
    * @brief Processes a buffer of audio samples.
    *
-   * @param buffer Pointer to the audio buffer.
+   * @param inputBuffer Pointer to the input audio buffer.
+   * @param outputBuffer Pointer to the output audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
-  void process(float* buffer, int numSamples) override;
+  void process(const float* inputBuffer, float* outputBuffer,
+               int numSamples) override;
 
  private:
   // Override from DynamicProcessor
   float computeGain(float envDb, float input, float attackCoef,
                     float releaseCoef) override;
-
-  // Limiter uses a very high ratio (effectively infinite)
-  static constexpr float kLimiterRatio = 20.0f;
 };
 
 #endif  // EFFECT_LIMITER_HPP

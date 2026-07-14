@@ -44,10 +44,19 @@ class ParametricEqualizer : public AudioEffector {
   /**
    * @brief Processes a buffer of audio samples.
    *
-   * @param buffer Pointer to the audio buffer (processed in-place).
+   * @param inputBuffer Pointer to the input audio buffer.
+   * @param outputBuffer Pointer to the output audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
-  void process(float* buffer, int numSamples);
+  void process(const float* inputBuffer, float* outputBuffer,
+               int numSamples) override;
+
+  /**
+   * @brief Sets the sample rate.
+   *
+   * @param sampleRate Sampling rate in Hz.
+   */
+  void setSampleRate(float sampleRate) override;
 
   /**
    * @brief Sets the number of EQ bands.
@@ -82,13 +91,6 @@ class ParametricEqualizer : public AudioEffector {
   float getGain(int bandIndex) const;
 
   /**
-   * @brief Sets the sample rate.
-   *
-   * @param sampleRate Sampling rate in Hz.
-   */
-  void setSampleRate(float sampleRate);
-
-  /**
    * @brief Computes the frequency response at specified points.
    *
    * Uses the biquad coefficients to calculate the magnitude response
@@ -99,7 +101,22 @@ class ParametricEqualizer : public AudioEffector {
    * @return Vector of magnitude responses in dB.
    */
   std::vector<float> computeFrequencyResponse(
-      const std::vector<float>& frequencies) const;
+      const std::vector<float>& frequencies);
+
+  /**
+   * @brief Enables or disables the equalizer.
+   *
+   * @param enabled True to enable, false to bypass.
+   */
+
+  void setEnabled(bool enabled) override { m_isEnabled = enabled; }
+
+  /**
+   * @brief Checks if the equalizer is enabled.
+   *
+   * @return True if enabled, false if bypassed.
+   */
+  bool isEnabled() const override { return m_isEnabled; }
 
  private:
   // Parameters
@@ -129,6 +146,7 @@ class ParametricEqualizer : public AudioEffector {
   mutable std::vector<Band> m_cachedBands;
   float m_cachedSampleRate;
   bool m_cacheValid;
+  bool m_isEnabled = true;  // Default to enabled
 };
 
 #endif  // EFFECT_PARAMETRIC_EQUALIZER_HPP

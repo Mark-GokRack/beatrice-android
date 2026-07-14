@@ -9,8 +9,9 @@
 #include <string>
 
 #include "beatriceParameters.h"
+#include "effectors/AudioEffector.hpp"
 
-class BeatriceProcessor {
+class BeatriceProcessor : public AudioEffector {
  public:
   explicit BeatriceProcessor(const std::string& toml_path);
 
@@ -43,6 +44,13 @@ class BeatriceProcessor {
   void setParameters(const BeatriceParameters& params);
   size_t getVoiceCount() const;
 
+  // AudioEffector interface
+  void process(const float* inputBuffer, float* outputBuffer,
+               int numSamples) override;
+  void setSampleRate(float sampleRate) override;
+  void setEnabled(bool enabled) override;
+  bool isEnabled() const override;
+
  private:
   void applyParametersToCore();
   bool isValidVoiceId(int32_t voiceID) const;
@@ -52,6 +60,7 @@ class BeatriceProcessor {
   std::filesystem::path mBeatriceModelPath;
   BeatriceParameters mBeatriceParameters;
   size_t mBeatriceVoiceCount = 0;
+  bool mIsEnabled = true;
 };
 
 #endif  // BEATRICE_PROCESSOR_H

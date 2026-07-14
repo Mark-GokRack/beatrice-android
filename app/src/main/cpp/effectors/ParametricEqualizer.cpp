@@ -7,9 +7,9 @@ ParametricEqualizer::ParametricEqualizer(float sampleRate, int numBands)
     : m_sampleRate(sampleRate),
       m_numBands(std::min(std::max(numBands, 1), 8)),
       m_bands(m_numBands, {1000.0f, 1.0f, 0.0f}),
-      m_z1(m_numBands, std::vector<float>(0.0f)),
-      m_z2(m_numBands, std::vector<float>(0.0f)),
-      m_coeffs(m_numBands),
+      m_z1(m_numBands, std::vector<float>(1, 0.0f)),
+      m_z2(m_numBands, std::vector<float>(1, 0.0f)),
+      m_coeffs(m_numBands, BiquadCoeffs{0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}),
       m_cachedSampleRate(sampleRate),
       m_cacheValid(false) {}
 
@@ -18,9 +18,10 @@ void ParametricEqualizer::setNumBands(int numBands) {
   if (bands != m_numBands) {
     m_numBands = bands;
     m_bands.assign(m_numBands, {1000.0f, 1.0f, 0.0f});
-    m_z1.assign(m_numBands, std::vector<float>(0.0f));
-    m_z2.assign(m_numBands, std::vector<float>(0.0f));
-    m_coeffs.assign(m_numBands);
+    m_z1.assign(m_numBands, std::vector<float>(1, 0.0f));
+    m_z2.assign(m_numBands, std::vector<float>(1, 0.0f));
+    m_coeffs.assign(m_numBands,
+                    BiquadCoeffs{0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f});
     computeAllCoeffs();
     m_cacheValid = false;
   }
@@ -60,15 +61,23 @@ void ParametricEqualizer::setSampleRate(float sampleRate) {
   m_cacheValid = false;
 }
 
-void ParametricEqualizer::process(float* buffer, int numSamples) {
-  // Process through all bands in cascade
-  for (int bandIndex = 0; bandIndex < m_numBands; ++bandIndex) {
-    float* currentBuffer = buffer;
-
-    for (int i = 0; i < numSamples; ++i) {
-      float output = processBiquad(currentBuffer[i], bandIndex);
-      buffer[i] = output;
+void ParametricEqualizer::process(const float* inputBuffer, float* outputBuffer,
+                                  int numSamples) {
+  if (m_isEnabled) {
+    // Process through all bands in cascade
+    const float* currentInput = inputBuffer;
+    float* currentOutput = outputBuffer;
+    for (int bandIndex = 0; bandIndex < m_numBands; ++bandIndex) {
+      for (int i = 0; i < numSamples; ++i) {
+        float output = processBiquad(currentInput[i], bandIndex);
+        currentOutput[i] = output;
+      }
+      currentInput =
+          currentOutput;  // Output of this band becomes input for the next
     }
+  } else if (inputBuffer != outputBuffer) {
+    // Bypass: copy input to output
+    std::copy(inputBuffer, inputBuffer + numSamples, outputBuffer);
   }
 }
 
@@ -110,6 +119,7 @@ void ParametricEqualizer::computeAllCoeffs() {
     computePeakingCoeffs(i, m_bands[i].centerFrequency, m_bands[i].Q,
                          m_bands[i].gainDb);
   }
+  m_cacheValid = true;
 }
 
 float ParametricEqualizer::processBiquad(float input, int bandIndex) {
@@ -156,7 +166,10 @@ float ParametricEqualizer::computeBiquadMagnitude(int bandIndex,
 
 bool ParametricEqualizer::isCacheValid(
     const std::vector<float>& frequencies) const {
+  if (!m_cacheValid) return false;
   if (m_cachedFrequencies.size() != frequencies.size()) return false;
+  if (m_cachedResponse.size() != frequencies.size()) return false;
+  if (m_cachedBands.size() != static_cast<size_t>(m_numBands)) return false;
 
   // Check if frequencies match
   for (size_t i = 0; i < frequencies.size(); ++i) {
@@ -179,7 +192,7 @@ bool ParametricEqualizer::isCacheValid(
 }
 
 std::vector<float> ParametricEqualizer::computeFrequencyResponse(
-    const std::vector<float>& frequencies) const {
+    const std::vector<float>& frequencies) {
   // Check cache
   if (isCacheValid(frequencies)) {
     return m_cachedResponse;

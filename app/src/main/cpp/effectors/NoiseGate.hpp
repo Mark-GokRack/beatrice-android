@@ -32,12 +32,19 @@ class NoiseGate : public DynamicProcessor {
    *
    * Applies noise gating with gain smoothing (unique to NoiseGate).
    *
-   * @param buffer Pointer to the audio buffer.
+   * @param inputBuffer Pointer to the input audio buffer.
+   * @param outputBuffer Pointer to the output audio buffer.
    * @param numSamples Number of samples in the buffer.
    */
-  void process(float* buffer, int numSamples) override;
+  void process(const float* inputBuffer, float* outputBuffer,
+               int numSamples) override;
 
-  // Setters for parameters
+  /**
+   * @brief Setters for parameters.
+   *
+   * @param range Maximum attenuation in dB when gate is closed.
+   */
+
   void setRange(float range);
 
  protected:

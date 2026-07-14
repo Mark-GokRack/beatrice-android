@@ -34,11 +34,11 @@ bool BeatriceAudioEngine::setAudioApi(oboe::AudioApi api) {
 }
 
 bool BeatriceAudioEngine::setEffectOn(
-    bool isOn, const ProcessorFactory& processorFactory) {
+    bool isOn, std::shared_ptr<AudioEffector> audioEffector) {
   bool success = true;
   if (isOn != mIsEffectOn) {
     if (isOn) {
-      success = openStreams(processorFactory) == oboe::Result::OK;
+      success = openStreams(audioEffector) == oboe::Result::OK;
       if (success) {
         mIsEffectOn = true;
       }
@@ -51,8 +51,8 @@ bool BeatriceAudioEngine::setEffectOn(
 }
 
 oboe::Result BeatriceAudioEngine::openStreams(
-    const ProcessorFactory& processorFactory) {
-  mProcessorFactory = processorFactory;
+    std::shared_ptr<AudioEffector> audioEffector) {
+  mAudioEffector = audioEffector;
 
   oboe::AudioStreamBuilder inBuilder, outBuilder;
 
@@ -107,23 +107,13 @@ oboe::Result BeatriceAudioEngine::openStreams(
     }
   }
 
-  try {
-    mProcessorCore = mProcessorFactory ? mProcessorFactory(mSampleRate) : nullptr;
-  } catch (const std::exception& e) {
-    LOGE("Failed to create processor core: %s", e.what());
-    closeStreams();
-    return oboe::Result::ErrorInternal;
-  }
-
-  if (!mProcessorCore) {
-    LOGE("Processor factory returned null");
-    closeStreams();
-    return oboe::Result::ErrorInternal;
+  if (mAudioEffector) {
+    mAudioEffector->setSampleRate(mSampleRate);
   }
 
   mLatencyTuner = std::make_shared<oboe::LatencyTuner>(*mPlayStream);
   mDuplexStream = std::make_unique<BeatriceFullDuplexPass>(
-      mProcessorCore, mLatencyTuner, mIsAsyncMode, 480, 2);
+      mAudioEffector, mLatencyTuner, mIsAsyncMode, 480, 2);
   mDuplexStream->setSharedInputStream(mRecordingStream);
   mDuplexStream->setSharedOutputStream(mPlayStream);
   mDuplexStream->start();
@@ -140,7 +130,6 @@ void BeatriceAudioEngine::closeStreams() {
   closeStream(mRecordingStream);
   mDuplexStream.reset();
   mLatencyTuner.reset();
-  mProcessorCore.reset();
 }
 
 oboe::AudioStreamBuilder* BeatriceAudioEngine::setupRecordingStreamParameters(
@@ -229,9 +218,9 @@ void BeatriceAudioEngine::onErrorAfterClose(oboe::AudioStream* oboeStream,
 
   closeStreams();
 
-  if (error == oboe::Result::ErrorDisconnected && mProcessorFactory) {
+  if (error == oboe::Result::ErrorDisconnected && mAudioEffector) {
     LOGI("Restarting AudioStream");
-    openStreams(mProcessorFactory);
+    openStreams(mAudioEffector);
   }
 }
 

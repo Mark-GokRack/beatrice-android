@@ -10,9 +10,10 @@ DynamicProcessor::DynamicProcessor(float threshold, float attack, float release,
       m_attackCoef(std::exp(-1.0f / (sampleRate * attack / 1000.0f))),
       m_releaseCoef(std::exp(-1.0f / (sampleRate * release / 1000.0f))) {}
 
-void DynamicProcessor::process(float* buffer, int numSamples) {
+void DynamicProcessor::process(const float* inputBuffer, float* outputBuffer,
+                               int numSamples) {
   for (int i = 0; i < numSamples; ++i) {
-    float input = std::abs(buffer[i]);
+    float input = std::abs(inputBuffer[i]);
 
     // Envelope follower (Peak detection)
     if (input > m_envelope) {
@@ -22,12 +23,19 @@ void DynamicProcessor::process(float* buffer, int numSamples) {
     }
 
     // Compute gain reduction via derived class
-    float gainDb = computeGain(m_envelope, input, m_attackCoef, m_releaseCoef);
+    float gainDb =
+        computeGain(linearToDb(m_envelope), input, m_attackCoef, m_releaseCoef);
 
     // Apply gain
     float gainLinear = dbToLinear(gainDb);
-    buffer[i] *= gainLinear;
+    outputBuffer[i] = inputBuffer[i] * gainLinear;
   }
+}
+
+void DynamicProcessor::setSampleRate(float sampleRate) {
+  m_sampleRate = sampleRate;
+  m_attackCoef = std::exp(-1.0f / (m_sampleRate * m_attackMs / 1000.0f));
+  m_releaseCoef = std::exp(-1.0f / (m_sampleRate * m_releaseMs / 1000.0f));
 }
 
 void DynamicProcessor::setThreshold(float threshold) {

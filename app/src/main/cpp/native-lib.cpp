@@ -16,22 +16,27 @@
 
 #include "beatriceAudioEngine.h"
 #include "beatriceProcessor.h"
+#include "effectors/AudioEffectorChain.hpp"
 
 static const int kOboeApiAAudio = 0;
 static const int kOboeApiOpenSLES = 1;
 
-using ProcessorFactory = BeatriceAudioEngine::ProcessorFactory;
-
-static std::unique_ptr<BeatriceProcessor> processor = nullptr;
+static std::shared_ptr<BeatriceProcessor> processor = nullptr;
 static std::unique_ptr<BeatriceAudioEngine> audioEngine = nullptr;
+static std::shared_ptr<AudioEffectorChain> effectorChain = nullptr;
 
 namespace {
 
-bool isInitialized() { return processor != nullptr && audioEngine != nullptr; }
+bool isInitialized() {
+  return processor != nullptr && audioEngine != nullptr &&
+         effectorChain != nullptr;
+}
 
-std::shared_ptr<beatrice::common::ProcessorCoreBase> createProcessorCore(
-    int32_t sampleRate) {
-  return processor ? processor->createProcessorCore(sampleRate) : nullptr;
+void resetEffectorChain() {
+  if (effectorChain) {
+    effectorChain->clearEffectors();
+    effectorChain->addEffector(processor);
+  }
 }
 
 void copy_from_asset(AAssetManager* assetManager, std::string filename_in_asst,
@@ -100,13 +105,17 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
   }
 
   try {
-    processor = std::make_unique<BeatriceProcessor>(toml_path);
+    processor = std::make_shared<BeatriceProcessor>(toml_path);
     audioEngine = std::make_unique<BeatriceAudioEngine>();
+    effectorChain = std::make_shared<AudioEffectorChain>();
   } catch (const std::exception& e) {
     LOGE("Failed to create engine: %s", e.what());
     processor.reset();
     audioEngine.reset();
+    effectorChain.reset();
   }
+
+  resetEffectorChain();
 
   env->ReleaseStringUTFChars(static_cast<jstring>(dir_name_), c_dir_name);
   return isInitialized() ? JNI_TRUE : JNI_FALSE;
@@ -124,6 +133,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_delete(JNIEnv* env, jclass) {
   processor->resetProcessorCore();
   audioEngine.reset();
   processor.reset();
+  effectorChain.reset();
 }
 
 JNIEXPORT jboolean JNICALL
@@ -141,6 +151,9 @@ Java_com_gokrack_beatriceapp_beatriceEngine_readModel(JNIEnv* env, jclass,
     auto nextProcessor = std::make_unique<BeatriceProcessor>(model_path);
     nextProcessor->setParameters(params);
     processor = std::move(nextProcessor);
+
+    resetEffectorChain();
+
   } catch (const std::exception& e) {
     LOGE("Failed to read model: %s", e.what());
     env->ReleaseStringUTFChars(static_cast<jstring>(model_path_), c_model_path);
@@ -153,7 +166,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_readModel(JNIEnv* env, jclass,
 
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelName(JNIEnv* env, jclass) {
-  jstring model_name = jstring("<<empty>>");
+  jstring model_name = env->NewStringUTF("<<empty>>");
   if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -175,7 +188,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_getModelName(JNIEnv* env, jclass) {
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
                                                                 jclass) {
-  jstring model_description = jstring("<<empty>>");
+  jstring model_description = env->NewStringUTF("<<empty>>");
   if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
@@ -219,17 +232,12 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setEffectOn(JNIEnv* env, jclass,
   }
 
   if (isEffectOn) {
-    return audioEngine->setEffectOn(true,
-                                    [](int32_t sampleRate) {
-                                      return createProcessorCore(sampleRate);
-                                    })
-               ? JNI_TRUE
-               : JNI_FALSE;
+    return audioEngine->setEffectOn(true, effectorChain) ? JNI_TRUE : JNI_FALSE;
+  } else {
+    const bool success = audioEngine->setEffectOn(false);
+    processor->resetProcessorCore();
+    return success ? JNI_TRUE : JNI_FALSE;
   }
-
-  const bool success = audioEngine->setEffectOn(false, ProcessorFactory{});
-  processor->resetProcessorCore();
-  return success ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL
@@ -503,7 +511,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrection(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionType(JNIEnv* env,
+Java_com_gokrack_beatriceapp_beatriceEngine_setPitchCorrectionMode(JNIEnv* env,
                                                                    jclass type,
                                                                    jint mode) {
   if (!processor) {

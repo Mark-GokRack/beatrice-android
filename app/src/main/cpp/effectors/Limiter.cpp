@@ -1,24 +1,40 @@
 #include "Limiter.hpp"
 
+#include <algorithm>
+
 Limiter::Limiter(float threshold, float attack, float release, float sampleRate)
     : DynamicProcessor(threshold, attack, release, sampleRate) {}
 
-void Limiter::process(float* buffer, int numSamples) {
-  // Delegate all processing to base class (envelope follower + gain)
-  DynamicProcessor::process(buffer, numSamples);
+void Limiter::process(const float* inputBuffer, float* outputBuffer,
+                      int numSamples) {
+  if (m_isEnabled) {
+    // Delegate all processing to base class (envelope follower + gain)
+    DynamicProcessor::process(inputBuffer, outputBuffer, numSamples);
+
+    // Enforce hard output ceiling so peaks do not exceed the limiter threshold.
+    const float thresholdLinear = dbToLinear(m_thresholdDb);
+    for (int i = 0; i < numSamples; ++i) {
+      outputBuffer[i] =
+          std::clamp(outputBuffer[i], -thresholdLinear, thresholdLinear);
+    }
+  } else if (inputBuffer != outputBuffer) {
+    // Bypass: copy input to output
+    std::copy(inputBuffer, inputBuffer + numSamples, outputBuffer);
+  }
 }
 
 float Limiter::computeGain(float envDb, float input, float attackCoef,
                            float releaseCoef) {
-  (void)input;
   (void)attackCoef;
   (void)releaseCoef;
 
-  float gainDb = 0.0f;
+  // Use the larger of envelope and current input peak for faster limiting.
+  const float detectorDb = std::max(envDb, linearToDb(input));
 
-  if (envDb > m_thresholdDb) {
-    // Very high ratio for limiter (effectively infinity:1)
-    gainDb = (m_thresholdDb - envDb) * (1.0f - 1.0f / kLimiterRatio);
+  float gainDb = 0.0f;
+  if (detectorDb > m_thresholdDb) {
+    // Infinite-ratio style limiting above threshold.
+    gainDb = m_thresholdDb - detectorDb;
   }
 
   return gainDb;

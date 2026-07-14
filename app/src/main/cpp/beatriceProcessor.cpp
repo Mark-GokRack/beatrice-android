@@ -59,9 +59,8 @@ BeatriceProcessor::createProcessorCore(int32_t sampleRate) {
     throw std::runtime_error("Unsupported model version");
   }
 
-  if (auto error_code =
-          mBeatriceProcessorCore->LoadModel(mBeatriceModelConfig,
-                                            mBeatriceModelPath);
+  if (auto error_code = mBeatriceProcessorCore->LoadModel(mBeatriceModelConfig,
+                                                          mBeatriceModelPath);
       error_code != beatrice::common::ErrorCode::kSuccess) {
     mBeatriceProcessorCore.reset();
     throw std::runtime_error("Failed to load model");
@@ -328,3 +327,20 @@ void BeatriceProcessor::applyParametersToCore() {
 bool BeatriceProcessor::isValidVoiceId(int32_t voiceID) const {
   return voiceID >= 0 && voiceID <= beatrice::common::kMaxNSpeakers;
 }
+
+void BeatriceProcessor::process(const float* inputBuffer, float* outputBuffer,
+                                int numSamples) {
+  if (mBeatriceProcessorCore && mIsEnabled) {
+    mBeatriceProcessorCore->Process(inputBuffer, outputBuffer, numSamples);
+  } else {
+    std::fill_n(outputBuffer, numSamples, 0.0f);
+  }
+}
+
+void BeatriceProcessor::setSampleRate(float sampleRate) {
+  createProcessorCore(static_cast<int32_t>(sampleRate));
+}
+
+void BeatriceProcessor::setEnabled(bool enabled) { mIsEnabled = enabled; }
+
+bool BeatriceProcessor::isEnabled() const { return mIsEnabled; }
