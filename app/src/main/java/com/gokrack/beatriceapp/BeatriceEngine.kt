@@ -38,6 +38,40 @@ object beatriceEngine {
     external fun setSourcePitchRange(minPitch: Double, maxPitch: Double): Boolean
     external fun setVQNumNeighbors(numNeighbors: Int): Boolean
     external fun setSpeakerMorphingWeight(targetSpk: Int, weight: Double): Boolean
+    external fun setProcessorEnabled(enabled: Boolean): Boolean
+    external fun setNoiseGateEnabled(enabled: Boolean): Boolean
+    external fun setNoiseGateThreshold(threshold: Double): Boolean
+    external fun setNoiseGateAttack(attack: Double): Boolean
+    external fun setNoiseGateRelease(release: Double): Boolean
+    external fun setNoiseGateRange(range: Double): Boolean
+    external fun setAmplifierEnabled(enabled: Boolean): Boolean
+    external fun setAmplifierGain(gainDb: Double): Boolean
+    external fun setCompressorEnabled(enabled: Boolean): Boolean
+    external fun setCompressorThreshold(threshold: Double): Boolean
+    external fun setCompressorAttack(attack: Double): Boolean
+    external fun setCompressorRelease(release: Double): Boolean
+    external fun setCompressorRatio(ratio: Double): Boolean
+    external fun setCompressorMakeupGain(makeupGain: Double): Boolean
+    external fun setPreEqualizerEnabled(enabled: Boolean): Boolean
+    external fun setPreEqualizerBandAsPeaking(bandIndex: Int, centerFrequency: Double, q: Double, gainDb: Double): Boolean
+    external fun setPreEqualizerBandAsLowpass(bandIndex: Int, cutoffFrequency: Double, q: Double): Boolean
+    external fun setPreEqualizerBandAsHighpass(bandIndex: Int, cutoffFrequency: Double, q: Double): Boolean
+    external fun setPreEqualizerBandAsLowShelf(bandIndex: Int, cutoffFrequency: Double, q: Double, gainDb: Double): Boolean
+    external fun setPreEqualizerBandAsHighShelf(bandIndex: Int, cutoffFrequency: Double, q: Double, gainDb: Double): Boolean
+    external fun setPreEqualizerBandAsNotch(bandIndex: Int, centerFrequency: Double, q: Double): Boolean
+    external fun setPreEqualizerBandAsAllpass(bandIndex: Int, centerFrequency: Double, q: Double): Boolean
+    external fun setPostEqualizerEnabled(enabled: Boolean): Boolean
+    external fun setPostEqualizerBandAsPeaking(bandIndex: Int, centerFrequency: Double, q: Double, gainDb: Double): Boolean
+    external fun setPostEqualizerBandAsLowpass(bandIndex: Int, cutoffFrequency: Double, q: Double): Boolean
+    external fun setPostEqualizerBandAsHighpass(bandIndex: Int, cutoffFrequency: Double, q: Double): Boolean
+    external fun setPostEqualizerBandAsLowShelf(bandIndex: Int, cutoffFrequency: Double, q: Double, gainDb: Double): Boolean
+    external fun setPostEqualizerBandAsHighShelf(bandIndex: Int, cutoffFrequency: Double, q: Double, gainDb: Double): Boolean
+    external fun setPostEqualizerBandAsNotch(bandIndex: Int, centerFrequency: Double, q: Double): Boolean
+    external fun setPostEqualizerBandAsAllpass(bandIndex: Int, centerFrequency: Double, q: Double): Boolean
+    external fun setLimiterEnabled(enabled: Boolean): Boolean
+    external fun setLimiterThreshold(threshold: Double): Boolean
+    external fun setLimiterAttack(attack: Double): Boolean
+    external fun setLimiterRelease(release: Double): Boolean
 
     external fun delete()
     external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)

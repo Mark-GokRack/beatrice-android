@@ -44,6 +44,17 @@ bool isInitialized() {
          preEqualizer != nullptr && postEqualizer != nullptr;
 }
 
+template <typename T>
+bool isEffectorAvailable(const std::shared_ptr<T>& effector,
+                         const char* effectorName) {
+  if (!effector) {
+    LOGE("%s is null, you must call createEngine before calling this method",
+         effectorName);
+    return false;
+  }
+  return true;
+}
+
 void resetEffectorChain() {
   if (effectorChain) {
     effectorChain->clearEffectors();
@@ -593,6 +604,386 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeight(
     return JNI_FALSE;
   }
   processor->setSpeakerMorphingWeight(target_spk, weight);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setProcessorEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(processor, "Processor")) {
+    return JNI_FALSE;
+  }
+  processor->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setNoiseGateEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(noiseGate, "NoiseGate")) {
+    return JNI_FALSE;
+  }
+  noiseGate->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setNoiseGateThreshold(
+    JNIEnv* env, jclass type, jdouble threshold) {
+  if (!isEffectorAvailable(noiseGate, "NoiseGate")) {
+    return JNI_FALSE;
+  }
+  noiseGate->setThreshold(static_cast<float>(threshold));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setNoiseGateAttack(JNIEnv* env,
+                                                               jclass type,
+                                                               jdouble attack) {
+  if (!isEffectorAvailable(noiseGate, "NoiseGate")) {
+    return JNI_FALSE;
+  }
+  noiseGate->setAttack(static_cast<float>(attack));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setNoiseGateRelease(
+    JNIEnv* env, jclass type, jdouble release) {
+  if (!isEffectorAvailable(noiseGate, "NoiseGate")) {
+    return JNI_FALSE;
+  }
+  noiseGate->setRelease(static_cast<float>(release));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setNoiseGateRange(JNIEnv* env,
+                                                              jclass type,
+                                                              jdouble range) {
+  if (!isEffectorAvailable(noiseGate, "NoiseGate")) {
+    return JNI_FALSE;
+  }
+  noiseGate->setRange(static_cast<float>(range));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setAmplifierEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(amplifier, "Amplifier")) {
+    return JNI_FALSE;
+  }
+  amplifier->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setAmplifierGain(JNIEnv* env,
+                                                             jclass type,
+                                                             jdouble gainDb) {
+  if (!isEffectorAvailable(amplifier, "Amplifier")) {
+    return JNI_FALSE;
+  }
+  amplifier->setGain(static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(compressor, "Compressor")) {
+    return JNI_FALSE;
+  }
+  compressor->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorThreshold(
+    JNIEnv* env, jclass type, jdouble threshold) {
+  if (!isEffectorAvailable(compressor, "Compressor")) {
+    return JNI_FALSE;
+  }
+  compressor->setThreshold(static_cast<float>(threshold));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorAttack(
+    JNIEnv* env, jclass type, jdouble attack) {
+  if (!isEffectorAvailable(compressor, "Compressor")) {
+    return JNI_FALSE;
+  }
+  compressor->setAttack(static_cast<float>(attack));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorRelease(
+    JNIEnv* env, jclass type, jdouble release) {
+  if (!isEffectorAvailable(compressor, "Compressor")) {
+    return JNI_FALSE;
+  }
+  compressor->setRelease(static_cast<float>(release));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorRatio(JNIEnv* env,
+                                                               jclass type,
+                                                               jdouble ratio) {
+  if (!isEffectorAvailable(compressor, "Compressor")) {
+    return JNI_FALSE;
+  }
+  compressor->setRatio(static_cast<float>(ratio));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorMakeupGain(
+    JNIEnv* env, jclass type, jdouble makeupGain) {
+  if (!isEffectorAvailable(compressor, "Compressor")) {
+    return JNI_FALSE;
+  }
+  compressor->setMakeupGain(static_cast<float>(makeupGain));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsPeaking(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble centerFrequency,
+    jdouble q, jdouble gainDb) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsPeaking(bandIndex, static_cast<float>(centerFrequency),
+                                 static_cast<float>(q),
+                                 static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsLowpass(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsLowpass(bandIndex, static_cast<float>(cutoffFrequency),
+                                 static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsHighpass(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsHighpass(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsLowShelf(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q, jdouble gainDb) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsLowShelf(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q),
+      static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsHighShelf(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q, jdouble gainDb) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsHighShelf(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q),
+      static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsNotch(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble centerFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsNotch(bandIndex, static_cast<float>(centerFrequency),
+                               static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsAllpass(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble centerFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return JNI_FALSE;
+  }
+  preEqualizer->setBandAsAllpass(bandIndex, static_cast<float>(centerFrequency),
+                                 static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsPeaking(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble centerFrequency,
+    jdouble q, jdouble gainDb) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsPeaking(
+      bandIndex, static_cast<float>(centerFrequency), static_cast<float>(q),
+      static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsLowpass(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsLowpass(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsHighpass(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsHighpass(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsLowShelf(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q, jdouble gainDb) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsLowShelf(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q),
+      static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsHighShelf(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble cutoffFrequency,
+    jdouble q, jdouble gainDb) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsHighShelf(
+      bandIndex, static_cast<float>(cutoffFrequency), static_cast<float>(q),
+      static_cast<float>(gainDb));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsNotch(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble centerFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsNotch(bandIndex, static_cast<float>(centerFrequency),
+                                static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsAllpass(
+    JNIEnv* env, jclass type, jint bandIndex, jdouble centerFrequency,
+    jdouble q) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return JNI_FALSE;
+  }
+  postEqualizer->setBandAsAllpass(
+      bandIndex, static_cast<float>(centerFrequency), static_cast<float>(q));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setLimiterEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(limiter, "Limiter")) {
+    return JNI_FALSE;
+  }
+  limiter->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setLimiterThreshold(
+    JNIEnv* env, jclass type, jdouble threshold) {
+  if (!isEffectorAvailable(limiter, "Limiter")) {
+    return JNI_FALSE;
+  }
+  limiter->setThreshold(static_cast<float>(threshold));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setLimiterAttack(JNIEnv* env,
+                                                             jclass type,
+                                                             jdouble attack) {
+  if (!isEffectorAvailable(limiter, "Limiter")) {
+    return JNI_FALSE;
+  }
+  limiter->setAttack(static_cast<float>(attack));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setLimiterRelease(JNIEnv* env,
+                                                              jclass type,
+                                                              jdouble release) {
+  if (!isEffectorAvailable(limiter, "Limiter")) {
+    return JNI_FALSE;
+  }
+  limiter->setRelease(static_cast<float>(release));
   return JNI_TRUE;
 }
 
