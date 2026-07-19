@@ -74,6 +74,48 @@ jboolean getEffectorBoolean(const std::shared_ptr<T>& effector,
   return getter(*effector) ? JNI_TRUE : JNI_FALSE;
 }
 
+std::vector<float> toFloatVector(JNIEnv* env, jdoubleArray inputArray) {
+  std::vector<float> result;
+  if (!inputArray) {
+    return result;
+  }
+
+  const jsize length = env->GetArrayLength(inputArray);
+  result.resize(static_cast<size_t>(length));
+
+  std::vector<jdouble> temp(static_cast<size_t>(length));
+  env->GetDoubleArrayRegion(inputArray, 0, length, temp.data());
+
+  for (jsize i = 0; i < length; ++i) {
+    result[static_cast<size_t>(i)] = static_cast<float>(temp[i]);
+  }
+
+  return result;
+}
+
+jdoubleArray toDoubleArray(JNIEnv* env, const std::vector<float>& values) {
+  const jsize length = static_cast<jsize>(values.size());
+  jdoubleArray outputArray = env->NewDoubleArray(length);
+  if (!outputArray) {
+    return nullptr;
+  }
+
+  std::vector<jdouble> temp(values.size());
+  for (size_t i = 0; i < values.size(); ++i) {
+    temp[i] = static_cast<jdouble>(values[i]);
+  }
+
+  if (length > 0) {
+    env->SetDoubleArrayRegion(outputArray, 0, length, temp.data());
+  }
+
+  return outputArray;
+}
+
+jdoubleArray makeEmptyDoubleArray(JNIEnv* env) {
+  return env->NewDoubleArray(0);
+}
+
 void resetEffectorChain() {
   if (effectorChain) {
     effectorChain->clearEffectors();
@@ -798,6 +840,22 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setAmplifierGain(JNIEnv* env,
 }
 
 JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isAmplifierEnabled(JNIEnv* env,
+                                                               jclass type) {
+  return getEffectorBoolean(amplifier, "Amplifier", [](const Amplifier& value) {
+    return value.isEnabled();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getAmplifierGain(JNIEnv* env,
+                                                             jclass type) {
+  return getEffectorDouble(amplifier, "Amplifier", [](const Amplifier& value) {
+    return value.getGain();
+  });
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorEnabled(
     JNIEnv* env, jclass type, jboolean enabled) {
   if (!isEffectorAvailable(compressor, "Compressor")) {
@@ -1035,6 +1093,18 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPreEqualizerBandAsAllpass(
   return JNI_TRUE;
 }
 
+JNIEXPORT jdoubleArray JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getPreEqualizerFrequencyResponse(
+    JNIEnv* env, jclass type, jdoubleArray frequencies) {
+  if (!isEffectorAvailable(preEqualizer, "PreEqualizer")) {
+    return makeEmptyDoubleArray(env);
+  }
+
+  const auto frequencyPoints = toFloatVector(env, frequencies);
+  const auto response = preEqualizer->computeFrequencyResponse(frequencyPoints);
+  return toDoubleArray(env, response);
+}
+
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerEnabled(
     JNIEnv* env, jclass type, jboolean enabled) {
@@ -1130,6 +1200,19 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPostEqualizerBandAsAllpass(
   postEqualizer->setBandAsAllpass(
       bandIndex, static_cast<float>(centerFrequency), static_cast<float>(q));
   return JNI_TRUE;
+}
+
+JNIEXPORT jdoubleArray JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getPostEqualizerFrequencyResponse(
+    JNIEnv* env, jclass type, jdoubleArray frequencies) {
+  if (!isEffectorAvailable(postEqualizer, "PostEqualizer")) {
+    return makeEmptyDoubleArray(env);
+  }
+
+  const auto frequencyPoints = toFloatVector(env, frequencies);
+  const auto response =
+      postEqualizer->computeFrequencyResponse(frequencyPoints);
+  return toDoubleArray(env, response);
 }
 
 JNIEXPORT jboolean JNICALL

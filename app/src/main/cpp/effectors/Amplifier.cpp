@@ -4,7 +4,7 @@
 #include <cmath>
 
 Amplifier::Amplifier(float gainDb)
-    : m_gainDb(gainDb), m_gainLinear(dbToLinear(gainDb)) {}
+    : m_gainLinear(dbToLinear(gainDb)), m_gainDb(gainDb) {}
 
 void Amplifier::process(const float* inputBuffer, float* outputBuffer,
                         int numSamples) {

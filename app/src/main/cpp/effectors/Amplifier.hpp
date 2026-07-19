@@ -17,6 +17,7 @@ class Amplifier : public AudioEffector {
                int numSamples) override;
 
   void setGain(float gainDb);
+  float getGain() const { return m_gainDb; }
 
   void setSampleRate(float sampleRate) override {
     (void)sampleRate;  // Sample rate is not used in this effector
