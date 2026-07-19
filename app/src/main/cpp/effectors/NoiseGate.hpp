@@ -46,6 +46,9 @@ class NoiseGate : public DynamicProcessor {
    */
 
   void setRange(float range);
+  float getRange() const { return m_rangeDb; }
+  float getGateGainDb() const { return getGainReductionDb(); }
+  bool isGateOpen() const { return getGateGainDb() > -0.1f; }
 
  protected:
   // DynamicProcessor base handles threshold, attack, release, sampleRate,

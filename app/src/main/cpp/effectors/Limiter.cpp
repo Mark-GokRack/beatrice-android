@@ -13,13 +13,23 @@ void Limiter::process(const float* inputBuffer, float* outputBuffer,
 
     // Enforce hard output ceiling so peaks do not exceed the limiter threshold.
     const float thresholdLinear = dbToLinear(m_thresholdDb);
+    bool hardClipActive = false;
     for (int i = 0; i < numSamples; ++i) {
-      outputBuffer[i] =
+      const float clampedOutput =
           std::clamp(outputBuffer[i], -thresholdLinear, thresholdLinear);
+      hardClipActive = hardClipActive || (clampedOutput != outputBuffer[i]);
+      outputBuffer[i] = clampedOutput;
     }
+
+    m_hardClipActive.store(hardClipActive);
   } else if (inputBuffer != outputBuffer) {
     // Bypass: copy input to output
     std::copy(inputBuffer, inputBuffer + numSamples, outputBuffer);
+  }
+
+  if (!m_isEnabled) {
+    publishBypassMeterState(inputBuffer, numSamples);
+    m_hardClipActive.store(false);
   }
 }
 

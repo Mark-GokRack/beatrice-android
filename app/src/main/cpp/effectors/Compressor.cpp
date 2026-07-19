@@ -24,6 +24,10 @@ void Compressor::process(const float* inputBuffer, float* outputBuffer,
     // Bypass: copy input to output
     std::copy(inputBuffer, inputBuffer + numSamples, outputBuffer);
   }
+
+  if (!m_isEnabled) {
+    publishBypassMeterState(inputBuffer, numSamples);
+  }
 }
 
 void Compressor::setRatio(float ratio) {

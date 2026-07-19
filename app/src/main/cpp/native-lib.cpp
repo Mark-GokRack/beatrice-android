@@ -55,6 +55,25 @@ bool isEffectorAvailable(const std::shared_ptr<T>& effector,
   return true;
 }
 
+template <typename T, typename Getter>
+jdouble getEffectorDouble(const std::shared_ptr<T>& effector,
+                          const char* effectorName, Getter getter,
+                          jdouble fallback = 0.0) {
+  if (!isEffectorAvailable(effector, effectorName)) {
+    return fallback;
+  }
+  return static_cast<jdouble>(getter(*effector));
+}
+
+template <typename T, typename Getter>
+jboolean getEffectorBoolean(const std::shared_ptr<T>& effector,
+                            const char* effectorName, Getter getter) {
+  if (!isEffectorAvailable(effector, effectorName)) {
+    return JNI_FALSE;
+  }
+  return getter(*effector) ? JNI_TRUE : JNI_FALSE;
+}
+
 void resetEffectorChain() {
   if (effectorChain) {
     effectorChain->clearEffectors();
@@ -670,6 +689,94 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setNoiseGateRange(JNIEnv* env,
 }
 
 JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isNoiseGateEnabled(JNIEnv* env,
+                                                               jclass type) {
+  return getEffectorBoolean(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.isEnabled();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateThreshold(JNIEnv* env,
+                                                                  jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getThreshold();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateAttack(JNIEnv* env,
+                                                               jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getAttack();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateRelease(JNIEnv* env,
+                                                                jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getRelease();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateRange(JNIEnv* env,
+                                                              jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getRange();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateDetectorLevel(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getDetectorLevelDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateGainReduction(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getGainReductionDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateInputPeak(JNIEnv* env,
+                                                                  jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getInputPeakDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateOutputPeak(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getOutputPeakDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getNoiseGateGateGain(JNIEnv* env,
+                                                                 jclass type) {
+  return getEffectorDouble(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.getGateGainDb();
+  });
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isNoiseGateOpen(JNIEnv* env,
+                                                            jclass type) {
+  return getEffectorBoolean(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
+    return gate.isGateOpen();
+  });
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setAmplifierEnabled(
     JNIEnv* env, jclass type, jboolean enabled) {
   if (!isEffectorAvailable(amplifier, "Amplifier")) {
@@ -749,6 +856,86 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setCompressorMakeupGain(
   }
   compressor->setMakeupGain(static_cast<float>(makeupGain));
   return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isCompressorEnabled(JNIEnv* env,
+                                                                jclass type) {
+  return getEffectorBoolean(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.isEnabled(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorThreshold(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getThreshold(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorAttack(JNIEnv* env,
+                                                                jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getAttack(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorRelease(JNIEnv* env,
+                                                                 jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getRelease(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorRatio(JNIEnv* env,
+                                                               jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getRatio(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorMakeupGain(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getMakeupGain(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorDetectorLevel(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getDetectorLevelDb(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorGainReduction(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getGainReductionDb(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorInputPeak(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getInputPeakDb(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getCompressorOutputPeak(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(
+      compressor, "Compressor",
+      [](const Compressor& value) { return value.getOutputPeakDb(); });
 }
 
 JNIEXPORT jboolean JNICALL
@@ -985,6 +1172,78 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setLimiterRelease(JNIEnv* env,
   }
   limiter->setRelease(static_cast<float>(release));
   return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isLimiterEnabled(JNIEnv* env,
+                                                             jclass type) {
+  return getEffectorBoolean(limiter, "Limiter", [](const Limiter& value) {
+    return value.isEnabled();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterThreshold(JNIEnv* env,
+                                                                jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getThreshold();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterAttack(JNIEnv* env,
+                                                             jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getAttack();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterRelease(JNIEnv* env,
+                                                              jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getRelease();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterDetectorLevel(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getDetectorLevelDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterGainReduction(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getGainReductionDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterInputPeak(JNIEnv* env,
+                                                                jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getInputPeakDb();
+  });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getLimiterOutputPeak(JNIEnv* env,
+                                                                 jclass type) {
+  return getEffectorDouble(limiter, "Limiter", [](const Limiter& value) {
+    return value.getOutputPeakDb();
+  });
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isLimiterHardClipActive(
+    JNIEnv* env, jclass type) {
+  return getEffectorBoolean(limiter, "Limiter", [](const Limiter& value) {
+    return value.isHardClipActive();
+  });
 }
 
 JNIEXPORT jint JNICALL

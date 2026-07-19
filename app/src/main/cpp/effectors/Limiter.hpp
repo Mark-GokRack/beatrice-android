@@ -1,6 +1,8 @@
 #ifndef EFFECT_LIMITER_HPP
 #define EFFECT_LIMITER_HPP
 
+#include <atomic>
+
 #include "DynamicProcessor.hpp"
 
 /**
@@ -34,7 +36,11 @@ class Limiter : public DynamicProcessor {
   void process(const float* inputBuffer, float* outputBuffer,
                int numSamples) override;
 
+  bool isHardClipActive() const { return m_hardClipActive.load(); }
+
  private:
+  std::atomic<bool> m_hardClipActive{false};
+
   // Override from DynamicProcessor
   float computeGain(float envDb, float input, float attackCoef,
                     float releaseCoef) override;

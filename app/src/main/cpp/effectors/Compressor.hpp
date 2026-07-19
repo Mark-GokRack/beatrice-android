@@ -40,6 +40,8 @@ class Compressor : public DynamicProcessor {
   // Setters for parameters
   void setRatio(float ratio);
   void setMakeupGain(float makeupGain);
+  float getRatio() const { return m_ratio; }
+  float getMakeupGain() const { return m_makeupGainDb; }
 
  protected:
   // DynamicProcessor base handles threshold, attack, release, sampleRate,

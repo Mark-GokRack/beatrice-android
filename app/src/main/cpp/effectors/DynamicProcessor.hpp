@@ -1,6 +1,8 @@
 #ifndef EFFECT_DYNAMIC_PROCESSOR_HPP
 #define EFFECT_DYNAMIC_PROCESSOR_HPP
 
+#include <atomic>
+
 #include "AudioEffector.hpp"
 
 /**
@@ -54,6 +56,16 @@ class DynamicProcessor : public AudioEffector {
   void setAttack(float attack);
   void setRelease(float release);
 
+  float getThreshold() const { return m_thresholdDb; }
+  float getAttack() const { return m_attackMs; }
+  float getRelease() const { return m_releaseMs; }
+  float getSampleRateHz() const { return m_sampleRate; }
+  float getDetectorLevelDb() const { return m_detectorLevelDb.load(); }
+  float getGainReductionDb() const { return m_gainReductionDb.load(); }
+  float getInputPeakDb() const { return m_inputPeakDb.load(); }
+  float getOutputPeakDb() const { return m_outputPeakDb.load(); }
+  bool isActive() const { return m_isActive.load(); }
+
  protected:
   // Common parameters
   float m_thresholdDb;
@@ -80,9 +92,21 @@ class DynamicProcessor : public AudioEffector {
   virtual float computeGain(float envDb, float input, float attackCoef,
                             float releaseCoef) = 0;
 
+  void publishMeterState(float detectorLevelLinear, float inputPeakLinear,
+                         float outputPeakLinear, float gainReductionDb,
+                         bool isActive);
+  void publishBypassMeterState(const float* inputBuffer, int numSamples);
+
   // Helper functions
   float dbToLinear(float db);
   float linearToDb(float linear);
+
+ private:
+  std::atomic<float> m_detectorLevelDb;
+  std::atomic<float> m_gainReductionDb;
+  std::atomic<float> m_inputPeakDb;
+  std::atomic<float> m_outputPeakDb;
+  std::atomic<bool> m_isActive;
 };
 
 #endif  // EFFECT_DYNAMIC_PROCESSOR_HPP

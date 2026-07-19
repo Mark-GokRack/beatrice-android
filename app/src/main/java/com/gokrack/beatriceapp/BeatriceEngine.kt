@@ -44,6 +44,17 @@ object beatriceEngine {
     external fun setNoiseGateAttack(attack: Double): Boolean
     external fun setNoiseGateRelease(release: Double): Boolean
     external fun setNoiseGateRange(range: Double): Boolean
+    external fun isNoiseGateEnabled(): Boolean
+    external fun getNoiseGateThreshold(): Double
+    external fun getNoiseGateAttack(): Double
+    external fun getNoiseGateRelease(): Double
+    external fun getNoiseGateRange(): Double
+    external fun getNoiseGateDetectorLevel(): Double
+    external fun getNoiseGateGainReduction(): Double
+    external fun getNoiseGateInputPeak(): Double
+    external fun getNoiseGateOutputPeak(): Double
+    external fun getNoiseGateGateGain(): Double
+    external fun isNoiseGateOpen(): Boolean
     external fun setAmplifierEnabled(enabled: Boolean): Boolean
     external fun setAmplifierGain(gainDb: Double): Boolean
     external fun setCompressorEnabled(enabled: Boolean): Boolean
@@ -52,6 +63,16 @@ object beatriceEngine {
     external fun setCompressorRelease(release: Double): Boolean
     external fun setCompressorRatio(ratio: Double): Boolean
     external fun setCompressorMakeupGain(makeupGain: Double): Boolean
+    external fun isCompressorEnabled(): Boolean
+    external fun getCompressorThreshold(): Double
+    external fun getCompressorAttack(): Double
+    external fun getCompressorRelease(): Double
+    external fun getCompressorRatio(): Double
+    external fun getCompressorMakeupGain(): Double
+    external fun getCompressorDetectorLevel(): Double
+    external fun getCompressorGainReduction(): Double
+    external fun getCompressorInputPeak(): Double
+    external fun getCompressorOutputPeak(): Double
     external fun setPreEqualizerEnabled(enabled: Boolean): Boolean
     external fun setPreEqualizerBandAsPeaking(bandIndex: Int, centerFrequency: Double, q: Double, gainDb: Double): Boolean
     external fun setPreEqualizerBandAsLowpass(bandIndex: Int, cutoffFrequency: Double, q: Double): Boolean
@@ -72,6 +93,15 @@ object beatriceEngine {
     external fun setLimiterThreshold(threshold: Double): Boolean
     external fun setLimiterAttack(attack: Double): Boolean
     external fun setLimiterRelease(release: Double): Boolean
+    external fun isLimiterEnabled(): Boolean
+    external fun getLimiterThreshold(): Double
+    external fun getLimiterAttack(): Double
+    external fun getLimiterRelease(): Double
+    external fun getLimiterDetectorLevel(): Double
+    external fun getLimiterGainReduction(): Double
+    external fun getLimiterInputPeak(): Double
+    external fun getLimiterOutputPeak(): Double
+    external fun isLimiterHardClipActive(): Boolean
 
     external fun delete()
     external fun native_setDefaultStreamValues(defaultSampleRate: Int, defaultFramesPerBurst: Int)

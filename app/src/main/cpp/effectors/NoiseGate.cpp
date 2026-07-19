@@ -11,6 +11,10 @@ NoiseGate::NoiseGate(float threshold, float attack, float release, float range,
 void NoiseGate::process(const float* inputBuffer, float* outputBuffer,
                         int numSamples) {
   if (m_isEnabled) {
+    float inputPeak = 0.0f;
+    float outputPeak = 0.0f;
+    float gainReductionDb = 0.0f;
+
     for (int i = 0; i < numSamples; ++i) {
       float input = std::abs(inputBuffer[i]);
 
@@ -33,10 +37,21 @@ void NoiseGate::process(const float* inputBuffer, float* outputBuffer,
 
       // Apply smoothed gain
       outputBuffer[i] = inputBuffer[i] * m_gain;
+
+      inputPeak = std::max(inputPeak, input);
+      outputPeak = std::max(outputPeak, std::abs(outputBuffer[i]));
+      gainReductionDb = std::min(gainReductionDb, linearToDb(m_gain));
     }
+
+    publishMeterState(m_envelope, inputPeak, outputPeak, gainReductionDb,
+                      gainReductionDb < -0.01f);
   } else if (inputBuffer != outputBuffer) {
     // Bypass: copy input to output
     std::copy(inputBuffer, inputBuffer + numSamples, outputBuffer);
+  }
+
+  if (!m_isEnabled) {
+    publishBypassMeterState(inputBuffer, numSamples);
   }
 }
 
