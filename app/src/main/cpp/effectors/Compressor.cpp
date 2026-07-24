@@ -20,6 +20,9 @@ void Compressor::process(const float* inputBuffer, float* outputBuffer,
     for (int i = 0; i < numSamples; ++i) {
       outputBuffer[i] *= m_makeupGainLinear;
     }
+    m_outputPeakDb.store(m_outputPeakDb.load() +
+                         m_makeupGainDb);  // Adjust output peak for makeup gain
+
   } else if (inputBuffer != outputBuffer) {
     // Bypass: copy input to output
     std::copy(inputBuffer, inputBuffer + numSamples, outputBuffer);

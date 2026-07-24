@@ -92,20 +92,21 @@ class DynamicProcessor : public AudioEffector {
   virtual float computeGain(float envDb, float input, float attackCoef,
                             float releaseCoef) = 0;
 
-  void publishMeterState(float detectorLevelLinear, float inputPeakLinear,
-                         float outputPeakLinear, float gainReductionDb,
-                         bool isActive);
+  virtual void publishMeterState(float detectorLevelLinear,
+                                 float inputPeakLinear, float outputPeakLinear,
+                                 float gainReductionDb, bool isActive);
   void publishBypassMeterState(const float* inputBuffer, int numSamples);
 
   // Helper functions
   float dbToLinear(float db);
   float linearToDb(float linear);
 
+  std::atomic<float> m_outputPeakDb;
+
  private:
   std::atomic<float> m_detectorLevelDb;
   std::atomic<float> m_gainReductionDb;
   std::atomic<float> m_inputPeakDb;
-  std::atomic<float> m_outputPeakDb;
   std::atomic<bool> m_isActive;
 };
 

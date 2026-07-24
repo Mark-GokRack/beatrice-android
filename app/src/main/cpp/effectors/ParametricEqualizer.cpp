@@ -35,7 +35,7 @@ void ParametricEqualizer::setBandAsPeaking(int bandIndex, float centerFrequency,
 
   m_bands[bandIndex].centerFrequency = clamp(centerFrequency, 20.0f, 20000.0f);
   m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
-  m_bands[bandIndex].gainDb = clamp(gainDb, -24.0f, 24.0f);
+  m_bands[bandIndex].gainDb = clamp(gainDb, -30.0f, 30.0f);
   m_filterTypes[bandIndex] = FilterType::PEAKING;
 
   computePeakingCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
@@ -78,7 +78,7 @@ void ParametricEqualizer::setBandAsLowShelf(int bandIndex,
 
   m_bands[bandIndex].centerFrequency = clamp(cutoffFrequency, 20.0f, 20000.0f);
   m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
-  m_bands[bandIndex].gainDb = clamp(gainDb, -24.0f, 24.0f);
+  m_bands[bandIndex].gainDb = clamp(gainDb, -30.0f, 30.0f);
   m_filterTypes[bandIndex] = FilterType::LOWSHELF;
 
   computeLowShelfCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,
@@ -93,7 +93,7 @@ void ParametricEqualizer::setBandAsHighShelf(int bandIndex,
 
   m_bands[bandIndex].centerFrequency = clamp(cutoffFrequency, 20.0f, 20000.0f);
   m_bands[bandIndex].Q = clamp(Q, 0.1f, 10.0f);
-  m_bands[bandIndex].gainDb = clamp(gainDb, -24.0f, 24.0f);
+  m_bands[bandIndex].gainDb = clamp(gainDb, -30.0f, 30.0f);
   m_filterTypes[bandIndex] = FilterType::HIGHSHELF;
 
   computeHighShelfCoeffs(bandIndex, m_bands[bandIndex].centerFrequency,

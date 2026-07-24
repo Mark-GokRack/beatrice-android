@@ -120,8 +120,8 @@ void resetEffectorChain() {
   if (effectorChain) {
     effectorChain->clearEffectors();
 
-    effectorChain->addEffector(noiseGate);
     effectorChain->addEffector(amplifier);
+    effectorChain->addEffector(noiseGate);
     effectorChain->addEffector(compressor);
     effectorChain->addEffector(preEqualizer);
     effectorChain->addEffector(processor);
@@ -203,8 +203,8 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
     compressor = std::make_shared<Compressor>();
     limiter = std::make_shared<Limiter>();
     noiseGate = std::make_shared<NoiseGate>();
-    preEqualizer = std::make_shared<ParametricEqualizer>(44100.0f, 5);
-    postEqualizer = std::make_shared<ParametricEqualizer>(44100.0f, 5);
+    preEqualizer = std::make_shared<ParametricEqualizer>(48000.0f, 3);
+    postEqualizer = std::make_shared<ParametricEqualizer>(48000.0f, 5);
   } catch (const std::exception& e) {
     LOGE("Failed to create engine: %s", e.what());
     processor.reset();

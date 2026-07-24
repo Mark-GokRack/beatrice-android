@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="8dp">
+
+    <TextView
+        android:id="@+id/dynamic_meters_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/peak"
+        android:textColor="@color/vst_text_secondary"
+        android:textSize="12sp" />
+
+    <com.gokrack.beatriceapp.view.PeakMeterView
+        android:id="@+id/input_peak_meter"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="2dp" />
+
+    <com.gokrack.beatriceapp.view.GainReductionBarView
+        android:id="@+id/gain_reduction_bar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="0dp" />
+
+    <com.gokrack.beatriceapp.view.PeakMeterView
+        android:id="@+id/output_peak_meter"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="0dp" />
+        
+    <com.gokrack.beatriceapp.view.PeakMeterView
+        android:id="@+id/tick_meter"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="0dp" /></LinearLayout>

@@ -40,8 +40,9 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
         val tabTitles = listOf(
             getString(R.string.tab_system),
-            getString(R.string.tab_voice),
-            getString(R.string.tab_basic),
+            getString(R.string.tab_model),
+            getString(R.string.tab_params),
+            getString(R.string.tab_effector),
             getString(R.string.tab_morphing)
         )
         TabLayoutMediator(findViewById(R.id.tab_layout), viewPager) { tab, position ->
@@ -120,6 +121,83 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             SettingsManager.loadSourcePitchRangeMin().toDouble(),
             SettingsManager.loadSourcePitchRangeMax().toDouble()
         )
+        applyEffectorSettingsToEngine()
+    }
+
+    private fun applyEffectorSettingsToEngine() {
+        beatriceEngine.setAmplifierEnabled(SettingsManager.loadAmplifierEnabled())
+        beatriceEngine.setAmplifierGain(SettingsManager.loadAmplifierGain().toDouble())
+
+        beatriceEngine.setNoiseGateEnabled(SettingsManager.loadNoiseGateEnabled())
+        beatriceEngine.setNoiseGateThreshold(SettingsManager.loadNoiseGateThreshold().toDouble())
+        beatriceEngine.setNoiseGateRange(SettingsManager.loadNoiseGateRange().toDouble())
+        beatriceEngine.setNoiseGateAttack(SettingsManager.loadNoiseGateAttack().toDouble())
+        beatriceEngine.setNoiseGateRelease(SettingsManager.loadNoiseGateRelease().toDouble())
+
+        beatriceEngine.setCompressorEnabled(SettingsManager.loadCompressorEnabled())
+        beatriceEngine.setCompressorThreshold(SettingsManager.loadCompressorThreshold().toDouble())
+        beatriceEngine.setCompressorRatio(SettingsManager.loadCompressorRatio().toDouble())
+        beatriceEngine.setCompressorAttack(SettingsManager.loadCompressorAttack().toDouble())
+        beatriceEngine.setCompressorRelease(SettingsManager.loadCompressorRelease().toDouble())
+        beatriceEngine.setCompressorMakeupGain(SettingsManager.loadCompressorMakeupGain().toDouble())
+
+        beatriceEngine.setLimiterEnabled(SettingsManager.loadLimiterEnabled())
+        beatriceEngine.setLimiterThreshold(SettingsManager.loadLimiterThreshold().toDouble())
+        beatriceEngine.setLimiterAttack(SettingsManager.loadLimiterAttack().toDouble())
+        beatriceEngine.setLimiterRelease(SettingsManager.loadLimiterRelease().toDouble())
+
+        beatriceEngine.setPreEqualizerEnabled(SettingsManager.loadPreEqualizerEnabled())
+        for (i in SettingsManager.DEFAULT_PRE_EQ_FREQUENCIES.indices) {
+            val band = SettingsManager.loadEqualizerBand(true, i)
+            applyEqualizerBandToEngine(true, i, band)
+        }
+
+        beatriceEngine.setPostEqualizerEnabled(SettingsManager.loadPostEqualizerEnabled())
+        for (i in SettingsManager.DEFAULT_POST_EQ_FREQUENCIES.indices) {
+            val band = SettingsManager.loadEqualizerBand(false, i)
+            applyEqualizerBandToEngine(false, i, band)
+        }
+    }
+
+    private fun applyEqualizerBandToEngine(isPre: Boolean, band: Int, settings: SettingsManager.EqualizerBandSettings) {
+        val index = band
+        when (settings.type) {
+            0 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsPeaking(index, settings.frequency.toDouble(), settings.q.toDouble(), settings.gain.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsPeaking(index, settings.frequency.toDouble(), settings.q.toDouble(), settings.gain.toDouble())
+            }
+            1 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsLowpass(index, settings.frequency.toDouble(), settings.q.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsLowpass(index, settings.frequency.toDouble(), settings.q.toDouble())
+            }
+            2 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsHighpass(index, settings.frequency.toDouble(), settings.q.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsHighpass(index, settings.frequency.toDouble(), settings.q.toDouble())
+            }
+            3 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsLowShelf(index, settings.frequency.toDouble(), settings.q.toDouble(), settings.gain.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsLowShelf(index, settings.frequency.toDouble(), settings.q.toDouble(), settings.gain.toDouble())
+            }
+            4 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsHighShelf(index, settings.frequency.toDouble(), settings.q.toDouble(), settings.gain.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsHighShelf(index, settings.frequency.toDouble(), settings.q.toDouble(), settings.gain.toDouble())
+            }
+            5 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsNotch(index, settings.frequency.toDouble(), settings.q.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsNotch(index, settings.frequency.toDouble(), settings.q.toDouble())
+            }
+            6 -> if (isPre) {
+                beatriceEngine.setPreEqualizerBandAsAllpass(index, settings.frequency.toDouble(), settings.q.toDouble())
+            } else {
+                beatriceEngine.setPostEqualizerBandAsAllpass(index, settings.frequency.toDouble(), settings.q.toDouble())
+            }
+        }
     }
 
     override fun onDestroy() {

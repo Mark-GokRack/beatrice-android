@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/eq_band_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_marginTop="8dp"
+    android:background="@color/vst_bg_card">
+
+    <LinearLayout
+        android:id="@+id/eq_band_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/eq_band_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/vst_accent"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/eq_band_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▼"
+            android:textColor="@color/vst_accent"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/eq_band_top_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/vst_divider"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:id="@+id/eq_band_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/filter_type"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        app:boxBackgroundColor="@color/vst_bg_secondary">
+
+        <AutoCompleteTextView
+            android:id="@+id/eq_band_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:textColor="@color/vst_text_primary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <include
+        android:id="@+id/eq_band_frequency"
+        layout="@layout/item_effector_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/eq_band_q"
+        layout="@layout/item_effector_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/eq_band_gain"
+        layout="@layout/item_effector_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</LinearLayout>
