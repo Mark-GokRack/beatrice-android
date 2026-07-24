@@ -42,8 +42,9 @@
 
     <!-- Tab titles -->
     <string name="tab_system">System</string>
-    <string name="tab_voice">Main</string>
-    <string name="tab_basic">Params</string>
+    <string name="tab_model">Main</string>
+    <string name="tab_params">Params</string>
+    <string name="tab_effector">Effector</string>
     <string name="tab_advanced">Advanced</string>
     <string name="tab_morphing">Morphing</string>
     <string name="tab_settings">Settings</string>
@@ -58,4 +59,37 @@
     <string name="section_audio_api">Audio API</string>
     <string name="section_latency">Latency Mode</string>
     <string name="section_devices">Devices</string>
+
+    <!-- Effector tab -->
+    <string name="section_pre_fx">Pre-FX (before Beatrice)</string>
+    <string name="section_post_fx">Post-FX (after Beatrice)</string>
+    <string name="effector_amplifier">Amplifier</string>
+    <string name="effector_noise_gate">Noise Gate</string>
+    <string name="effector_compressor">Compressor</string>
+    <string name="effector_pre_equalizer">Pre-Equalizer</string>
+    <string name="effector_post_equalizer">Post-Equalizer</string>
+    <string name="effector_limiter">Limiter</string>
+    <string name="gain">Gain</string>
+    <string name="enabled">Enabled</string>
+    <string name="threshold">Threshold</string>
+    <string name="range">Range</string>
+    <string name="attack">Attack</string>
+    <string name="release">Release</string>
+    <string name="ratio">Ratio</string>
+    <string name="makeup_gain">Make-up Gain</string>
+    <string name="filter_type">Filter Type</string>
+    <string name="frequency">Frequency</string>
+    <string name="q_value">Q</string>
+    <string name="peak">Peak</string>
+    <string name="input_peak">Input Peak</string>
+    <string name="output_peak">Output Peak</string>
+    <string name="gain_reduction">Gain Reduction</string>
+    <string name="detector_level">Detector Level</string>
+
+    <!-- Preset management -->
+    <string name="preset_save">Save</string>
+    <string name="preset_reset">Reset to Default</string>
+    <string name="preset_saved">Saved to %s</string>
+    <string name="preset_reset_confirm_title">Reset All Settings</string>
+    <string name="preset_reset_confirm_message">Are you sure you want to reset all parameters to default values?</string>
 </resources>

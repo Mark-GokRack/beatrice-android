@@ -3,4 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_vertical_group_margin">32dp</dimen>
+    <dimen name="meter_tick_text_size">9sp</dimen>
 </resources>

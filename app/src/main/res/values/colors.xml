@@ -22,4 +22,10 @@
     <color name="vst_text_secondary">#9A8068</color>
     <color name="vst_divider">#3C2A14</color>
     <color name="vst_slider_inactive">#4A3020</color>
+
+    <!-- Meter colors -->
+    <color name="meter_green">#FF4CAF50</color>
+    <color name="meter_yellow">#FFFFC107</color>
+    <color name="meter_red">#FFF44336</color>
+    <color name="gain_reduction_cyan">#FF00BCD4</color>
 </resources>

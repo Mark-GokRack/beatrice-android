@@ -56,7 +56,6 @@ class MainFragment : Fragment() {
                 } ?: emptyList()
 
                 if (tomlFiles.isNotEmpty()) {
-                    (requireActivity() as MainActivity).resetUserAdjustableSettings()
                     copyModelFilesToExtDir(tomlFiles.first().uri)
                 } else {
                     Toast.makeText(

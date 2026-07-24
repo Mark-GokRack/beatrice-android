@@ -18,24 +18,26 @@
 #define BEATRICE_FULLDUPLEXPASS_H
 
 #include <android/log.h>
-#include <common/processor_core.h>
 #include <oboe/LatencyTuner.h>
 
+#include <algorithm>
 #include <asio/bind_executor.hpp>
 #include <asio/io_context.hpp>
 #include <asio/post.hpp>
+#include <cstring>
 #include <string>
 #include <thread>
 
+#include "effectors/AudioEffector.hpp"
+
 class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
  public:
-  BeatriceFullDuplexPass(
-      std::shared_ptr<beatrice::common::ProcessorCoreBase> processorCore,
-      std::shared_ptr<oboe::LatencyTuner> latencyTuner,
-      bool useAsyncProcessing = false, size_t frame_size = 480,
-      size_t buffer_count = 2)
+  BeatriceFullDuplexPass(std::shared_ptr<AudioEffector> effector,
+                         std::shared_ptr<oboe::LatencyTuner> latencyTuner,
+                         bool useAsyncProcessing = false,
+                         size_t frame_size = 480, size_t buffer_count = 2)
       : oboe::FullDuplexStream(),
-        processorCore_(processorCore),
+        effector_(effector),
         latencyTuner_(latencyTuner),
         useAsyncProcessing_(useAsyncProcessing),
         frame_size_(frame_size),
@@ -50,7 +52,12 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
         work_(asio::make_work_guard(*ioContext_.get())),
         ioThread_(useAsyncProcessing ? std::make_unique<std::thread>(
                                            [this]() { ioContext_->run(); })
-                                     : nullptr) {}
+                                     : nullptr) {
+    if (useAsyncProcessing_) {
+      std::fill_n(inputBuffer_.get(), buffer_size_, 0.0f);
+      std::fill_n(outputBuffer_.get(), buffer_size_, 0.0f);
+    }
+  }
 
   virtual ~BeatriceFullDuplexPass() {
     if (ioThread_ && ioThread_->joinable()) {
@@ -101,13 +108,13 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
       }
 
       size_t frame_idx_ = (buffer_index_ / frame_size_);
-      if (next_buffer_index_ / frame_size_ != frame_idx_) {
+      if (effector_ && next_buffer_index_ / frame_size_ != frame_idx_) {
         // process from internal input buffer to internal output buffer
         auto token = [this, frame_idx_]() {
           const float* inputFloats = &inputBuffer_[frame_idx_ * frame_size_];
           float* outputFloats = &outputBuffer_[frame_idx_ * frame_size_];
           int32_t samplesToProcess = frame_size_;
-          processorCore_->Process(inputFloats, outputFloats, samplesToProcess);
+          effector_->process(inputFloats, outputFloats, samplesToProcess);
         };
         asio::post(*ioContext_.get(), token);
       }
@@ -117,8 +124,8 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
         next_buffer_index_ -= buffer_size_;
       }
       buffer_index_ = next_buffer_index_;
-    } else {
-      processorCore_->Process(inputFloats, outputFloats, samplesToProcess);
+    } else if (effector_) {
+      effector_->process(inputFloats, outputFloats, samplesToProcess);
       latencyTuner_->tune();
     }
 
@@ -126,7 +133,7 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
   }
 
  private:
-  std::shared_ptr<beatrice::common::ProcessorCoreBase> processorCore_;
+  std::shared_ptr<AudioEffector> effector_;
   std::shared_ptr<oboe::LatencyTuner> latencyTuner_;
 
   bool useAsyncProcessing_ = false;

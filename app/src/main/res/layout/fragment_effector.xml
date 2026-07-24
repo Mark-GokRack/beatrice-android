@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/vst_bg_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Pre-FX section header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_pre_fx"
+            android:textColor="@color/vst_accent"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Amplifier -->
+        <include
+            android:id="@+id/amplifier_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/amplifier_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <include
+                android:id="@+id/amplifier_gain_slider"
+                layout="@layout/item_effector_slider" />
+        </LinearLayout>
+
+        <!-- Noise Gate -->
+        <include
+            android:id="@+id/noise_gate_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/noise_gate_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <include
+                android:id="@+id/noise_gate_meters"
+                layout="@layout/item_effector_dynamic_meters" />
+
+            <include
+                android:id="@+id/noise_gate_threshold_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/noise_gate_range_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/noise_gate_attack_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/noise_gate_release_slider"
+                layout="@layout/item_effector_slider" />
+        </LinearLayout>
+
+        <!-- Compressor -->
+        <include
+            android:id="@+id/compressor_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/compressor_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <include
+                android:id="@+id/compressor_meters"
+                layout="@layout/item_effector_dynamic_meters" />
+
+            <include
+                android:id="@+id/compressor_threshold_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/compressor_ratio_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/compressor_attack_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/compressor_release_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/compressor_makeup_gain_slider"
+                layout="@layout/item_effector_slider" />
+        </LinearLayout>
+
+        <!-- Pre-Equalizer -->
+        <include
+            android:id="@+id/pre_equalizer_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/pre_equalizer_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <com.gokrack.beatriceapp.view.EqCurveView
+                android:id="@+id/pre_equalizer_curve"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginBottom="12dp"
+                android:background="@color/vst_bg_card" />
+
+            <include
+                android:id="@+id/pre_eq_band_0"
+                layout="@layout/item_eq_band" />
+
+            <include
+                android:id="@+id/pre_eq_band_1"
+                layout="@layout/item_eq_band" />
+
+            <include
+                android:id="@+id/pre_eq_band_2"
+                layout="@layout/item_eq_band" />
+        </LinearLayout>
+
+        <!-- Post-FX section header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_post_fx"
+            android:textColor="@color/vst_accent"
+            android:textSize="11sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Post-Equalizer -->
+        <include
+            android:id="@+id/post_equalizer_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/post_equalizer_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <com.gokrack.beatriceapp.view.EqCurveView
+                android:id="@+id/post_equalizer_curve"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginBottom="12dp"
+                android:background="@color/vst_bg_card" />
+
+            <include
+                android:id="@+id/post_eq_band_0"
+                layout="@layout/item_eq_band" />
+
+            <include
+                android:id="@+id/post_eq_band_1"
+                layout="@layout/item_eq_band" />
+
+            <include
+                android:id="@+id/post_eq_band_2"
+                layout="@layout/item_eq_band" />
+
+            <include
+                android:id="@+id/post_eq_band_3"
+                layout="@layout/item_eq_band" />
+
+            <include
+                android:id="@+id/post_eq_band_4"
+                layout="@layout/item_eq_band" />
+        </LinearLayout>
+
+        <!-- Limiter -->
+        <include
+            android:id="@+id/limiter_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/limiter_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <include
+                android:id="@+id/limiter_meters"
+                layout="@layout/item_effector_dynamic_meters" />
+
+            <include
+                android:id="@+id/limiter_threshold_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/limiter_attack_slider"
+                layout="@layout/item_effector_slider" />
+
+            <include
+                android:id="@+id/limiter_release_slider"
+                layout="@layout/item_effector_slider" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
