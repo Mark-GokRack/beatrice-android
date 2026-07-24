@@ -85,4 +85,11 @@
     <string name="output_peak">Output Peak</string>
     <string name="gain_reduction">Gain Reduction</string>
     <string name="detector_level">Detector Level</string>
+
+    <!-- Preset management -->
+    <string name="preset_save">Save</string>
+    <string name="preset_reset">Reset to Default</string>
+    <string name="preset_saved">Saved to %s</string>
+    <string name="preset_reset_confirm_title">Reset All Settings</string>
+    <string name="preset_reset_confirm_message">Are you sure you want to reset all parameters to default values?</string>
 </resources>

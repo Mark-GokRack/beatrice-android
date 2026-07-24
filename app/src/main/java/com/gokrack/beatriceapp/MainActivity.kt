@@ -7,9 +7,15 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -27,12 +33,33 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
+        
+        // WindowInsets API: ノッチ対応
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         setContentView(R.layout.activity_main)
 
         SettingsManager.init(this)
+        PresetManager.init(this)
 
         viewModel = ViewModelProvider(this)[EngineStateViewModel::class.java]
         viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+
+        // ステータスバーの下にプリセットバーがくるよう高さとパディングを調整
+        val presetBar = findViewById<android.widget.LinearLayout>(R.id.preset_bar)
+        val baseHeightPx = (36f * resources.displayMetrics.density).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(presetBar) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 高さを56dp + ステータスバー高さに設定
+            view.layoutParams.height = baseHeightPx + systemBars.top
+            view.layoutParams = view.layoutParams
+            // 上部パディングでノッチを回避
+            view.setPadding(view.paddingLeft, systemBars.top, view.paddingRight, view.paddingBottom)
+            insets
+        }
+
+        // プリセットバー初期化
+        setupPresetBar()
 
         // ViewPager2 + TabLayout
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
@@ -97,6 +124,57 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
                 voiceNameList.add( "Voice Morphing Mode");
             }
             viewModel.voiceNames.value = voiceNameList
+        }
+    }
+
+    private fun setupPresetBar() {
+        val presetSpinner = findViewById<Spinner>(R.id.preset_spinner)
+        val saveButton = findViewById<ImageButton>(R.id.preset_save_button)
+        val resetButton = findViewById<ImageButton>(R.id.preset_reset_button)
+
+        // プリセット一覧を取得
+        val presetNames = PresetManager.getPresetNames()
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, presetNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        presetSpinner.adapter = adapter
+
+        // 現在のプリセットを選択状態に
+        val currentPresetIndex = PresetManager.getCurrentPresetIndex()
+        presetSpinner.setSelection(currentPresetIndex)
+
+        // プリセット選択時
+        presetSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                PresetManager.loadPreset(position)
+                applyPersistedUserSettingsToEngine()
+                viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+                viewModel.requestSettingsReset()
+            }
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
+
+        // 保存ボタン
+        saveButton.setOnClickListener {
+            val currentIndex = presetSpinner.selectedItemPosition
+            PresetManager.savePreset(currentIndex)
+            android.widget.Toast.makeText(
+                this,
+                getString(R.string.preset_saved, presetNames[currentIndex]),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        // リセットボタン
+        resetButton.setOnClickListener {
+            android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.preset_reset_confirm_title)
+                .setMessage(R.string.preset_reset_confirm_message)
+                .setPositiveButton(R.string.preset_reset) { _, _ ->
+                    resetUserAdjustableSettings()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
         }
     }
 
