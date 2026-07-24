@@ -288,6 +288,15 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         super.onDestroy()
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        // Stop realtime audio processing when app moves to background.
+        if (!isChangingConfigurations && viewModel.isEngineRunning.value == true) {
+            stopEffect()
+        }
+    }
+
     internal fun toggleEffect() {
         if (viewModel.isEngineRunning.value == true) {
             stopEffect()
