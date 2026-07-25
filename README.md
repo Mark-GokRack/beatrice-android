@@ -3,6 +3,7 @@
 <img src="./app/src/main/res/icon_round.png" width="50%">
 
 [beatrice-vst](https://github.com/prj-beatrice/beatrice-vst) を Android へ移植したアプリです。
+下記のように本家様の許諾は得ていますが、あくまで非公式ですのでご承知おきください。
 
 ## How to Use
 
