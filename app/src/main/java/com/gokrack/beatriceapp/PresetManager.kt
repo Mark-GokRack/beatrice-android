@@ -139,7 +139,13 @@ object PresetManager {
             val parsed = morphingSerialized.split(";").mapNotNull { it.toFloatOrNull() }
             if (parsed.size == 256) {  // Morphing weights are always 256-element array
                 SettingsManager.saveMorphingWeights(parsed.toFloatArray())
+            }else{
+                // If morphing weights are not loaded, reset to default
+                SettingsManager.resetMorphingWeights()
             }
+        }else{
+            // If morphing weights are not loaded, reset to default
+            SettingsManager.resetMorphingWeights()
         }
 
         // Amplifier

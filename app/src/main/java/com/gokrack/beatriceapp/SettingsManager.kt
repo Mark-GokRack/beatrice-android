@@ -69,7 +69,7 @@ object SettingsManager {
     const val DEFAULT_COMPRESSOR_ATTACK = 5.0f
     const val DEFAULT_COMPRESSOR_RELEASE = 50.0f
     const val DEFAULT_COMPRESSOR_MAKEUP_GAIN = 0.0f
-    const val DEFAULT_LIMITER_ENABLED = false
+    const val DEFAULT_LIMITER_ENABLED = true
     const val DEFAULT_LIMITER_THRESHOLD = -3.0f
     const val DEFAULT_LIMITER_ATTACK = 5.0f
     const val DEFAULT_LIMITER_RELEASE = 50.0f
@@ -159,6 +159,10 @@ object SettingsManager {
     fun saveMorphingWeights(weights: FloatArray) {
         val serialized = weights.joinToString(";") { String.format(Locale.US, "%.6f", it) }
         prefs.edit().putString(KEY_MORPHING_WEIGHTS, serialized).apply()
+    }
+
+    fun resetMorphingWeights() {
+        prefs.edit().putString(KEY_MORPHING_WEIGHTS, null).apply()
     }
 
     fun loadMorphingWeights(): FloatArray {

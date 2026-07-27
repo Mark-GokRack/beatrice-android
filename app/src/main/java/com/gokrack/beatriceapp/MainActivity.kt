@@ -146,8 +146,8 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         presetSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
                 PresetManager.loadPreset(position)
-                applyPersistedUserSettingsToEngine()
                 viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+                applyPersistedUserSettingsToEngine()
                 viewModel.requestSettingsReset()
             }
 
