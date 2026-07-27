@@ -22,6 +22,7 @@ object beatriceEngine {
     external fun setPlaybackDeviceId(deviceId: Int)
     external fun setPerformanceMode(performanceMode: Int): Boolean
     external fun setAsyncMode(isAsyncMode: Boolean): Boolean
+    external fun setVoiceCommunicationMode(isVoiceCommunicationMode: Boolean): Boolean
     external fun readModel( modelPath : String ):Boolean
     external fun getModelName():String
     external fun getModelDescription():String

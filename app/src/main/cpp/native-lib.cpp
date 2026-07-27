@@ -586,6 +586,19 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setAsyncMode(JNIEnv* env,
 }
 
 JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setVoiceCommunicationMode(
+    JNIEnv* env, jclass type, jboolean isVoiceCommunicationMode) {
+  if (!audioEngine) {
+    LOGE(
+        "Engine is null, you must call createEngine "
+        "before calling this method");
+    return JNI_FALSE;
+  }
+  audioEngine->setVoiceCommunicationMode(isVoiceCommunicationMode);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setIntonationIntensity(
     JNIEnv* env, jclass type, jdouble intensity) {
   if (!processor) {

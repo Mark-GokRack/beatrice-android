@@ -21,6 +21,7 @@
     <string name="normal_latency">Normal</string>
     <string name="power_saving">PowerSaving</string>
     <string name="async_proc">Use Async Processing</string>
+    <string name="voice_communication">Use AEC ( may increase latency )</string>
 
     <string name="model_label">Model</string>
     <string name="model_select">Open</string>

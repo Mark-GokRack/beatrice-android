@@ -14,6 +14,7 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
  public:
   void setPlaybackDeviceId(int32_t deviceId);
   void setRecordingDeviceId(int32_t deviceId);
+  void setVoiceCommunicationMode(bool isVoiceCommunicationMode);
   void setPerformanceMode(oboe::PerformanceMode mode);
   void setAsyncMode(bool isAsyncMode);
 
@@ -57,6 +58,7 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
   const int32_t mOutputChannelCount = oboe::ChannelCount::Mono;
   oboe::PerformanceMode mPerformanceMode = oboe::PerformanceMode::LowLatency;
   bool mIsAsyncMode = false;
+  bool mIsVoiceCommunicationMode = false;
 
   std::unique_ptr<BeatriceFullDuplexPass> mDuplexStream;
   std::shared_ptr<oboe::AudioStream> mRecordingStream;

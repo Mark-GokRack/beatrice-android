@@ -21,6 +21,11 @@ void BeatriceAudioEngine::setAsyncMode(bool isAsyncMode) {
   mIsAsyncMode = isAsyncMode;
 }
 
+void BeatriceAudioEngine::setVoiceCommunicationMode(
+    bool isVoiceCommunicationMode) {
+  mIsVoiceCommunicationMode = isVoiceCommunicationMode;
+}
+
 bool BeatriceAudioEngine::isAAudioRecommended() const {
   return oboe::AudioStreamBuilder::isAAudioRecommended();
 }
@@ -139,6 +144,10 @@ oboe::AudioStreamBuilder* BeatriceAudioEngine::setupRecordingStreamParameters(
       ->setSampleRate(sampleRate)
       ->setChannelCount(mInputChannelCount);
 
+  if (mIsVoiceCommunicationMode) {
+    builder->setInputPreset(oboe::InputPreset::VoiceCommunication);
+  }
+
   return setupCommonStreamParameters(builder);
 }
 
@@ -149,6 +158,10 @@ oboe::AudioStreamBuilder* BeatriceAudioEngine::setupPlaybackStreamParameters(
       ->setDeviceId(mPlaybackDeviceId)
       ->setDirection(oboe::Direction::Output)
       ->setChannelCount(mOutputChannelCount);
+
+  if (mIsVoiceCommunicationMode) {
+    builder->setUsage(oboe::Usage::VoiceCommunication);
+  }
 
   return setupCommonStreamParameters(builder);
 }
@@ -164,7 +177,6 @@ oboe::AudioStreamBuilder* BeatriceAudioEngine::setupCommonStreamParameters(
   } else {
     builder->setPerformanceMode(oboe::PerformanceMode::None);
   }
-  builder->setUsage(oboe::Usage::Game);
   return builder;
 }
 

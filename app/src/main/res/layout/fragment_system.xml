@@ -107,6 +107,15 @@
             android:textSize="14sp"
             android:layout_marginTop="8dp" />
 
+        <CheckBox
+            android:id="@+id/voiceCommunicationCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_communication"
+            android:textColor="@color/vst_text_primary"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

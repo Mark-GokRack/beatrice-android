@@ -114,6 +114,14 @@ class SystemFragment : Fragment() {
             }
         }
 
+        // Voice communication mode
+        val voiceCommCheckbox = view.findViewById<CheckBox>(R.id.voiceCommunicationCheckbox)
+        voiceCommCheckbox.isChecked = viewModel.isVoiceCommunicationMode.value ?: false
+        voiceCommCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.isVoiceCommunicationMode.value = isChecked
+            beatriceEngine.setVoiceCommunicationMode(isChecked)
+        }
+
         // Observe running state — disable settings while engine is active
         viewModel.isEngineRunning.observe(viewLifecycleOwner) { running ->
             setAllSettingsEnabled(!running)
@@ -141,6 +149,8 @@ class SystemFragment : Fragment() {
         view.findViewById<RadioGroup>(R.id.apiSelectionGroup).check(
             if (isAAudio) R.id.aaudioButton else R.id.slesButton
         )
+
+        view.findViewById<CheckBox>(R.id.voiceCommunicationCheckbox).isEnabled = enabled
 
         updateLatencyAndAsync(
             enabled = enabled && isAAudio,
