@@ -49,17 +49,25 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 <img src="./fig/fig_system.png" width="33%">
 
 音声 API やデバイス選択など、システム寄りの設定を行います。
+音声処理中はこのタブの内容について設定を変更できません。
 
 - **Audio API**
   - 使用する Android の音声 API を選択します。特に理由がなければ **AAudio** で構いません。
 - **Latency Mode**
   - AAudio 選択時に有効になる、レイテンシに関するモードです。特に理由がなければ **LowLatency** のままで良いはずです。
 - **Use Async Processing**
-  - beatrice の処理を AAudio のコールバックとは別スレッドで実行するオプションです。AAudio / LowLatency との組み合わせのみ有効です。
+  - beatrice の処理を AAudio のコールバックとは別スレッドで実行するオプションです。
+  - AAudio / LowLatency との組み合わせのみ有効です。
+- **Use AEC**
+  - デバイス内蔵の AEC を有効にするフラグを立てます。
+  - ハウリング防止に効果がある可能性がある反面、音量や音声品質、レイテンシを悪化させます。
 - **Recording device**
   - マイクなどの音声入力デバイスを選択します。
+  - Bluetooth 接続のものも選択できますが、レイテンシが増えるため有線接続を推奨します。
 - **Playback device**
   - スピーカーなどの音声出力デバイスを選択します。
+  - Bluetooth 接続のものも選択できますが、レイテンシが増えるため有線接続を推奨します。
+  - マイクに近いスピーカーを選択するとハウリングを起こす恐れがありますのでご注意ください。
 
 ---
 
@@ -76,7 +84,8 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 - **Voice**
   - モデルに含まれている話者をスピナーから選択できます。
   - 表示される利用規約を守っての使用をお願いします。
-  - 話者が２つ以上含まれているモデルの場合、末尾に "Voice Morphing Mode" が追加されます。このモードを選択した場合、後述する Morphing タブの内容に従って話者特徴量を混合した声質になります。
+  - 話者が２つ以上含まれているモデルの場合、末尾に "Voice Morphing Mode" が追加されます。
+  - このモードを選択した場合、後述する Morphing タブの内容に従って話者特徴量を混合した声質になります。
 
 ---
 
@@ -84,19 +93,22 @@ Bluetooth 接続のものでも動作はしますが、レイテンシ(音声変
 
 <img src="./fig/fig_params_basic.png" width="33%">
 
-Beatrice の動作をコントロールするための音声変換パラメータを調整します。各スライダーの左右にある **−** / **+** ボタンで微調整ができます。
+Beatrice の動作をコントロールするための音声変換パラメータを調整します。  
+各スライダーの左右にある **−** / **+** ボタンで微調整ができます。  
 画面が煩雑になるのを避けるため、高度なパラメータについては初期状態では ADVANCED の項目の中に隠れています。
 
-- **InputGain**
-  - マイク入力のゲイン調整です（単位: dB）。
-- **OutputGain**
-  - スピーカー出力のゲイン調整です。
+- **InputGain** / **OutputGain**
+  - マイク入力とスピーカー出力のゲイン調整です（単位: dB）。
+  - 上げすぎると音が潰れたりハウリングの原因となりますため、ご注意ください。
 - **PitchShift**
   - 音声の高さを調整します（単位: 半音）。
+  - +12 で 1 オクターブ上、-12 で 1 オクターブ下に相当します。
 - **FormantShift**
   - 音声のフォルマントを調整します。
+  - + 方向で女性らしい声に、− 方向で男性らしい声になる傾向があります。
 - **VQ Neighbors**
   - 声質の変換品質に関わるパラメータです。
+  - 値を大きくすると話者類似度が向上しますが、発音が不明瞭になる傾向があります。
 
 <img src="./fig/fig_params_advanced.png" width="33%">
 
@@ -122,15 +134,26 @@ Beatrice の動作をコントロールするための音声変換パラメー�
 
 <img src="./fig/fig_effects.png" width="33%">
 
-Beatrice の処理を行う前後に配置された エフェクト（音響効果）を制御するタブです。
-各項目の右側には有効・無効を切り替えるトグルボタンが配置されています。
+Beatrice の処理を行う前後に配置された エフェクト（音響効果）を制御するタブです。  
+各項目の右側には有効・無効を切り替えるトグルボタンが配置されています。  
 
 - **Pre-FX (before Beatrice)**
   - 音声変換の前に適用されるエフェクトです。
-  - **Amplifier**, **Noise Gate**, **Compressor**, **Pre-Equalizer**
+  - **Amplifier**  
+    <img src="./fig/fig_fx_amp.png" width="33%">
+    - マイク入力に対するゲインを -30 ~ +30 dB の範囲で調整します。
+  - **Noise Gate**  
+    <img src="./fig/fig_fx_noisegate.png" width="33%">
+  - **Compressor**  
+    <img src="./fig/fig_fx_compressor.png" width="33%">
+  - **Pre-Equalizer**  
+    <img src="./fig/fig_fx_preEQ.png" width="33%">
 - **Post-FX (after Beatrice)**
   - 音声変換の後に適用されるエフェクトです。
-  - **Post-Equalizer**, **Limiter**
+  - **Post-Equalizer**  
+    <img src="./fig/fig_fx_postEQ.png" width="33%">
+  - **Limiter**  
+    <img src="./fig/fig_fx_limiter.png" width="33%">
 
 ---
 
