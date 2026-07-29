@@ -199,6 +199,12 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             SettingsManager.loadSourcePitchRangeMin().toDouble(),
             SettingsManager.loadSourcePitchRangeMax().toDouble()
         )
+
+        val morphingWeights = SettingsManager.loadMorphingWeights()
+        for (i in morphingWeights.indices) {
+            beatriceEngine.setSpeakerMorphingWeight(i, morphingWeights[i].toDouble())
+        }
+
         applyEffectorSettingsToEngine()
     }
 
