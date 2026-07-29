@@ -215,6 +215,7 @@
             android:orientation="vertical"
             android:visibility="gone"
             android:padding="12dp"
+            android:layout_marginBottom="48dp"
             android:background="@color/vst_bg_secondary">
 
             <include

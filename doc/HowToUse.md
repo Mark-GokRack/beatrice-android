@@ -116,13 +116,15 @@ Beatrice の動作をコントロールするための音声変換パラメー�
   - 音声変換処理に関する高度なパラメータを調整します。
 
     - **IntonationIntensity**
-        - 変換後の声のイントネーション（抑揚）の強度を調整します。
+        - 変換後の声のイントネーション（抑揚）の強度を調整します。大きくなるにつれて抑揚が大げさになります。
     - **PitchCorrection**
-        - ピッチ補正の強度を調整します（0.0 ～ 1.0）。
+        - ピッチ補正の強度を調整します（0.0 ～ 1.0）。 0 で無効になります。
+        - 強度が高い場合、出力音声の音高が十二平均律に近づいていきます。
     - **PitchCorrectionMode**
         - ピッチ補正のアルゴリズムを **Hard 0** / **Hard 1** から選択します。
     - **SourcePitchRange**
-        - 入力音声として想定するピッチ（基本周波数）の範囲を設定する…のでしょうか？ (あまり把握してません)。レンジスライダーで下限・上限を個別に調整できます。
+        - 入力音声として想定する音声。レンジスライダーで下限・上限を個別に調整できます。
+        - 単位は MIDI ノード番号で、周波数に変換した値も隣に表示しています。
 
 ---
 
@@ -138,22 +140,54 @@ Beatrice の処理を行う前後に配置された エフェクト（音響効�
 各項目の右側には有効・無効を切り替えるトグルボタンが配置されています。  
 
 - **Pre-FX (before Beatrice)**
-  - 音声変換の前に適用されるエフェクトです。
+  - 音声変換の前に適用されるエフェクタ類。
+
   - **Amplifier**  
     <img src="./fig/fig_fx_amp.png" width="33%">
     - マイク入力に対するゲインを -30 ~ +30 dB の範囲で調整します。
   - **Noise Gate**  
     <img src="./fig/fig_fx_noisegate.png" width="33%">
+    - 閾値(Threshold)を下回る音量の音声が入力されたときに出力を絞るエフェクタ。
+    - 各項目の内容は下記の通り
+      - Threshold : 音声がゲートを開く基準となる音量
+      - Range : ゲートが閉じたときの減衰量
+      - Attack : ゲートが開く際にかかる時間
+      - Release : ゲートが閉じる際にかかる時間
   - **Compressor**  
     <img src="./fig/fig_fx_compressor.png" width="33%">
+    - 閾値(Threshold)を下回る音量の音声が入力されたときに出力音声の音量を圧縮するエフェクタ。
+    - 各項目の内容は下記の通り
+      - Threshold : コンプレッションを開始する音量レベル
+      - Ratio : 音量を圧縮する比率
+      - Attack : コンプレッションを開始するまでの時間
+      - Release : コンプレッションを終了するまでの時間
+      - Makeup Gain : コンプレッション後の音量調整
   - **Pre-Equalizer**  
     <img src="./fig/fig_fx_preEQ.png" width="33%">
+    - 3バンドの Biquad フィルタを用いてイコライジングを行うエフェクタ。
+      - Beatrice の処理前の EQ の役割は Beatrice に渡すノイズ低減と考えて、バンド数は少なめに設定。
+    - 各バンドの設定項目は下記の通り
+      - Filter Type
+        - Peaking, Lowpass, Highpass, LowShelf, HighShelf, Notch, Allpass の７種類から選択可能
+      - Frequency
+        - フィルタの中心周波数を調整するスライダー
+      - Q
+        - フィルタ特性の鋭さを調整するスライダー
+      - Gain (Peaking, LowShelf, HighShelf のみ)
+        - フィルタによって上げ下げするゲインを調整するスライダー
 - **Post-FX (after Beatrice)**
   - 音声変換の後に適用されるエフェクトです。
   - **Post-Equalizer**  
     <img src="./fig/fig_fx_postEQ.png" width="33%">
+    - 設定項目の内容については Pre Equalizer のものと同じ。
+      - 役割としては出力の音色調整となるため、 pre-EQ に比べてバンド数を多めに確保（5バンド）。
   - **Limiter**  
     <img src="./fig/fig_fx_limiter.png" width="33%">
+    - 閾値(Threshold)を下回る音量の音声が入力されたときに出力音声の音量を閾値以下になるように強制的に下げるエフェクタ。
+    - 各項目の内容は下記の通り
+      - Threshold : 音量を制限する最大値
+      - Attack : 制限が適用されるまでの時間
+      - Release : 制限が解除されるまでの時間
 
 ---
 

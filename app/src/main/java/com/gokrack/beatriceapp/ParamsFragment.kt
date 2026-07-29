@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import kotlin.math.roundToInt
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.slider.Slider
@@ -191,7 +192,8 @@ class ParamsFragment : Fragment() {
         rangeSlider.addOnChangeListener { slider, _, _ ->
             if (isRestoring) return@addOnChangeListener
             val values = slider.values
-            rangeText.text = "${values[0]} - ${values[1]}"
+            val valuesInHz = listOf((440 * Math.pow(2.0, (values[0] - 69) / 12.0)).roundToInt(), (440 * Math.pow(2.0, (values[1] - 69) / 12.0)).roundToInt())
+            rangeText.text = "${values[0]} - ${values[1]} (${valuesInHz[0]} Hz - ${valuesInHz[1]} Hz)"
             SettingsManager.saveSourcePitchRange(values[0], values[1])
             beatriceEngine.setSourcePitchRange(values[0].toDouble(), values[1].toDouble())
         }
@@ -257,8 +259,10 @@ class ParamsFragment : Fragment() {
         val rangeSlider = view.findViewById<RangeSlider>(R.id.source_pitch_range_slider)
         val minPitch = SettingsManager.loadSourcePitchRangeMin()
         val maxPitch = SettingsManager.loadSourcePitchRangeMax()
+        val minHz = (440 * Math.pow(2.0, (minPitch - 69) / 12.0)).roundToInt()
+        val maxHz = (440 * Math.pow(2.0, (maxPitch - 69) / 12.0)).roundToInt()
+        rangeText.text = "$minPitch - $maxPitch ($minHz Hz - $maxHz Hz)"
         rangeSlider.values = listOf(minPitch, maxPitch)
-        rangeText.text = "$minPitch - $maxPitch"
         SettingsManager.saveSourcePitchRange(minPitch, maxPitch)
         beatriceEngine.setSourcePitchRange(minPitch.toDouble(), maxPitch.toDouble())
     }

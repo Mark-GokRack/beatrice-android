@@ -662,12 +662,12 @@
 
                 <TextView
                     android:id="@+id/source_pitch_range_value"
-                    android:layout_width="120dp"
+                    android:layout_width="240dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/vst_text_primary"
                     android:textSize="13sp"
                     android:gravity="end"
-                    android:text="33.125 - 80.875" />
+                    android:text="33.125 - 80.875 (55 Hz - 867 Hz)" />
 
             </LinearLayout>
 
@@ -681,7 +681,8 @@
                 app:values="@array/source_pitch_range_defaults"
                 app:trackColorActive="@color/vst_accent"
                 app:trackColorInactive="@color/vst_slider_inactive"
-                app:thumbColor="@color/vst_accent" />
+                app:thumbColor="@color/vst_accent"
+                android:layout_marginBottom="48dp" />
 
         </LinearLayout>
 
