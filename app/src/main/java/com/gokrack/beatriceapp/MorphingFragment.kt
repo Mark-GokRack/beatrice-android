@@ -134,22 +134,12 @@ class MorphingFragment : Fragment() {
         }
 
         private fun applyWeight(pos: Int, newVal: Float, holder: ViewHolder) {
-            val current = currentWeights()
-            val rounded = Math.round(newVal * 100) / 100f
-            val oldWeight = current[pos]
-            if (rounded == oldWeight) return
+            val update = viewModel.applyMorphingWeight(pos, newVal)
+            if (!update.changed) return
 
-            val wasZero = oldWeight < 0.0001f
-            val isNowZero = rounded < 0.0001f
+            holder.valueText.text = String.format(Locale.US, "%.2f", update.roundedValue)
 
-            val updated = viewModel.updateMorphingWeight(pos, rounded)
-            beatriceEngine.setSpeakerMorphingWeights(updated)
-            SettingsManager.saveMorphingWeights(updated)
-
-            holder.valueText.text = String.format(Locale.US, "%.2f", rounded)
-
-            if (wasZero != isNowZero) {
-                viewModel.morphingDescriptionTrigger.postValue(Unit)
+            if (update.zeroStateChanged) {
                 holder.slider.post {
                     for (i in 0 until voiceCount) {
                         notifyItemChanged(i, PAYLOAD_GRAYOUT)

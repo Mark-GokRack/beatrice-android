@@ -24,11 +24,17 @@ class EngineStateViewModel : ViewModel() {
     val morphingDescriptionTrigger = MutableLiveData<Unit>()
     val settingsResetTrigger = MutableLiveData(0)
 
+    data class MorphingWeightUpdateResult(
+        val changed: Boolean,
+        val roundedValue: Float,
+        val zeroStateChanged: Boolean
+    )
+
     fun requestSettingsReset() {
         settingsResetTrigger.value = (settingsResetTrigger.value ?: 0) + 1
     }
 
-    fun updateMorphingWeight(index: Int, value: Float): FloatArray {
+    private fun updateMorphingWeight(index: Int, value: Float): FloatArray {
         require(index in 0 until MORPHING_WEIGHT_SIZE) { "index out of range: $index" }
 
         val base = morphingWeights.value ?: FloatArray(MORPHING_WEIGHT_SIZE) { 0f }
@@ -36,6 +42,39 @@ class EngineStateViewModel : ViewModel() {
         updated[index] = value
         morphingWeights.value = updated
         return updated
+    }
+
+    fun applyMorphingWeight(index: Int, rawValue: Float): MorphingWeightUpdateResult {
+        require(index in 0 until MORPHING_WEIGHT_SIZE) { "index out of range: $index" }
+
+        val current = morphingWeights.value ?: SettingsManager.loadMorphingWeights()
+        val oldWeight = current[index]
+        val rounded = Math.round(rawValue * 100) / 100f
+        if (rounded == oldWeight) {
+            return MorphingWeightUpdateResult(
+                changed = false,
+                roundedValue = rounded,
+                zeroStateChanged = false
+            )
+        }
+
+        val wasZero = oldWeight < 0.0001f
+        val isNowZero = rounded < 0.0001f
+
+        val updated = updateMorphingWeight(index, rounded)
+        beatriceEngine.setSpeakerMorphingWeights(updated)
+        SettingsManager.saveMorphingWeights(updated)
+
+        val zeroStateChanged = wasZero != isNowZero
+        if (zeroStateChanged) {
+            morphingDescriptionTrigger.postValue(Unit)
+        }
+
+        return MorphingWeightUpdateResult(
+            changed = true,
+            roundedValue = rounded,
+            zeroStateChanged = zeroStateChanged
+        )
     }
 
     /**
