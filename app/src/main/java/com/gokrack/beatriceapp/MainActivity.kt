@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         PresetManager.init(this)
 
         viewModel = ViewModelProvider(this)[EngineStateViewModel::class.java]
-        viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+        viewModel.reloadMorphingWeightsFromSettings()
 
         // ステータスバーの下にプリセットバーがくるよう高さとパディングを調整
         val presetBar = findViewById<android.widget.LinearLayout>(R.id.preset_bar)
@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         presetSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
                 PresetManager.loadPreset(position)
-                viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+                viewModel.reloadMorphingWeightsFromSettings()
                 applyPersistedUserSettingsToEngine()
                 viewModel.requestSettingsReset()
             }
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
     internal fun resetUserAdjustableSettings() {
         SettingsManager.resetAllToDefaults()
-        viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
+        viewModel.reloadMorphingWeightsFromSettings()
         applyPersistedUserSettingsToEngine()
         viewModel.requestSettingsReset()
     }

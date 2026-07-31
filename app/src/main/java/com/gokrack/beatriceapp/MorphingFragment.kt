@@ -35,20 +35,14 @@ class MorphingFragment : Fragment() {
         recyclerView.adapter = adapter
 
         viewModel.morphingVoiceNames.observe(viewLifecycleOwner) { names ->
-            ensureMorphingWeightsInitialized()
+            viewModel.ensureMorphingWeightsInitialized()
             adapter.setData(names)
         }
 
         viewModel.settingsResetTrigger.observe(viewLifecycleOwner) {
             val names = viewModel.morphingVoiceNames.value ?: emptyList()
-            ensureMorphingWeightsInitialized()
+            viewModel.ensureMorphingWeightsInitialized()
             adapter.setData(names)
-        }
-    }
-
-    private fun ensureMorphingWeightsInitialized() {
-        if (viewModel.morphingWeights.value == null) {
-            viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
         }
     }
 
@@ -62,12 +56,7 @@ class MorphingFragment : Fragment() {
         private var voiceCount = 0
 
         private fun currentWeights(): FloatArray {
-            val existing = viewModel.morphingWeights.value
-            if (existing != null) return existing
-
-            val loaded = SettingsManager.loadMorphingWeights()
-            viewModel.morphingWeights.value = loaded
-            return loaded
+            return viewModel.ensureMorphingWeightsInitialized()
         }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

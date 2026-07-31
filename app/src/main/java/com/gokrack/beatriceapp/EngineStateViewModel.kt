@@ -34,6 +34,19 @@ class EngineStateViewModel : ViewModel() {
         settingsResetTrigger.value = (settingsResetTrigger.value ?: 0) + 1
     }
 
+    fun reloadMorphingWeightsFromSettings() {
+        morphingWeights.value = SettingsManager.loadMorphingWeights()
+    }
+
+    fun ensureMorphingWeightsInitialized(): FloatArray {
+        val existing = morphingWeights.value
+        if (existing != null) return existing
+
+        val loaded = SettingsManager.loadMorphingWeights()
+        morphingWeights.value = loaded
+        return loaded
+    }
+
     private fun updateMorphingWeight(index: Int, value: Float): FloatArray {
         require(index in 0 until MORPHING_WEIGHT_SIZE) { "index out of range: $index" }
 
@@ -47,7 +60,7 @@ class EngineStateViewModel : ViewModel() {
     fun applyMorphingWeight(index: Int, rawValue: Float): MorphingWeightUpdateResult {
         require(index in 0 until MORPHING_WEIGHT_SIZE) { "index out of range: $index" }
 
-        val current = morphingWeights.value ?: SettingsManager.loadMorphingWeights()
+        val current = ensureMorphingWeightsInitialized()
         val oldWeight = current[index]
         val rounded = Math.round(rawValue * 100) / 100f
         if (rounded == oldWeight) {
