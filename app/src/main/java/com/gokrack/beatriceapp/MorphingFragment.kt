@@ -35,14 +35,20 @@ class MorphingFragment : Fragment() {
         recyclerView.adapter = adapter
 
         viewModel.morphingVoiceNames.observe(viewLifecycleOwner) { names ->
-            val weights = viewModel.morphingWeights.value ?: SettingsManager.loadMorphingWeights()
-            adapter.setData(names, weights)
+            ensureMorphingWeightsInitialized()
+            adapter.setData(names)
         }
 
         viewModel.settingsResetTrigger.observe(viewLifecycleOwner) {
             val names = viewModel.morphingVoiceNames.value ?: emptyList()
-            val weights = viewModel.morphingWeights.value ?: SettingsManager.loadMorphingWeights()
-            adapter.setData(names, weights)
+            ensureMorphingWeightsInitialized()
+            adapter.setData(names)
+        }
+    }
+
+    private fun ensureMorphingWeightsInitialized() {
+        if (viewModel.morphingWeights.value == null) {
+            viewModel.morphingWeights.value = SettingsManager.loadMorphingWeights()
         }
     }
 
@@ -52,9 +58,17 @@ class MorphingFragment : Fragment() {
 
     inner class MorphingAdapter : RecyclerView.Adapter<MorphingAdapter.ViewHolder>() {
 
-        private val weights = FloatArray(256) { 0f }
         private val voiceNameList = mutableListOf<String>()
         private var voiceCount = 0
+
+        private fun currentWeights(): FloatArray {
+            val existing = viewModel.morphingWeights.value
+            if (existing != null) return existing
+
+            val loaded = SettingsManager.loadMorphingWeights()
+            viewModel.morphingWeights.value = loaded
+            return loaded
+        }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val nameLabel: TextView = itemView.findViewById(R.id.voice_name_label)
@@ -85,6 +99,7 @@ class MorphingFragment : Fragment() {
         }
 
         private fun bindFull(holder: ViewHolder, position: Int) {
+            val weights = currentWeights()
             val weight = weights[position]
             holder.nameLabel.text = voiceNameList.getOrElse(position) { "Voice $position" }
             holder.valueText.text = String.format(Locale.US, "%.2f", weight)
@@ -119,6 +134,7 @@ class MorphingFragment : Fragment() {
         }
 
         private fun applyWeight(pos: Int, newVal: Float, holder: ViewHolder) {
+            val weights = currentWeights()
             val rounded = Math.round(newVal * 100) / 100f
             val oldWeight = weights[pos]
             if (rounded == oldWeight) return
@@ -144,6 +160,7 @@ class MorphingFragment : Fragment() {
         }
 
         private fun bindGrayout(holder: ViewHolder, position: Int) {
+            val weights = currentWeights()
             val weight = weights[position]
             val enabled = isSliderEnabled(position, weight)
             val alpha = if (!enabled) 0.4f else 1.0f
@@ -167,15 +184,15 @@ class MorphingFragment : Fragment() {
             return countNonZero() < 8
         }
 
-        private fun countNonZero(): Int = (0 until voiceCount).count { weights[it] > 0.001f }
+        private fun countNonZero(): Int {
+            val weights = currentWeights()
+            return (0 until voiceCount).count { weights[it] > 0.001f }
+        }
 
-        fun setData(names: List<String>, newWeights: FloatArray) {
+        fun setData(names: List<String>) {
             voiceNameList.clear()
             voiceNameList.addAll(names)
             voiceCount = names.size
-            for (i in 0 until 256) {
-                weights[i] = newWeights[i]
-            }
             notifyDataSetChanged()
         }
     }
