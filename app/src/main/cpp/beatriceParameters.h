@@ -20,8 +20,8 @@ struct BeatriceParameters {
   int vqNumNeighbors = 4;
   std::array<double, beatrice::common::kMaxNSpeakers + 1>
       averageTargetPitchBase = {0.0};
-  std::array<double, beatrice::common::kMaxNSpeakers> speakerMorphingWeights = {
-      0.0};
+  std::array<float, beatrice::common::kMaxNSpeakers> speakerMorphingWeights = {
+      0.0f};
 };
 
 #endif  // BEATRICE_PARAMETERS_H

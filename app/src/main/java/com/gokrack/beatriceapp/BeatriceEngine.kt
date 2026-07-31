@@ -44,7 +44,7 @@ object beatriceEngine {
     external fun setPitchCorrectionMode(mode: Int): Boolean
     external fun setSourcePitchRange(minPitch: Double, maxPitch: Double): Boolean
     external fun setVQNumNeighbors(numNeighbors: Int): Boolean
-    external fun setSpeakerMorphingWeights(weights: DoubleArray): Boolean
+    external fun setSpeakerMorphingWeights(weights: FloatArray): Boolean
     external fun setProcessorEnabled(enabled: Boolean): Boolean
     external fun setNoiseGateEnabled(enabled: Boolean): Boolean
     external fun setNoiseGateThreshold(threshold: Double): Boolean

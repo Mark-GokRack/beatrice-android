@@ -12,14 +12,13 @@
 using namespace beatrice::common;
 
 namespace {
-std::array<float, kMaxNSpeakers> toFloatWeights(
-    const std::array<double, kMaxNSpeakers>& weights) {
-  std::array<float, kMaxNSpeakers> floatWeights{};
-  for (int32_t i = 0; i < kMaxNSpeakers; ++i) {
-    floatWeights[static_cast<size_t>(i)] =
-        static_cast<float>(weights[static_cast<size_t>(i)]);
+std::array<float, kMaxNSpeakers> zeroUnusedWeights(
+    const std::array<float, kMaxNSpeakers>& weights, size_t voiceCount) {
+  std::array<float, kMaxNSpeakers> result{};
+  for (size_t i = 0; i < voiceCount; ++i) {
+    result[i] = weights[i];
   }
-  return floatWeights;
+  return result;
 }
 }  // namespace
 
@@ -268,14 +267,14 @@ void BeatriceProcessor::setVQNumNeighbors(int32_t numNeighbors) {
 }
 
 bool BeatriceProcessor::setSpeakerMorphingWeights(
-    const std::array<double, beatrice::common::kMaxNSpeakers>& weights) {
-  mBeatriceParameters.speakerMorphingWeights = weights;
+    const std::array<float, beatrice::common::kMaxNSpeakers>& weights) {
+  const auto cleanWeights =
+      zeroUnusedWeights(weights, static_cast<size_t>(mBeatriceVoiceCount));
+  mBeatriceParameters.speakerMorphingWeights = cleanWeights;
 
   if (mBeatriceProcessorCore) {
-    const auto floatWeights =
-        toFloatWeights(mBeatriceParameters.speakerMorphingWeights);
     auto error_code =
-        mBeatriceProcessorCore->SetSpeakerMorphingWeights(floatWeights);
+        mBeatriceProcessorCore->SetSpeakerMorphingWeights(cleanWeights);
     if (error_code != ErrorCode::kSuccess) {
       LOGW("Failed to set speaker morphing weights: %d",
            static_cast<int>(error_code));
@@ -334,7 +333,7 @@ void BeatriceProcessor::applyParametersToCore() {
   mBeatriceProcessorCore->SetMaxSourcePitch(mBeatriceParameters.maxSourcePitch);
   mBeatriceProcessorCore->SetVQNumNeighbors(mBeatriceParameters.vqNumNeighbors);
   mBeatriceProcessorCore->SetSpeakerMorphingWeights(
-      toFloatWeights(mBeatriceParameters.speakerMorphingWeights));
+      mBeatriceParameters.speakerMorphingWeights);
 }
 
 bool BeatriceProcessor::isValidVoiceId(int32_t voiceID) const {

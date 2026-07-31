@@ -117,23 +117,23 @@ jdoubleArray makeEmptyDoubleArray(JNIEnv* env) {
   return env->NewDoubleArray(0);
 }
 
-std::array<double, beatrice::common::kMaxNSpeakers> toSpeakerMorphingWeights(
-    JNIEnv* env, jdoubleArray inputArray) {
-  std::array<double, beatrice::common::kMaxNSpeakers> result{};
+std::array<float, beatrice::common::kMaxNSpeakers> toSpeakerMorphingWeights(
+    JNIEnv* env, jfloatArray inputArray) {
+  std::array<float, beatrice::common::kMaxNSpeakers> result{};
   if (!inputArray) {
     return result;
   }
 
   const jsize length = env->GetArrayLength(inputArray);
-  std::vector<jdouble> temp(static_cast<size_t>(length));
-  env->GetDoubleArrayRegion(inputArray, 0, length, temp.data());
+  std::vector<jfloat> temp(static_cast<size_t>(length));
+  env->GetFloatArrayRegion(inputArray, 0, length, temp.data());
 
   const jsize count =
       length < static_cast<jsize>(beatrice::common::kMaxNSpeakers)
           ? length
           : static_cast<jsize>(beatrice::common::kMaxNSpeakers);
   for (jsize i = 0; i < count; ++i) {
-    result[static_cast<size_t>(i)] = static_cast<double>(temp[i]);
+    result[static_cast<size_t>(i)] = temp[i];
   }
 
   return result;
@@ -675,7 +675,7 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setVQNumNeighbors(
 
 JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeights(
-    JNIEnv* env, jclass type, jdoubleArray weights) {
+    JNIEnv* env, jclass type, jfloatArray weights) {
   if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "

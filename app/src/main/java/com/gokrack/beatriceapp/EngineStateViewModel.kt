@@ -54,7 +54,7 @@ class EngineStateViewModel : ViewModel() {
         }
 
         morphingWeights.postValue(weights)
-        beatriceEngine.setSpeakerMorphingWeights(weights.toDoubleArray())
+        beatriceEngine.setSpeakerMorphingWeights(weights)
         morphingVoiceNames.postValue(voiceNames)
     }
 }

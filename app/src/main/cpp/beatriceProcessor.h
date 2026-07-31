@@ -39,7 +39,7 @@ class BeatriceProcessor : public AudioEffector {
   void setSourcePitchRange(double minPitch, double maxPitch);
   void setVQNumNeighbors(int32_t numNeighbors);
   bool setSpeakerMorphingWeights(
-      const std::array<double, beatrice::common::kMaxNSpeakers>& weights);
+      const std::array<float, beatrice::common::kMaxNSpeakers>& weights);
 
   BeatriceParameters getParameters() const;
   void setParameters(const BeatriceParameters& params);

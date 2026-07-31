@@ -128,7 +128,7 @@ class MorphingFragment : Fragment() {
 
             weights[pos] = rounded
             viewModel.morphingWeights.value?.set(pos, rounded)
-            beatriceEngine.setSpeakerMorphingWeights(weights.toDoubleArray())
+            beatriceEngine.setSpeakerMorphingWeights(weights)
             SettingsManager.saveMorphingWeights(weights)
 
             holder.valueText.text = String.format(Locale.US, "%.2f", rounded)
