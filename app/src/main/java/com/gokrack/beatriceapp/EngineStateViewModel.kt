@@ -4,6 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class EngineStateViewModel : ViewModel() {
+    companion object {
+        const val MORPHING_WEIGHT_SIZE = 256
+    }
+
     val isEngineRunning = MutableLiveData(false)
     val isAAudioRecommended = MutableLiveData(true)
     val statusText = MutableLiveData("")
@@ -15,13 +19,23 @@ class EngineStateViewModel : ViewModel() {
     val voiceNames = MutableLiveData<List<String>>(emptyList())
 
     // Morphing tab state
-    val morphingWeights = MutableLiveData(FloatArray(256) { 0f })
+    val morphingWeights = MutableLiveData(FloatArray(MORPHING_WEIGHT_SIZE) { 0f })
     val morphingVoiceNames = MutableLiveData<List<String>>(emptyList())
     val morphingDescriptionTrigger = MutableLiveData<Unit>()
     val settingsResetTrigger = MutableLiveData(0)
 
     fun requestSettingsReset() {
         settingsResetTrigger.value = (settingsResetTrigger.value ?: 0) + 1
+    }
+
+    fun updateMorphingWeight(index: Int, value: Float): FloatArray {
+        require(index in 0 until MORPHING_WEIGHT_SIZE) { "index out of range: $index" }
+
+        val base = morphingWeights.value ?: FloatArray(MORPHING_WEIGHT_SIZE) { 0f }
+        val updated = base.copyOf()
+        updated[index] = value
+        morphingWeights.value = updated
+        return updated
     }
 
     /**
@@ -31,11 +45,11 @@ class EngineStateViewModel : ViewModel() {
      *   until the non-zero count is at most 8
      */
     fun onMorphingModelLoaded(voiceCount: Int, voiceNames: List<String>) {
-        val weights = (morphingWeights.value ?: FloatArray(256)).clone()
+        val weights = (morphingWeights.value ?: FloatArray(MORPHING_WEIGHT_SIZE)).clone()
         val modelVersion = beatriceEngine.getModelVersion()
 
         // Zero out voices beyond voiceCount
-        for (i in voiceCount until 256) {
+        for (i in voiceCount until MORPHING_WEIGHT_SIZE) {
             if (weights[i] != 0f) {
                 weights[i] = 0f
             }

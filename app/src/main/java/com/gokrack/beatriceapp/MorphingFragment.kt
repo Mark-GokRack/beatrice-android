@@ -134,18 +134,17 @@ class MorphingFragment : Fragment() {
         }
 
         private fun applyWeight(pos: Int, newVal: Float, holder: ViewHolder) {
-            val weights = currentWeights()
+            val current = currentWeights()
             val rounded = Math.round(newVal * 100) / 100f
-            val oldWeight = weights[pos]
+            val oldWeight = current[pos]
             if (rounded == oldWeight) return
 
             val wasZero = oldWeight < 0.0001f
             val isNowZero = rounded < 0.0001f
 
-            weights[pos] = rounded
-            viewModel.morphingWeights.value?.set(pos, rounded)
-            beatriceEngine.setSpeakerMorphingWeights(weights)
-            SettingsManager.saveMorphingWeights(weights)
+            val updated = viewModel.updateMorphingWeight(pos, rounded)
+            beatriceEngine.setSpeakerMorphingWeights(updated)
+            SettingsManager.saveMorphingWeights(updated)
 
             holder.valueText.text = String.format(Locale.US, "%.2f", rounded)
 
