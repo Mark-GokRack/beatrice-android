@@ -200,8 +200,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             SettingsManager.loadSourcePitchRangeMax().toDouble()
         )
 
-        val morphingWeights = SettingsManager.loadMorphingWeights()
-        beatriceEngine.setSpeakerMorphingWeights(morphingWeights)
+        viewModel.reloadMorphingWeightsFromSettingsAndApplyToEngine()
 
         applyEffectorSettingsToEngine()
     }
@@ -317,9 +316,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         val success = beatriceEngine.setEffectOn(true)
         if (success) {
             // Re-apply all morphing weights in case the stream lost them on restart
-            viewModel.morphingWeights.value?.let { weights ->
-                beatriceEngine.setSpeakerMorphingWeights(weights)
-            }
+            viewModel.applyCurrentMorphingWeightsToEngine()
             val sampleRate = beatriceEngine.getSampleRate()
             val framesPerBurst = beatriceEngine.getFramesPerBurst()
             viewModel.statusText.value = getString(R.string.status_playing) +

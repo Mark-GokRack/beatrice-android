@@ -38,6 +38,17 @@ class EngineStateViewModel : ViewModel() {
         morphingWeights.value = SettingsManager.loadMorphingWeights()
     }
 
+    fun applyCurrentMorphingWeightsToEngine(): FloatArray {
+        val weights = ensureMorphingWeightsInitialized()
+        beatriceEngine.setSpeakerMorphingWeights(weights)
+        return weights
+    }
+
+    fun reloadMorphingWeightsFromSettingsAndApplyToEngine(): FloatArray {
+        reloadMorphingWeightsFromSettings()
+        return applyCurrentMorphingWeightsToEngine()
+    }
+
     fun ensureMorphingWeightsInitialized(): FloatArray {
         val existing = morphingWeights.value
         if (existing != null) return existing
