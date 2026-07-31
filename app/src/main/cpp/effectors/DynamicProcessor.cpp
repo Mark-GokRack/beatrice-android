@@ -12,10 +12,10 @@ DynamicProcessor::DynamicProcessor(float threshold, float attack, float release,
       m_attackCoef(std::exp(-1.0f / (sampleRate * attack / 1000.0f))),
       m_releaseCoef(std::exp(-1.0f / (sampleRate * release / 1000.0f))),
       m_envelope(0.0f),
+      m_outputPeakDb(-100.0f),
       m_detectorLevelDb(-100.0f),
       m_gainReductionDb(0.0f),
       m_inputPeakDb(-100.0f),
-      m_outputPeakDb(-100.0f),
       m_isActive(false) {}
 
 void DynamicProcessor::process(const float* inputBuffer, float* outputBuffer,

@@ -4,6 +4,7 @@
 #include <jni.h>
 #include <logging_macros.h>
 
+#include <array>
 #include <codecvt>
 #include <exception>
 #include <filesystem>
@@ -114,6 +115,28 @@ jdoubleArray toDoubleArray(JNIEnv* env, const std::vector<float>& values) {
 
 jdoubleArray makeEmptyDoubleArray(JNIEnv* env) {
   return env->NewDoubleArray(0);
+}
+
+std::array<double, beatrice::common::kMaxNSpeakers> toSpeakerMorphingWeights(
+    JNIEnv* env, jdoubleArray inputArray) {
+  std::array<double, beatrice::common::kMaxNSpeakers> result{};
+  if (!inputArray) {
+    return result;
+  }
+
+  const jsize length = env->GetArrayLength(inputArray);
+  std::vector<jdouble> temp(static_cast<size_t>(length));
+  env->GetDoubleArrayRegion(inputArray, 0, length, temp.data());
+
+  const jsize count =
+      length < static_cast<jsize>(beatrice::common::kMaxNSpeakers)
+          ? length
+          : static_cast<jsize>(beatrice::common::kMaxNSpeakers);
+  for (jsize i = 0; i < count; ++i) {
+    result[static_cast<size_t>(i)] = static_cast<double>(temp[i]);
+  }
+
+  return result;
 }
 
 void resetEffectorChain() {
@@ -269,46 +292,28 @@ Java_com_gokrack_beatriceapp_beatriceEngine_readModel(JNIEnv* env, jclass,
 
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelName(JNIEnv* env, jclass) {
-  jstring model_name = env->NewStringUTF("<<empty>>");
   if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
-    return model_name;
+    return env->NewStringUTF("<<empty>>");
   }
-
-  auto u8str = processor->getModelName();
-  std::u16string u16str =
-      std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
-          .from_bytes(reinterpret_cast<const char*>(u8str.c_str()));
-
-  model_name = env->NewString(reinterpret_cast<const jchar*>(u16str.c_str()),
-                              static_cast<jsize>(u16str.length()));
-
-  return model_name;
+  std::u8string modelName = processor->getModelName();
+  return env->NewStringUTF(reinterpret_cast<const char*>(modelName.c_str()));
 }
 
 JNIEXPORT jstring JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_getModelDescription(JNIEnv* env,
                                                                 jclass) {
-  jstring model_description = env->NewStringUTF("<<empty>>");
   if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
-    return model_description;
+    return env->NewStringUTF("<<empty>>");
   }
-
-  auto u8str = processor->getModelDescription();
-  std::u16string u16str =
-      std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
-          .from_bytes(reinterpret_cast<const char*>(u8str.c_str()));
-
-  model_description =
-      env->NewString(reinterpret_cast<const jchar*>(u16str.c_str()),
-                     static_cast<jsize>(u16str.length()));
-
-  return model_description;
+  std::u8string modelDescription = processor->getModelDescription();
+  return env->NewStringUTF(
+      reinterpret_cast<const char*>(modelDescription.c_str()));
 }
 
 JNIEXPORT jint JNICALL
@@ -669,16 +674,18 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setVQNumNeighbors(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeight(
-    JNIEnv* env, jclass type, jint target_spk, jdouble weight) {
+Java_com_gokrack_beatriceapp_beatriceEngine_setSpeakerMorphingWeights(
+    JNIEnv* env, jclass type, jdoubleArray weights) {
   if (!processor) {
     LOGE(
         "Engine is null, you must call createEngine before calling this "
         "method");
     return JNI_FALSE;
   }
-  processor->setSpeakerMorphingWeight(target_spk, weight);
-  return JNI_TRUE;
+  return processor->setSpeakerMorphingWeights(
+             toSpeakerMorphingWeights(env, weights))
+             ? JNI_TRUE
+             : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL

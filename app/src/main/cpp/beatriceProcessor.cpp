@@ -11,6 +11,18 @@
 
 using namespace beatrice::common;
 
+namespace {
+std::array<float, kMaxNSpeakers> toFloatWeights(
+    const std::array<double, kMaxNSpeakers>& weights) {
+  std::array<float, kMaxNSpeakers> floatWeights{};
+  for (int32_t i = 0; i < kMaxNSpeakers; ++i) {
+    floatWeights[static_cast<size_t>(i)] =
+        static_cast<float>(weights[static_cast<size_t>(i)]);
+  }
+  return floatWeights;
+}
+}  // namespace
+
 BeatriceProcessor::BeatriceProcessor(const std::string& toml_path_str) {
   mBeatriceModelPath = std::filesystem::path(toml_path_str);
   const auto toml_data = toml::parse(mBeatriceModelPath);
@@ -255,17 +267,22 @@ void BeatriceProcessor::setVQNumNeighbors(int32_t numNeighbors) {
   }
 }
 
-void BeatriceProcessor::setSpeakerMorphingWeight(int32_t target_spk,
-                                                 double weight) {
-  if (target_spk < 0 || target_spk >= beatrice::common::kMaxNSpeakers) {
-    LOGW("Invalid target_spk: %d", target_spk);
-    return;
-  }
-  mBeatriceParameters.speakerMorphingWeights[target_spk] = weight;
+bool BeatriceProcessor::setSpeakerMorphingWeights(
+    const std::array<double, beatrice::common::kMaxNSpeakers>& weights) {
+  mBeatriceParameters.speakerMorphingWeights = weights;
 
   if (mBeatriceProcessorCore) {
-    mBeatriceProcessorCore->SetSpeakerMorphingWeight(target_spk, weight);
+    const auto floatWeights =
+        toFloatWeights(mBeatriceParameters.speakerMorphingWeights);
+    auto error_code =
+        mBeatriceProcessorCore->SetSpeakerMorphingWeights(floatWeights);
+    if (error_code != ErrorCode::kSuccess) {
+      LOGW("Failed to set speaker morphing weights: %d",
+           static_cast<int>(error_code));
+      return false;
+    }
   }
+  return true;
 }
 
 BeatriceParameters BeatriceProcessor::getParameters() const {
@@ -288,9 +305,7 @@ void BeatriceProcessor::setParameters(const BeatriceParameters& params) {
   setPitchCorrectionMode(params.pitchCorrectionMode);
   setSourcePitchRange(params.minSourcePitch, params.maxSourcePitch);
   setVQNumNeighbors(params.vqNumNeighbors);
-  for (int32_t i = 0; i < beatrice::common::kMaxNSpeakers; ++i) {
-    setSpeakerMorphingWeight(i, params.speakerMorphingWeights[i]);
-  }
+  setSpeakerMorphingWeights(params.speakerMorphingWeights);
 }
 
 size_t BeatriceProcessor::getVoiceCount() const { return mBeatriceVoiceCount; }
@@ -318,10 +333,8 @@ void BeatriceProcessor::applyParametersToCore() {
   mBeatriceProcessorCore->SetMinSourcePitch(mBeatriceParameters.minSourcePitch);
   mBeatriceProcessorCore->SetMaxSourcePitch(mBeatriceParameters.maxSourcePitch);
   mBeatriceProcessorCore->SetVQNumNeighbors(mBeatriceParameters.vqNumNeighbors);
-  for (int32_t i = 0; i < beatrice::common::kMaxNSpeakers; ++i) {
-    mBeatriceProcessorCore->SetSpeakerMorphingWeight(
-        i, mBeatriceParameters.speakerMorphingWeights[i]);
-  }
+  mBeatriceProcessorCore->SetSpeakerMorphingWeights(
+      toFloatWeights(mBeatriceParameters.speakerMorphingWeights));
 }
 
 bool BeatriceProcessor::isValidVoiceId(int32_t voiceID) const {

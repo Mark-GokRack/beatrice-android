@@ -38,7 +38,6 @@ class EngineStateViewModel : ViewModel() {
         for (i in voiceCount until 256) {
             if (weights[i] != 0f) {
                 weights[i] = 0f
-                beatriceEngine.setSpeakerMorphingWeight(i, 0.0)
             }
         }
 
@@ -49,13 +48,13 @@ class EngineStateViewModel : ViewModel() {
                 if (nonZeroCount <= 8) break
                 if (weights[i] != 0f) {
                     weights[i] = 0f
-                    beatriceEngine.setSpeakerMorphingWeight(i, 0.0)
                     nonZeroCount--
                 }
             }
         }
 
         morphingWeights.postValue(weights)
+        beatriceEngine.setSpeakerMorphingWeights(weights.toDoubleArray())
         morphingVoiceNames.postValue(voiceNames)
     }
 }

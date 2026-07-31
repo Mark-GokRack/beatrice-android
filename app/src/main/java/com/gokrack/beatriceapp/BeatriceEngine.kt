@@ -7,6 +7,9 @@ import android.content.res.AssetManager
 import kotlin.math.exp
 import kotlin.math.ln
 
+internal fun FloatArray.toDoubleArray(): DoubleArray =
+    DoubleArray(size) { index -> this[index].toDouble() }
+
 object beatriceEngine {
 
     init {
@@ -41,7 +44,7 @@ object beatriceEngine {
     external fun setPitchCorrectionMode(mode: Int): Boolean
     external fun setSourcePitchRange(minPitch: Double, maxPitch: Double): Boolean
     external fun setVQNumNeighbors(numNeighbors: Int): Boolean
-    external fun setSpeakerMorphingWeight(targetSpk: Int, weight: Double): Boolean
+    external fun setSpeakerMorphingWeights(weights: DoubleArray): Boolean
     external fun setProcessorEnabled(enabled: Boolean): Boolean
     external fun setNoiseGateEnabled(enabled: Boolean): Boolean
     external fun setNoiseGateThreshold(threshold: Double): Boolean
