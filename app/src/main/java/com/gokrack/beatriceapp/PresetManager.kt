@@ -85,6 +85,9 @@ object PresetManager {
         editor.putFloat(prefix + "limiter_attack", SettingsManager.loadLimiterAttack())
         editor.putFloat(prefix + "limiter_release", SettingsManager.loadLimiterRelease())
 
+        // RNNoise
+        editor.putBoolean(prefix + "rnnoise_enabled", SettingsManager.loadRnnoiseEnabled())
+
         // Equalizers
         editor.putBoolean(prefix + "pre_equalizer_enabled", SettingsManager.loadPreEqualizerEnabled())
         editor.putBoolean(prefix + "post_equalizer_enabled", SettingsManager.loadPostEqualizerEnabled())
@@ -172,6 +175,9 @@ object PresetManager {
         SettingsManager.saveLimiterThreshold(prefs.getFloat(prefix + "limiter_threshold", SettingsManager.DEFAULT_LIMITER_THRESHOLD))
         SettingsManager.saveLimiterAttack(prefs.getFloat(prefix + "limiter_attack", SettingsManager.DEFAULT_LIMITER_ATTACK))
         SettingsManager.saveLimiterRelease(prefs.getFloat(prefix + "limiter_release", SettingsManager.DEFAULT_LIMITER_RELEASE))
+
+        // RNNoise
+        SettingsManager.saveRnnoiseEnabled(prefs.getBoolean(prefix + "rnnoise_enabled", SettingsManager.DEFAULT_RNNOISE_ENABLED))
 
         // Equalizers
         SettingsManager.savePreEqualizerEnabled(prefs.getBoolean(prefix + "pre_equalizer_enabled", SettingsManager.DEFAULT_PRE_EQUALIZER_ENABLED))

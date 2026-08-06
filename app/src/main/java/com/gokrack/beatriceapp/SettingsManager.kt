@@ -25,6 +25,7 @@ object SettingsManager {
     // Effector settings
     private const val KEY_AMPLIFIER_ENABLED = "amplifier_enabled"
     private const val KEY_AMPLIFIER_GAIN = "amplifier_gain"
+    private const val KEY_RNNOISE_ENABLED = "rnnoise_enabled"
     private const val KEY_NOISE_GATE_ENABLED = "noise_gate_enabled"
     private const val KEY_NOISE_GATE_THRESHOLD = "noise_gate_threshold"
     private const val KEY_NOISE_GATE_RANGE = "noise_gate_range"
@@ -58,6 +59,7 @@ object SettingsManager {
     // Effector defaults
     const val DEFAULT_AMPLIFIER_ENABLED = true
     const val DEFAULT_AMPLIFIER_GAIN = 0.0f
+    const val DEFAULT_RNNOISE_ENABLED = false
     const val DEFAULT_NOISE_GATE_ENABLED = false
     const val DEFAULT_NOISE_GATE_THRESHOLD = -40.0f
     const val DEFAULT_NOISE_GATE_RANGE = -80.0f
@@ -209,6 +211,9 @@ object SettingsManager {
     fun saveAmplifierGain(value: Float) = prefs.edit().putFloat(KEY_AMPLIFIER_GAIN, value).apply()
     fun loadAmplifierGain(): Float = prefs.getFloat(KEY_AMPLIFIER_GAIN, DEFAULT_AMPLIFIER_GAIN)
 
+    fun saveRnnoiseEnabled(enabled: Boolean) = prefs.edit().putBoolean(KEY_RNNOISE_ENABLED, enabled).apply()
+    fun loadRnnoiseEnabled(): Boolean = prefs.getBoolean(KEY_RNNOISE_ENABLED, DEFAULT_RNNOISE_ENABLED)
+
     fun saveNoiseGateEnabled(enabled: Boolean) = prefs.edit().putBoolean(KEY_NOISE_GATE_ENABLED, enabled).apply()
     fun loadNoiseGateEnabled(): Boolean = prefs.getBoolean(KEY_NOISE_GATE_ENABLED, DEFAULT_NOISE_GATE_ENABLED)
     fun saveNoiseGateThreshold(value: Float) = prefs.edit().putFloat(KEY_NOISE_GATE_THRESHOLD, value).apply()
@@ -264,6 +269,7 @@ object SettingsManager {
 
         editor.putBoolean(KEY_AMPLIFIER_ENABLED, DEFAULT_AMPLIFIER_ENABLED)
         editor.putFloat(KEY_AMPLIFIER_GAIN, DEFAULT_AMPLIFIER_GAIN)
+        editor.putBoolean(KEY_RNNOISE_ENABLED, DEFAULT_RNNOISE_ENABLED)
         editor.putBoolean(KEY_NOISE_GATE_ENABLED, DEFAULT_NOISE_GATE_ENABLED)
         editor.putFloat(KEY_NOISE_GATE_THRESHOLD, DEFAULT_NOISE_GATE_THRESHOLD)
         editor.putFloat(KEY_NOISE_GATE_RANGE, DEFAULT_NOISE_GATE_RANGE)

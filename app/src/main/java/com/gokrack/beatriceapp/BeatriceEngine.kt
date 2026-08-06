@@ -62,6 +62,12 @@ object beatriceEngine {
     external fun getNoiseGateOutputPeak(): Double
     external fun getNoiseGateGateGain(): Double
     external fun isNoiseGateOpen(): Boolean
+    external fun setRNNoiseEnabled(enabled: Boolean): Boolean
+    external fun isRNNoiseEnabled(): Boolean
+    external fun isRNNoiseReady(): Boolean
+    external fun getRNNoiseVadProbability(): Double
+    external fun getRNNoiseInputPeak(): Double
+    external fun getRNNoiseOutputPeak(): Double
     external fun setAmplifierEnabled(enabled: Boolean): Boolean
     external fun setAmplifierGain(gainDb: Double): Boolean
     external fun isAmplifierEnabled(): Boolean

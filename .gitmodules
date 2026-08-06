@@ -7,3 +7,6 @@
 [submodule "lib/asio"]
 	path = lib/asio
 	url = https://github.com/chriskohlhoff/asio.git
+[submodule "lib/rnnoise"]
+	path = lib/rnnoise
+	url = https://github.com/xiph/rnnoise.git

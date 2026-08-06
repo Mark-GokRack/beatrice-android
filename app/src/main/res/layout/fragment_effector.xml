@@ -41,6 +41,107 @@
                 layout="@layout/item_effector_slider" />
         </LinearLayout>
 
+        <!-- RNNoise -->
+        <include
+            android:id="@+id/rnnoise_section_header"
+            layout="@layout/item_effector_section" />
+
+        <LinearLayout
+            android:id="@+id/rnnoise_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@color/vst_bg_secondary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/rnnoise_ready"
+                    android:textColor="@color/vst_text_secondary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/rnnoise_ready_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rnnoise_ready_no"
+                    android:textColor="@color/vst_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/rnnoise_vad"
+                    android:textColor="@color/vst_text_secondary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/rnnoise_vad_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textColor="@color/vst_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/rnnoise_vad_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="8dp"
+                android:max="1000"
+                android:progress="0"
+                android:progressTint="@color/vst_accent"
+                android:progressBackgroundTint="@color/vst_bg_card" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/peak"
+                android:textColor="@color/vst_text_secondary"
+                android:textSize="12sp" />
+
+            <com.gokrack.beatriceapp.view.PeakMeterView
+                android:id="@+id/rnnoise_input_peak_meter"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginTop="2dp" />
+
+            <com.gokrack.beatriceapp.view.PeakMeterView
+                android:id="@+id/rnnoise_output_peak_meter"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginTop="0dp" />
+
+            <com.gokrack.beatriceapp.view.PeakMeterView
+                android:id="@+id/rnnoise_tick_meter"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="0dp" />
+        </LinearLayout>
+
         <!-- Noise Gate -->
         <include
             android:id="@+id/noise_gate_section_header"

@@ -65,6 +65,7 @@
     <string name="section_pre_fx">Pre-FX (before Beatrice)</string>
     <string name="section_post_fx">Post-FX (after Beatrice)</string>
     <string name="effector_amplifier">Amplifier</string>
+    <string name="effector_rnnoise">RNNoise</string>
     <string name="effector_noise_gate">Noise Gate</string>
     <string name="effector_compressor">Compressor</string>
     <string name="effector_pre_equalizer">Pre-Equalizer</string>
@@ -86,6 +87,10 @@
     <string name="output_peak">Output Peak</string>
     <string name="gain_reduction">Gain Reduction</string>
     <string name="detector_level">Detector Level</string>
+    <string name="rnnoise_ready">Ready</string>
+    <string name="rnnoise_vad">VAD</string>
+    <string name="rnnoise_ready_yes">Yes</string>
+    <string name="rnnoise_ready_no">No</string>
 
     <!-- Preset management -->
     <string name="preset_save">Save</string>

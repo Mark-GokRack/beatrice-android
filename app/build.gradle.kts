@@ -1,5 +1,6 @@
 import java.net.URI
 import java.io.FileOutputStream
+import java.security.MessageDigest
 import java.util.Properties
 
 plugins {
@@ -109,6 +110,21 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
+fun sha256(file: File): String {
+    val digest = MessageDigest.getInstance("SHA-256")
+    file.inputStream().use { input ->
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var read = input.read(buffer)
+        while (read >= 0) {
+            if (read > 0) {
+                digest.update(buffer, 0, read)
+            }
+            read = input.read(buffer)
+        }
+    }
+    return digest.digest().joinToString("") { "%02x".format(it) }
+}
+
 val downloadBeatriceLib_ARM by tasks.registering {
     val targetDir = file("../lib/beatrice-api/arm64-v8a/")
     val targetFile = File(targetDir, "libbeatrice.a")
@@ -199,8 +215,55 @@ val downloadDefaultModelForAssets by tasks.registering {
     }
 }
 
+val prepareRnnoiseModel by tasks.registering {
+    val rnnoiseDir = rootProject.file("lib/rnnoise")
+    val modelVersionFile = File(rnnoiseDir, "model_version")
+    val modelHash = modelVersionFile.readText().trim()
+    val modelArchive = File(rnnoiseDir, "rnnoise_data-${modelHash}.tar.gz")
+    val extractedModelC = File(rnnoiseDir, "src/rnnoise_data.c")
+    val extractedModelH = File(rnnoiseDir, "src/rnnoise_data.h")
+    val modelUri = URI("https://media.xiph.org/rnnoise/models/${modelArchive.name}")
+
+    inputs.file(modelVersionFile)
+    outputs.file(extractedModelC)
+    outputs.file(extractedModelH)
+
+    doLast {
+        if (!modelArchive.exists()) {
+            println("Downloading RNNoise model: ${modelArchive.name}")
+            modelUri.toURL().openStream().use { input ->
+                FileOutputStream(modelArchive).use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }
+
+        val checksum = sha256(modelArchive)
+        if (checksum != modelHash) {
+            throw GradleException(
+                "RNNoise model checksum mismatch for ${modelArchive.name}. " +
+                    "Expected ${modelHash}, but was ${checksum}. " +
+                    "Delete the local archive and run build again."
+            )
+        }
+
+        println("Extracting RNNoise model archive: ${modelArchive.name}")
+        copy {
+            from(tarTree(resources.gzip(modelArchive)))
+            into(rnnoiseDir)
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name.startsWith("configureCMake") || name.startsWith("externalNativeBuild")) {
+        dependsOn(prepareRnnoiseModel)
+    }
+}
+
 tasks.named("preBuild") {
     dependsOn(downloadBeatriceLib_ARM)
     //dependsOn(downloadBeatriceLib_x64)
     dependsOn(downloadDefaultModelForAssets)
+    dependsOn(prepareRnnoiseModel)
 }

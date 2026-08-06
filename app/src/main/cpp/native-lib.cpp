@@ -23,6 +23,7 @@
 #include "effectors/Limiter.hpp"
 #include "effectors/NoiseGate.hpp"
 #include "effectors/ParametricEqualizer.hpp"
+#include "effectors/RNNoiseProcessor.hpp"
 
 static const int kOboeApiAAudio = 0;
 static const int kOboeApiOpenSLES = 1;
@@ -36,13 +37,15 @@ static std::shared_ptr<Limiter> limiter = nullptr;
 static std::shared_ptr<NoiseGate> noiseGate = nullptr;
 static std::shared_ptr<ParametricEqualizer> preEqualizer = nullptr;
 static std::shared_ptr<ParametricEqualizer> postEqualizer = nullptr;
+static std::shared_ptr<RNNoiseProcessor> rnnoise = nullptr;
 
 namespace {
 bool isInitialized() {
   return processor != nullptr && audioEngine != nullptr &&
          effectorChain != nullptr && amplifier != nullptr &&
          compressor != nullptr && limiter != nullptr && noiseGate != nullptr &&
-         preEqualizer != nullptr && postEqualizer != nullptr;
+         preEqualizer != nullptr && postEqualizer != nullptr &&
+         rnnoise != nullptr;
 }
 
 template <typename T>
@@ -144,6 +147,7 @@ void resetEffectorChain() {
     effectorChain->clearEffectors();
 
     effectorChain->addEffector(amplifier);
+    effectorChain->addEffector(rnnoise);
     effectorChain->addEffector(noiseGate);
     effectorChain->addEffector(compressor);
     effectorChain->addEffector(preEqualizer);
@@ -228,6 +232,7 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
     noiseGate = std::make_shared<NoiseGate>();
     preEqualizer = std::make_shared<ParametricEqualizer>(48000.0f, 3);
     postEqualizer = std::make_shared<ParametricEqualizer>(48000.0f, 5);
+    rnnoise = std::make_shared<RNNoiseProcessor>();
   } catch (const std::exception& e) {
     LOGE("Failed to create engine: %s", e.what());
     processor.reset();
@@ -239,6 +244,7 @@ JNIEXPORT jboolean JNICALL Java_com_gokrack_beatriceapp_beatriceEngine_create(
     noiseGate.reset();
     preEqualizer.reset();
     postEqualizer.reset();
+    rnnoise.reset();
   }
 
   resetEffectorChain();
@@ -836,6 +842,57 @@ Java_com_gokrack_beatriceapp_beatriceEngine_isNoiseGateOpen(JNIEnv* env,
   return getEffectorBoolean(noiseGate, "NoiseGate", [](const NoiseGate& gate) {
     return gate.isGateOpen();
   });
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setRNNoiseEnabled(
+    JNIEnv* env, jclass type, jboolean enabled) {
+  if (!isEffectorAvailable(rnnoise, "RNNoise")) {
+    return JNI_FALSE;
+  }
+  rnnoise->setEnabled(enabled == JNI_TRUE);
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isRNNoiseEnabled(JNIEnv* env,
+                                                             jclass type) {
+  return getEffectorBoolean(
+      rnnoise, "RNNoise",
+      [](const RNNoiseProcessor& value) { return value.isEnabled(); });
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_isRNNoiseReady(JNIEnv* env,
+                                                           jclass type) {
+  return getEffectorBoolean(
+      rnnoise, "RNNoise",
+      [](const RNNoiseProcessor& value) { return value.isReady(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getRNNoiseVadProbability(
+    JNIEnv* env, jclass type) {
+  return getEffectorDouble(rnnoise, "RNNoise",
+                           [](const RNNoiseProcessor& value) {
+                             return value.getLastVadProbability();
+                           });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getRNNoiseInputPeak(JNIEnv* env,
+                                                                jclass type) {
+  return getEffectorDouble(
+      rnnoise, "RNNoise",
+      [](const RNNoiseProcessor& value) { return value.getInputPeakDb(); });
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_getRNNoiseOutputPeak(JNIEnv* env,
+                                                                 jclass type) {
+  return getEffectorDouble(
+      rnnoise, "RNNoise",
+      [](const RNNoiseProcessor& value) { return value.getOutputPeakDb(); });
 }
 
 JNIEXPORT jboolean JNICALL

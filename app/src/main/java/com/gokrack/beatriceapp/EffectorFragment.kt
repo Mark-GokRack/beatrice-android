@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -55,6 +56,7 @@ class EffectorFragment : Fragment() {
 
     // Sections
     private lateinit var amplifierSection: EffectorSection
+    private lateinit var rnnoiseSection: EffectorSection
     private lateinit var noiseGateSection: EffectorSection
     private lateinit var compressorSection: EffectorSection
     private lateinit var preEqSection: EffectorSection
@@ -83,6 +85,12 @@ class EffectorFragment : Fragment() {
     private lateinit var noiseGateMeters: DynamicMetersBinding
     private lateinit var compressorMeters: DynamicMetersBinding
     private lateinit var limiterMeters: DynamicMetersBinding
+    private lateinit var rnnoiseReadyValue: TextView
+    private lateinit var rnnoiseVadValue: TextView
+    private lateinit var rnnoiseVadBar: ProgressBar
+    private lateinit var rnnoiseInputPeakMeter: PeakMeterView
+    private lateinit var rnnoiseOutputPeakMeter: PeakMeterView
+    private lateinit var rnnoiseTickMeter: PeakMeterView
 
     // EQ
     private lateinit var preEqCurve: EqCurveView
@@ -134,6 +142,16 @@ class EffectorFragment : Fragment() {
             if (!isRestoring) {
                 SettingsManager.saveAmplifierEnabled(enabled)
                 beatriceEngine.setAmplifierEnabled(enabled)
+            }
+        }
+
+        rnnoiseSection = EffectorSection(
+            view, R.id.rnnoise_section_header, R.id.rnnoise_content,
+            getString(R.string.effector_rnnoise), false
+        ) { enabled ->
+            if (!isRestoring) {
+                SettingsManager.saveRnnoiseEnabled(enabled)
+                beatriceEngine.setRNNoiseEnabled(enabled)
             }
         }
 
@@ -289,6 +307,17 @@ class EffectorFragment : Fragment() {
         noiseGateMeters = DynamicMetersBinding(view, R.id.noise_gate_meters)
         compressorMeters = DynamicMetersBinding(view, R.id.compressor_meters)
         limiterMeters = DynamicMetersBinding(view, R.id.limiter_meters)
+        rnnoiseReadyValue = view.findViewById(R.id.rnnoise_ready_value)
+        rnnoiseVadValue = view.findViewById(R.id.rnnoise_vad_value)
+        rnnoiseVadBar = view.findViewById(R.id.rnnoise_vad_bar)
+        rnnoiseInputPeakMeter = view.findViewById(R.id.rnnoise_input_peak_meter)
+        rnnoiseOutputPeakMeter = view.findViewById(R.id.rnnoise_output_peak_meter)
+        rnnoiseTickMeter = view.findViewById(R.id.rnnoise_tick_meter)
+
+        rnnoiseInputPeakMeter.setShowTicks(false)
+        rnnoiseOutputPeakMeter.setShowTicks(false)
+        rnnoiseTickMeter.setShowTicks(true)
+        rnnoiseTickMeter.setLevelDb(PeakMeterView.MIN_DB)
     }
 
     private fun setupEq(view: View) {
@@ -330,6 +359,11 @@ class EffectorFragment : Fragment() {
         amplifierGain.setValue(amplifierGainValue)
         beatriceEngine.setAmplifierEnabled(amplifierEnabled)
         beatriceEngine.setAmplifierGain(amplifierGainValue.toDouble())
+
+        // RNNoise
+        val rnnoiseEnabled = SettingsManager.loadRnnoiseEnabled()
+        rnnoiseSection.setChecked(rnnoiseEnabled)
+        beatriceEngine.setRNNoiseEnabled(rnnoiseEnabled)
 
         // Noise Gate
         val noiseGateEnabled = SettingsManager.loadNoiseGateEnabled()
@@ -408,6 +442,20 @@ class EffectorFragment : Fragment() {
             beatriceEngine.getLimiterOutputPeak().toFloat(),
             beatriceEngine.getLimiterGainReduction().toFloat()
         )
+
+        val isRnnoiseReady = beatriceEngine.isRNNoiseReady()
+        rnnoiseReadyValue.text = if (isRnnoiseReady) {
+            getString(R.string.rnnoise_ready_yes)
+        } else {
+            getString(R.string.rnnoise_ready_no)
+        }
+
+        val vad = beatriceEngine.getRNNoiseVadProbability().toFloat().coerceIn(0f, 1f)
+        rnnoiseVadValue.text = String.format("%.2f", vad)
+        rnnoiseVadBar.progress = (vad * 1000.0f).roundToInt()
+
+        rnnoiseInputPeakMeter.setLevelDb(beatriceEngine.getRNNoiseInputPeak().toFloat())
+        rnnoiseOutputPeakMeter.setLevelDb(beatriceEngine.getRNNoiseOutputPeak().toFloat())
     }
 
     private fun startMeterUpdate() {

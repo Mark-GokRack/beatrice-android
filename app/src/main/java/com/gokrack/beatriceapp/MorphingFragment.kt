@@ -108,7 +108,8 @@ class MorphingFragment : Fragment() {
             holder.decrementBtn.setOnClickListener {
                 val adapterPosition = holder.bindingAdapterPosition
                 if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
-                val newValue = (Math.round(weights[adapterPosition] * 100) - 1).coerceAtLeast(0) / 100f
+                val latestWeights = currentWeights()
+                val newValue = (Math.round(latestWeights[adapterPosition] * 100) - 1).coerceAtLeast(0) / 100f
                 holder.slider.value = newValue
                 applyWeight(adapterPosition, newValue, holder)
             }
@@ -116,7 +117,8 @@ class MorphingFragment : Fragment() {
             holder.incrementBtn.setOnClickListener {
                 val adapterPosition = holder.bindingAdapterPosition
                 if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
-                val newValue = (Math.round(weights[adapterPosition] * 100) + 1).coerceAtMost(100) / 100f
+                val latestWeights = currentWeights()
+                val newValue = (Math.round(latestWeights[adapterPosition] * 100) + 1).coerceAtMost(100) / 100f
                 holder.slider.value = newValue
                 applyWeight(adapterPosition, newValue, holder)
             }
