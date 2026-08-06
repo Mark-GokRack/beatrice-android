@@ -145,6 +145,10 @@ Beatrice の処理を行う前後に配置された エフェクト（音響効�
   - **Amplifier**  
     <img src="./fig/fig_fx_amp.png" width="33%">
     - マイク入力に対するゲインを -30 ~ +30 dB の範囲で調整します。
+  - **RNNoise**  
+    <img src="./fig/fig_fx_rnnoise.png" width="33%">
+    - [RNNoise](https://github.com/xiph/rnnoise) によるノイズ抑圧処理を行うエフェクタ。
+    - 初期化処理の結果と VAD(voice activity detection)、入出力の音圧レベルが表示されている。
   - **Noise Gate**  
     <img src="./fig/fig_fx_noisegate.png" width="33%">
     - 閾値(Threshold)を下回る音量の音声が入力されたときに出力を絞るエフェクタ。
