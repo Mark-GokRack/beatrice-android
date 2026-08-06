@@ -23,6 +23,7 @@ This project uses the following third-party libraries as Git submodules
 - [Beatrice VST](https://github.com/prj-beatrice/beatrice-vst) : [MIT License](https://github.com/prj-beatrice/beatrice-vst/blob/main/LICENSE.txt)
 - [Oboe](https://github.com/google/oboe) : [Apache License 2.0](https://github.com/google/oboe/blob/main/LICENSE)
 - [Asio](https://github.com/chriskohlhoff/asio) : [Boost Software License 1.0](https://github.com/chriskohlhoff/asio/blob/master/LICENSE_1_0.txt)
+- [RNNoise](https://github.com/xiph/rnnoise) : [BSD-3-Clause license](https://github.com/xiph/rnnoise?tab=BSD-3-Clause-1-ov-file)
 
 
 And this application uses the inference library beatrice.lib under permission from [Project Beatrice](https://prj-beatrice.com/).  
