@@ -61,7 +61,8 @@ oboe::Result BeatriceAudioEngine::openStreams(
 
   oboe::AudioStreamBuilder inBuilder, outBuilder;
 
-  setupPlaybackStreamParameters(&outBuilder);
+  setupPlaybackStreamParameters(
+      &outBuilder, 48000);  // Set a default sample rate for playback stream
   oboe::Result result = outBuilder.openStream(mPlayStream);
   if (result != oboe::Result::OK) {
     LOGE("Failed to open output stream for rate detection. Error %s",
@@ -70,7 +71,8 @@ oboe::Result BeatriceAudioEngine::openStreams(
   }
   int32_t rateP = mPlayStream->getSampleRate();
 
-  setupRecordingStreamParameters(&inBuilder, oboe::kUnspecified);
+  setupRecordingStreamParameters(
+      &inBuilder, 48000);  // Set a default sample rate for recording stream
   result = inBuilder.openStream(mRecordingStream);
   if (result != oboe::Result::OK) {
     LOGE("Failed to open input stream for rate detection. Error %s",
@@ -118,7 +120,7 @@ oboe::Result BeatriceAudioEngine::openStreams(
 
   mLatencyTuner = std::make_shared<oboe::LatencyTuner>(*mPlayStream);
   mDuplexStream = std::make_unique<BeatriceFullDuplexPass>(
-      mAudioEffector, mLatencyTuner, mIsAsyncMode, 480, 2);
+      mAudioEffector, mLatencyTuner, mIsAsyncMode, 2);
   mDuplexStream->setSharedInputStream(mRecordingStream);
   mDuplexStream->setSharedOutputStream(mPlayStream);
   mDuplexStream->start();
@@ -152,11 +154,12 @@ oboe::AudioStreamBuilder* BeatriceAudioEngine::setupRecordingStreamParameters(
 }
 
 oboe::AudioStreamBuilder* BeatriceAudioEngine::setupPlaybackStreamParameters(
-    oboe::AudioStreamBuilder* builder) {
+    oboe::AudioStreamBuilder* builder, int32_t sampleRate) {
   builder->setDataCallback(this)
       ->setErrorCallback(this)
       ->setDeviceId(mPlaybackDeviceId)
       ->setDirection(oboe::Direction::Output)
+      ->setSampleRate(sampleRate)
       ->setChannelCount(mOutputChannelCount);
 
   if (mIsVoiceCommunicationMode) {

@@ -42,9 +42,11 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
   oboe::AudioStreamBuilder* setupCommonStreamParameters(
       oboe::AudioStreamBuilder* builder);
   oboe::AudioStreamBuilder* setupRecordingStreamParameters(
-      oboe::AudioStreamBuilder* builder, int32_t sampleRate);
+      oboe::AudioStreamBuilder* builder,
+      int32_t sampleRate = oboe::kUnspecified);
   oboe::AudioStreamBuilder* setupPlaybackStreamParameters(
-      oboe::AudioStreamBuilder* builder);
+      oboe::AudioStreamBuilder* builder,
+      int32_t sampleRate = oboe::kUnspecified);
   void closeStream(std::shared_ptr<oboe::AudioStream>& stream);
   void warnIfNotLowLatency(std::shared_ptr<oboe::AudioStream>& stream);
 
