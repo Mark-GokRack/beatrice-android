@@ -58,6 +58,14 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             insets
         }
 
+        // ナビゲーションバー（ホームボタン/ジェスチャー領域）の高さに応じて下部パディングを調整
+        val rootLayout = findViewById<android.widget.LinearLayout>(R.id.activity_main_root)
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
+            insets
+        }
+
         // プリセットバー初期化
         setupPresetBar()
 
