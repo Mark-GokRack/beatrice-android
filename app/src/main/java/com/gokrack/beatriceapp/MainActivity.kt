@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.Spinner
@@ -330,6 +331,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             viewModel.statusText.value = getString(R.string.status_playing) +
                 "\nsampling frequency : ${sampleRate} Hz \t frame size: ${framesPerBurst} samples"
             viewModel.isEngineRunning.value = true
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             viewModel.statusText.value = getString(R.string.status_open_failed)
         }
@@ -340,6 +342,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
         beatriceEngine.setEffectOn(false)
         viewModel.statusText.value = getString(R.string.status_warning)
         viewModel.isEngineRunning.value = false
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     private fun onStopEngine() {
