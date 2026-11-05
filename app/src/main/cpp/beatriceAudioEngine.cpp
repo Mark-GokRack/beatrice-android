@@ -21,6 +21,10 @@ void BeatriceAudioEngine::setAsyncMode(bool isAsyncMode) {
   mIsAsyncMode = isAsyncMode;
 }
 
+void BeatriceAudioEngine::setSecondOutputChannel(SecondOutputChannel mode) {
+  mSecondOutputChannel = mode;
+}
+
 void BeatriceAudioEngine::setVoiceCommunicationMode(
     bool isVoiceCommunicationMode) {
   mIsVoiceCommunicationMode = isVoiceCommunicationMode;
@@ -63,7 +67,7 @@ oboe::Result BeatriceAudioEngine::openStreams(
 
   setupPlaybackStreamParameters(
       &outBuilder, 48000);  // Set a default sample rate for playback stream
-  oboe::Result result = outBuilder.openStream(mPlayStream);
+  oboe::Result result = openPlaybackStream(&outBuilder);
   if (result != oboe::Result::OK) {
     LOGE("Failed to open output stream for rate detection. Error %s",
          oboe::convertToText(result));
@@ -95,7 +99,7 @@ oboe::Result BeatriceAudioEngine::openStreams(
 
     setupPlaybackStreamParameters(&outBuilder);
     outBuilder.setSampleRate(mSampleRate);
-    result = outBuilder.openStream(mPlayStream);
+    result = openPlaybackStream(&outBuilder);
     if (result != oboe::Result::OK) {
       LOGE("Failed to re-open output stream with common rate. Error %s",
            oboe::convertToText(result));
@@ -120,7 +124,7 @@ oboe::Result BeatriceAudioEngine::openStreams(
 
   mLatencyTuner = std::make_shared<oboe::LatencyTuner>(*mPlayStream);
   mDuplexStream = std::make_unique<BeatriceFullDuplexPass>(
-      mAudioEffector, mLatencyTuner, mIsAsyncMode, 2);
+      mAudioEffector, mLatencyTuner, mIsAsyncMode, 2, mSecondOutputChannel);
   mDuplexStream->setSharedInputStream(mRecordingStream);
   mDuplexStream->setSharedOutputStream(mPlayStream);
   mDuplexStream->start();
@@ -160,13 +164,38 @@ oboe::AudioStreamBuilder* BeatriceAudioEngine::setupPlaybackStreamParameters(
       ->setDeviceId(mPlaybackDeviceId)
       ->setDirection(oboe::Direction::Output)
       ->setSampleRate(sampleRate)
-      ->setChannelCount(mOutputChannelCount);
+      ->setChannelCount(oboe::ChannelCount::Stereo);
 
   if (mIsVoiceCommunicationMode) {
     builder->setUsage(oboe::Usage::VoiceCommunication);
   }
 
   return setupCommonStreamParameters(builder);
+}
+
+oboe::Result BeatriceAudioEngine::openPlaybackStream(
+    oboe::AudioStreamBuilder* builder) {
+  oboe::Result result = builder->openStream(mPlayStream);
+  if (result == oboe::Result::OK &&
+      mPlayStream->getHardwareChannelCount() == oboe::ChannelCount::Mono &&
+      mPlayStream->getChannelCount() != oboe::ChannelCount::Mono) {
+    LOGI("Output hardware is mono; reopening output as mono");
+    result = mPlayStream->close();
+    mPlayStream.reset();
+    if (result != oboe::Result::OK) {
+      LOGE("Failed to close stereo output: %s", oboe::convertToText(result));
+      return result;
+    }
+    builder->setChannelCount(oboe::ChannelCount::Mono);
+    return builder->openStream(mPlayStream);
+  }
+  if (result != oboe::Result::OK) {
+    LOGW("Stereo output unavailable (%s); trying mono output",
+         oboe::convertToText(result));
+    builder->setChannelCount(oboe::ChannelCount::Mono);
+    result = builder->openStream(mPlayStream);
+  }
+  return result;
 }
 
 oboe::AudioStreamBuilder* BeatriceAudioEngine::setupCommonStreamParameters(

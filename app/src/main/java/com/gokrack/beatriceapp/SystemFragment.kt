@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -122,6 +124,20 @@ class SystemFragment : Fragment() {
             beatriceEngine.setVoiceCommunicationMode(isChecked)
         }
 
+        val outputChannelSpinner = view.findViewById<Spinner>(R.id.second_output_channel_spinner)
+        val outputChannelAdapter = ArrayAdapter.createFromResource(
+            requireContext(), R.array.second_output_channel_options, android.R.layout.simple_spinner_item
+        )
+        outputChannelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        outputChannelSpinner.adapter = outputChannelAdapter
+        outputChannelSpinner.setSelection(viewModel.secondOutputChannel.value ?: 0)
+        outputChannelSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, v: View?, position: Int, id: Long) {
+                viewModel.secondOutputChannel.value = position
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
         // Observe running state — disable settings while engine is active
         viewModel.isEngineRunning.observe(viewLifecycleOwner) { running ->
             setAllSettingsEnabled(!running)
@@ -151,6 +167,10 @@ class SystemFragment : Fragment() {
         )
 
         view.findViewById<CheckBox>(R.id.voiceCommunicationCheckbox).isEnabled = enabled
+        view.findViewById<Spinner>(R.id.second_output_channel_spinner).apply {
+            isEnabled = enabled
+            alpha = if (enabled) 1.0f else 0.4f
+        }
 
         updateLatencyAndAsync(
             enabled = enabled && isAAudio,

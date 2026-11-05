@@ -316,6 +316,10 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
             beatriceEngine.setAPI(viewModel.apiSelection.value ?: 0)
             beatriceEngine.setPerformanceMode(viewModel.performanceMode.value ?: 0)
             beatriceEngine.setAsyncMode(viewModel.isAsyncMode.value ?: true)
+            if (!beatriceEngine.setSecondOutputChannel(viewModel.secondOutputChannel.value ?: 0)) {
+                viewModel.statusText.value = getString(R.string.status_output_channel_failed)
+                return
+            }
             startEffect()
         }
     }

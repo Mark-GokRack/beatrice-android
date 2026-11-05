@@ -23,6 +23,7 @@ object beatriceEngine {
     external fun setEffectOn(isEffectOn: Boolean): Boolean
     external fun setRecordingDeviceId(deviceId: Int)
     external fun setPlaybackDeviceId(deviceId: Int)
+    external fun setSecondOutputChannel(mode: Int): Boolean
     external fun setPerformanceMode(performanceMode: Int): Boolean
     external fun setAsyncMode(isAsyncMode: Boolean): Boolean
     external fun setVoiceCommunicationMode(isVoiceCommunicationMode: Boolean): Boolean

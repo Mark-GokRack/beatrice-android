@@ -24,10 +24,10 @@
 #include <asio/bind_executor.hpp>
 #include <asio/io_context.hpp>
 #include <asio/post.hpp>
-#include <cstring>
 #include <string>
 #include <thread>
 
+#include "AudioChannelRouting.h"
 #include "effectors/AudioEffector.hpp"
 
 class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
@@ -35,11 +35,14 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
   BeatriceFullDuplexPass(std::shared_ptr<AudioEffector> effector,
                          std::shared_ptr<oboe::LatencyTuner> latencyTuner,
                          bool useAsyncProcessing = false,
-                         size_t buffer_count = 2)
+                         size_t buffer_count = 2,
+                         SecondOutputChannel secondOutputChannel =
+                             SecondOutputChannel::Processed)
       : oboe::FullDuplexStream(),
         effector_(effector),
         latencyTuner_(latencyTuner),
         useAsyncProcessing_(useAsyncProcessing),
+        secondOutputChannel_(secondOutputChannel),
         buffer_size_(buffer_count * frame_size_),
         inputBuffer_(std::make_unique<float[]>(frame_size_ * buffer_count)),
         outputBuffer_(std::make_unique<float[]>(frame_size_ * buffer_count)),
@@ -63,19 +66,15 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
                                                       int numInputFrames,
                                                       void* outputData,
                                                       int numOutputFrames) {
-    // Copy the input samples to the output with a little arbitrary gain
-    // change.
-
     // This code assumes the data format for both streams is Float.
     const float* inputFloats = static_cast<const float*>(inputData);
     float* outputFloats = static_cast<float*>(outputData);
 
-    // It also assumes the channel count for each stream is monaural.
     int32_t numInputChannels = getInputStream()->getChannelCount();
     int32_t numOutputChannels = getOutputStream()->getChannelCount();
-    if (numInputChannels != 1 || numOutputChannels != 1) {
+    if (numInputChannels < 1 || numOutputChannels < 1) {
       __android_log_print(ANDROID_LOG_ERROR, "BeatriceFullDuplexPass",
-                          "Channel count must be mono");
+                          "Invalid audio channel count");
       return oboe::DataCallbackResult::Stop;
     }
     int32_t numInputSamples = numInputFrames;
@@ -90,26 +89,11 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
     while (samplesToProcessRemaining > 0) {
       size_t len = std::min(frame_size_, samplesToProcessRemaining);
       size_t next_buffer_index_ = buffer_index_ + len;
-      if (next_buffer_index_ <= buffer_size_) {
-        // copy internal output buffer to output
-        std::memcpy(&outputFloats[processedSamples],
-                    &outputBuffer_[buffer_index_], sizeof(float) * len);
-        // copy input to internal buffer
-        std::memcpy(&inputBuffer_[buffer_index_],
-                    &inputFloats[processedSamples], sizeof(float) * len);
-      } else {
-        size_t first_part = buffer_size_ - buffer_index_;
-        std::memcpy(&outputFloats[processedSamples],
-                    &outputBuffer_[buffer_index_], sizeof(float) * first_part);
-        std::memcpy(&inputBuffer_[buffer_index_],
-                    &inputFloats[processedSamples], sizeof(float) * first_part);
-        size_t second_part = len - first_part;
-        std::memcpy(&outputFloats[processedSamples + first_part],
-                    &outputBuffer_[0], sizeof(float) * second_part);
-        std::memcpy(&inputBuffer_[0],
-                    &inputFloats[processedSamples + first_part],
-                    sizeof(float) * second_part);
-      }
+      routeAudioFrames(inputFloats + processedSamples * numInputChannels,
+                       outputFloats + processedSamples * numOutputChannels,
+                       numInputChannels, numOutputChannels, inputBuffer_.get(),
+                       outputBuffer_.get(), buffer_size_, buffer_index_, len,
+                       secondOutputChannel_);
 
       size_t frame_idx_ = (buffer_index_ / frame_size_);
       size_t next_frame_idx_ = (next_buffer_index_ / frame_size_);
@@ -129,6 +113,9 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
           func();
         }
       }
+
+      std::fill(outputFloats + samplesToProcess * numOutputChannels,
+                outputFloats + numOutputFrames * numOutputChannels, 0.0f);
 
       // update buffer index
       if (next_buffer_index_ >= buffer_size_) {
@@ -151,6 +138,7 @@ class BeatriceFullDuplexPass : public oboe::FullDuplexStream {
   std::shared_ptr<oboe::LatencyTuner> latencyTuner_;
 
   bool useAsyncProcessing_ = false;
+  SecondOutputChannel secondOutputChannel_;
   static constexpr size_t frame_size_ = 480;
   size_t buffer_size_ = 960;
   size_t buffer_index_ = 0;

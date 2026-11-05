@@ -15,6 +15,7 @@ class EngineStateViewModel : ViewModel() {
     val performanceMode = MutableLiveData(0)                 // 0 = LowLatency, 1 = Normal, 2 = PowerSaving
     val isAsyncMode = MutableLiveData(true)
     val isVoiceCommunicationMode = MutableLiveData(false)
+    val secondOutputChannel = MutableLiveData(0)
     val modelName = MutableLiveData("")
     val voiceNames = MutableLiveData<List<String>>(emptyList())
 

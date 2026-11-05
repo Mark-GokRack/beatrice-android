@@ -11,6 +11,8 @@
     <string name="status_warning">Warnings:\n\t\tUsing the built-in microphone and speaker may cause acoustic feedback.\n\t\tBluetooth headsets may experience audio issues or latency.\n\t\tA wired connection is strongly recommended.</string>
     <string name="recording_device">Recording device</string>
     <string name="playback_device">Playback device</string>
+    <string name="second_output_channel">Output channel 2</string>
+    <string name="status_output_channel_failed">Failed to set output channel mode</string>
 
     <string name="apiSelection">APIs</string>
     <string name="aaudio">AAudio</string>

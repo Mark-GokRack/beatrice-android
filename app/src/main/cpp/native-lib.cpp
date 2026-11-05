@@ -381,6 +381,21 @@ Java_com_gokrack_beatriceapp_beatriceEngine_setPlaybackDeviceId(JNIEnv* env,
 }
 
 JNIEXPORT jboolean JNICALL
+Java_com_gokrack_beatriceapp_beatriceEngine_setSecondOutputChannel(
+    JNIEnv* env, jclass, jint mode) {
+  if (!audioEngine) {
+    LOGE("Engine is null, you must call createEngine before calling this method");
+    return JNI_FALSE;
+  }
+  if (mode < 0 || mode > 2) {
+    LOGE("Invalid second output channel mode: %d", mode);
+    return JNI_FALSE;
+  }
+  audioEngine->setSecondOutputChannel(static_cast<SecondOutputChannel>(mode));
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_gokrack_beatriceapp_beatriceEngine_setPerformanceMode(
     JNIEnv* env, jclass type, jint performanceMode_) {
   if (!audioEngine) {

@@ -17,6 +17,7 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
   void setVoiceCommunicationMode(bool isVoiceCommunicationMode);
   void setPerformanceMode(oboe::PerformanceMode mode);
   void setAsyncMode(bool isAsyncMode);
+  void setSecondOutputChannel(SecondOutputChannel mode);
 
   bool isAAudioRecommended() const;
   bool setAudioApi(oboe::AudioApi api);
@@ -49,6 +50,7 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
       int32_t sampleRate = oboe::kUnspecified);
   void closeStream(std::shared_ptr<oboe::AudioStream>& stream);
   void warnIfNotLowLatency(std::shared_ptr<oboe::AudioStream>& stream);
+  oboe::Result openPlaybackStream(oboe::AudioStreamBuilder* builder);
 
   bool mIsEffectOn = false;
   int32_t mRecordingDeviceId = oboe::kUnspecified;
@@ -57,7 +59,7 @@ class BeatriceAudioEngine : public oboe::AudioStreamCallback {
   oboe::AudioApi mAudioApi = oboe::AudioApi::AAudio;
   int32_t mSampleRate = oboe::kUnspecified;
   const int32_t mInputChannelCount = oboe::ChannelCount::Mono;
-  const int32_t mOutputChannelCount = oboe::ChannelCount::Mono;
+  SecondOutputChannel mSecondOutputChannel = SecondOutputChannel::Processed;
   oboe::PerformanceMode mPerformanceMode = oboe::PerformanceMode::LowLatency;
   bool mIsAsyncMode = false;
   bool mIsVoiceCommunicationMode = false;
