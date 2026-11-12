@@ -60,7 +60,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
         ${OBOE_DIR}/include
         ${BEATRICE_VST_DIR}/lib
         ${BEATRICE_VST_DIR}/src
-        ${ASIO_DIR}/asio/include/
+        ${ASIO_DIR}/include
         ${RNNOISE_DIR}/include
 )
 
@@ -80,4 +80,3 @@ target_link_directories( ${CMAKE_PROJECT_NAME} PUBLIC ${BEATRICE_API_DIR} )
 
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall "$<$<CONFIG:RELEASE>:-Ofast>")
-
